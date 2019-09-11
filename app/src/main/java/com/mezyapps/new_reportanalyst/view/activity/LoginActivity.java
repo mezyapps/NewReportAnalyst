@@ -2,6 +2,7 @@ package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,7 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     private ShowProgressDialog showProgressDialog;
 
     private ConnectionCommon connectionCommon;
-    private Connection connection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
     public class CheckLogin extends AsyncTask<String, String, String> {
 
         String msg = "";
@@ -84,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 msg = "Please enter Username and Password";
             else {
                 try {
-                    connection = connectionCommon.connectionDatabase();
+                    Connection connection = connectionCommon.connectionDatabase();
                     if (connection == null) {
                         msg = "Check Your Internet Access!";
                     } else {

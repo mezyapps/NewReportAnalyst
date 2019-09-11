@@ -12,4 +12,6 @@
     <string name="enter_username">Enter Username</string>
     <string name="enter_password">Enter Password</string>
     <string name="login">Login</string>
+    <string name="enter_confirm_password">Enter Confirm password</string>
+    <string name="update">update</string>
 </resources>
