@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         edit_password = findViewById(R.id.edit_password);
         btn_login = findViewById(R.id.btn_login);
 
-        connectionCommon = new ConnectionCommon();
+        connectionCommon = new ConnectionCommon(LoginActivity.this);
         showProgressDialog = new ShowProgressDialog(LoginActivity.this);
     }
 

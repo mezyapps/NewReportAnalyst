@@ -51,7 +51,7 @@ public class ChancePasswordFragment extends Fragment {
         btn_update =view.findViewById(R.id.btn_update);
         edit_confirm_password =view.findViewById(R.id.edit_confirm_password);
 
-        connectionCommon = new ConnectionCommon();
+        connectionCommon = new ConnectionCommon(mContext);
         showProgressDialog = new ShowProgressDialog(mContext);
     }
 
