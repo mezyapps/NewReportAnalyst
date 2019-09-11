@@ -15,6 +15,6 @@ public class NetworkUtils {
     }
 
     public static void isNetworkNotAvailable(Context activity) {
-        Toast.makeText(activity, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Please check your internet connectionDatabase", Toast.LENGTH_SHORT).show();
     }
 }

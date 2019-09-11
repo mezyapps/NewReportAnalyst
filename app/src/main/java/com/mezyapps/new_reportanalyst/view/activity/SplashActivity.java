@@ -1,35 +1,35 @@
 package com.mezyapps.new_reportanalyst.view.activity;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.ImageView;
 
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import rx.functions.Action1;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private Handler handler;
+    String is_login="";
+    Handler handler;
+    ImageView iv_splash_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        find_View_IDs();
-        events();
-    }
-    private void find_View_IDs() {
-    }
+        iv_splash_image=findViewById(R.id.iv_splash_image);
 
-    private void events() {
+        is_login = SharedLoginUtils.getLoginSharedUtils(getApplicationContext());
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermissions();
         } else {
@@ -52,24 +52,14 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void handlerCall() {
-        handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }, 3000);
-    }
+
     private void initialize(Boolean isAppInitialized) {
         if (isAppInitialized) {
             handlerCall();
 
         } else {
             /* If one Of above permission not grant show alert (force to grant permission)*/
-            AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
+            android.app.AlertDialog.Builder builder = new AlertDialog.Builder(SplashActivity.this);
             builder.setTitle("Alert");
             builder.setMessage("All permissions necessary");
 
@@ -88,5 +78,23 @@ public class SplashActivity extends AppCompatActivity {
             });
             builder.show();
         }
+    }
+
+    private void handlerCall() {
+        handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
+                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+                finish();
+            }
+        }, 3000);
     }
 }

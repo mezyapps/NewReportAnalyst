@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.view.fragment.ChancePasswordFragment;
 import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         txt_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // SharedLoginUtils.removeLoginSharedUtils(MainActivity.this);
+                SharedLoginUtils.removeLoginSharedUtils(MainActivity.this);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

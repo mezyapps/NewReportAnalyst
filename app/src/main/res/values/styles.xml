@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/app_nav</item>
         <item name="colorPrimaryDark">@color/app_bar_color</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/app_bar_color</item>
     </style>
 
 </resources>
