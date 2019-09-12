@@ -18,7 +18,7 @@ import java.sql.Connection;
 public class HomeFragment extends Fragment {
 
     private Context mContext;
-    private ConnectionCommon connectionCommon;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,15 +34,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void find_View_IdS(View view) {
-        connectionCommon=new ConnectionCommon();
-        Connection connection=connectionCommon.connectionDatabase();
-        if(connection==null)
-        {
-            Toast.makeText(mContext, "Connection Problem Try Again", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Toast.makeText(mContext, "Connection Successfully", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
     private void events() {
