@@ -8,17 +8,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.mezyapps.new_reportanalyst.R;
-import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
-
-import java.sql.Connection;
 
 public class HomeFragment extends Fragment {
 
     private Context mContext;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

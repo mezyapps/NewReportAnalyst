@@ -17,4 +17,10 @@
     <string name="enter_ip_address">Enter IP Address</string>
     <string name="enter_database_name">Enter Database Name</string>
     <string name="enter_username">Enter Username</string>
+    <string name="purchase_report">Purchase Report</string>
+    <string name="sales_report">Sales Report</string>
+    <string name="outstanding_receivable">Outstanding Receivable</string>
+    <string name="outstanding_payable">outstanding Payable</string>
+    <string name="stock_report">Stock Report</string>
+    <string name="order_entry">Order Entry</string>
 </resources>

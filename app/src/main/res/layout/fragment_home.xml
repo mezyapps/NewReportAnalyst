@@ -4,219 +4,317 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="@color/app_background"
     tools:context=".view.fragment.HomeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@color/white"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="15dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_height="150dp"
+            android:paddingTop="5dp"
+            android:background="@color/app_color">
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/splash_icon"
+                android:id="@+id/iv_dashboard_image"
+                android:layout_centerHorizontal="true"/>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView_add_customer2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginEnd="5dp"
-                android:elevation="5dp"
-                app:cardBackgroundColor="@color/app_background"
-                app:cardCornerRadius="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_dashboard_image"
+                android:layout_centerHorizontal="true"
+                android:text="Report Analyst"
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
 
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    android:weightSum="2">
-
-
-                    <ImageView
-                        android:id="@+id/iv_add_customer2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1.5"
-                        android:padding="5dp"
-                        android:src="@drawable/splash_icon" />
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="0.5"
-                        android:text="Test"
-                        android:textSize="16sp" />
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewIncomeExpense2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:elevation="5dp"
-                app:cardBackgroundColor="@color/app_background"
-                app:cardCornerRadius="5dp">
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    android:weightSum="2">
-
-
-                    <ImageView
-                        android:id="@+id/iv_income_expense2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1.5"
-                        android:padding="5dp"
-                        android:src="@drawable/splash_icon" />
-
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="0.5"
-                        android:text="Test"
-                        android:textSize="16sp" />
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_height="match_parent"
+            android:layout_marginTop="-35dp"
+            android:orientation="vertical"
+            android:weightSum="3"
+            android:padding="10dp">
 
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView_add_customer"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginEnd="5dp"
-                android:elevation="5dp"
-                app:cardBackgroundColor="@color/app_background"
-                app:cardCornerRadius="5dp">
+                android:orientation="horizontal"
+                android:weightSum="2">
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView_Sales_Report"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    android:weightSum="2">
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
 
 
-                    <ImageView
-                        android:id="@+id/iv_add_customer"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1.5"
-                        android:padding="5dp"
-                        android:src="@drawable/splash_icon" />
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
 
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="0.5"
-                        android:text="Test"
-                        android:textSize="16sp" />
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_purchase_report" />
 
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/sales_report"
+                            android:textSize="13sp" />
 
 
-            </androidx.cardview.widget.CardView>
+                    </LinearLayout>
 
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewIncomeExpense"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewPurchase_Report"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_sale_report" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/purchase_report"
+                            android:textSize="13sp" />
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:elevation="5dp"
-                app:cardBackgroundColor="@color/app_background"
-                app:cardCornerRadius="5dp">
+                android:orientation="horizontal"
+                android:weightSum="2">
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView_outstanding_receivable"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    android:weightSum="2">
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
 
 
-                    <ImageView
-                        android:id="@+id/iv_income_expense"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1.5"
-                        android:padding="5dp"
-                        android:src="@drawable/splash_icon" />
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
 
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight="0.5"
-                        android:text="Test"
-                        android:textSize="16sp" />
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_outstabding_receivable" />
 
 
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/outstanding_receivable"
+                            android:textSize="13sp" />
 
 
-            </androidx.cardview.widget.CardView>
+                    </LinearLayout>
 
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView_outstanding_payable"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_outstanding_payable" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/outstanding_payable"
+                            android:textSize="13sp" />
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView_stock_report"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_stock_report" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/stock_report"
+                            android:textSize="13sp" />
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView_order_entry"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    app:cardCornerRadius="5dp">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"
+                            android:padding="25dp"
+                            android:src="@drawable/ic_vector_order_entry" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:gravity="center"
+                            android:text="@string/order_entry"
+                            android:textSize="13sp" />
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
 
         </LinearLayout>
 
