@@ -14,7 +14,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-
+        <activity android:name=".view.activity.OrderEnteryActivity"></activity>
+        <activity android:name=".view.activity.StockReportActivity" />
+        <activity android:name=".view.activity.OutstandingPayableActivity" />
+        <activity android:name=".view.activity.OutstandingReceivableActivity" />
+        <activity android:name=".view.activity.PurchaseReportActivity" />
+        <activity android:name=".view.activity.SalesReportActivity" />
         <activity
             android:name=".view.activity.DatabaseConfigActivity"
             android:screenOrientation="portrait" />
@@ -44,12 +49,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>
