@@ -23,4 +23,6 @@
     <string name="outstanding_payable">outstanding Payable</string>
     <string name="stock_report">Stock Report</string>
     <string name="order_entry">Order Entry</string>
+    <string name="receivable">Receivable</string>
+    <string name="payable">Payable</string>
 </resources>

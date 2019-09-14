@@ -21,6 +21,18 @@
             android:id="@+id/iv_back"/>
 
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/outstanding_receivable"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_toEndOf="@+id/iv_back"/>
+
+
+
     </RelativeLayout>
 
 

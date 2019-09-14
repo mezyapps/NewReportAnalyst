@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     private boolean doubleBackToExitPressedOnce = false;
     private Dialog dialog_logout;
-
+    private TextView text_version_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
         iv_drawer=findViewById(R.id.iv_drawer);
         drawerLayout=findViewById(R.id.drawerLayout);
         navigationView=findViewById(R.id.navigationView);
+        text_version_name=findViewById(R.id.text_version_name);
+
+        //AppVersion Display
+        String versionName = "";
+        try {
+            versionName = getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        text_version_name.setText("Version Name : "+versionName);
+
+        //AppVersion Display
     }
 
     private void events() {
@@ -78,7 +91,11 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new ChancePasswordFragment());
                 }else if (id == R.id.nav_share_app){
                     shareApplication();
-                }else if (id == R.id.nav_logout) {
+                }else if (id == R.id.nav_database_config){
+                    Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
+                    startActivity(intent);
+                }
+                else if (id == R.id.nav_logout) {
                     logoutApplication();
                 }
 

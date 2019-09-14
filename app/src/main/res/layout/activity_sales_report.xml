@@ -20,13 +20,135 @@
             android:padding="5dp"
             android:id="@+id/iv_back"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sales_report"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_toEndOf="@+id/iv_back"/>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:id="@+id/iv_custom_calender"
+            android:src="@drawable/ic_vector_calendar"/>
+
+
 
     </RelativeLayout>
 
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_color"
+        android:orientation="horizontal"
+        android:id="@+id/linear_layout_custom_day"
+        android:weightSum="7">
+
+
+        <TextView
+            android:id="@+id/textDateStart"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:padding="5dp"
+            android:gravity="center"
+            android:text="From Date"
+            android:textColor="@color/white" />
+
+
+        <TextView
+            android:id="@+id/textAll"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="5dp"
+            android:gravity="center"
+            android:text="to"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+
+
+        <TextView
+            android:id="@+id/textDateEnd"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="To Date"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_color"
+        android:id="@+id/linear_layout_today_date"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/text_today_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:text="Today Date"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/light_grey"
+        android:padding="5dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Total Sales"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/black" />
+
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"
+            android:text="00"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/black" />
+
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
 
