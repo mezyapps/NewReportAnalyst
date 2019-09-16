@@ -42,6 +42,7 @@ public class DatabaseConfigActivity extends AppCompatActivity {
 
         find_View_IdS();
         events();
+
     }
 
     private void find_View_IdS() {
@@ -52,6 +53,25 @@ public class DatabaseConfigActivity extends AppCompatActivity {
         btn_save = findViewById(R.id.btn_save);
         connectionCommon=new ConnectionCommon();
         showProgressDialog=new ShowProgressDialog(DatabaseConfigActivity.this);
+
+        String is_config= DatabaseConfiguration.getDatabaseConfiguration(getApplicationContext());
+
+        if(is_config.equalsIgnoreCase("true"))
+        {
+
+            databaseConfigModelArrayList= DatabaseConfiguration.getDatabaseConfig(DatabaseConfigActivity.this);
+            ip_address=databaseConfigModelArrayList.get(0).getIp_address();
+            database=databaseConfigModelArrayList.get(0).getDatabase();
+            username=databaseConfigModelArrayList.get(0).getUsername();
+            password=databaseConfigModelArrayList.get(0).getPassword();
+
+            edit_ip_address.setText(ip_address);
+            edit_database_name.setText(database);
+            edit_username.setText(username);
+            edit_password.setText(password);
+        }
+
+
     }
     private void events() {
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +94,7 @@ public class DatabaseConfigActivity extends AppCompatActivity {
                         Toast.makeText(DatabaseConfigActivity.this, "Connect Successfully", Toast.LENGTH_SHORT).show();
                         DatabaseConfiguration.addDatabaseConfig(DatabaseConfigActivity.this,databaseConfigModelArrayList);
                         DatabaseConfiguration.putDatabaseConfiguration(DatabaseConfigActivity.this);
-                        startActivity(new Intent(DatabaseConfigActivity.this,LoginActivity.class));
+                        startActivity(new Intent(DatabaseConfigActivity.this,MainActivity.class));
                         finish();
                     }
 

@@ -20,7 +20,6 @@ import rx.functions.Action1;
 public class SplashActivity extends AppCompatActivity {
 
     String is_login="";
-    String is_config="";
     Handler handler;
     ImageView iv_splash_image;
 
@@ -32,7 +31,6 @@ public class SplashActivity extends AppCompatActivity {
         iv_splash_image=findViewById(R.id.iv_splash_image);
 
         is_login = SharedLoginUtils.getLoginSharedUtils(getApplicationContext());
-        is_config= DatabaseConfiguration.getDatabaseConfiguration(getApplicationContext());
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermissions();
         } else {
@@ -89,14 +87,10 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                if(is_config.equalsIgnoreCase("") || is_config.equalsIgnoreCase("false"))
-                {
-                    Intent intent = new Intent(SplashActivity.this, DatabaseConfigActivity.class);
-                    startActivity(intent);
-                }else if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
+                if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
                     Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(intent);
-                } else {
+                }else  {
                     Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(intent);
                 }

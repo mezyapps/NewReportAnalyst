@@ -14,13 +14,17 @@
         android:title="@string/share_app"
         android:id="@+id/nav_share_app"
         android:icon="@drawable/ic_vector_share"/>
-
+    <item
+        android:title="@string/database_configuration"
+        android:id="@+id/nav_database_config"
+        android:icon="@drawable/ic_vector_database_config"/>
 
 
     <item
-        android:title="Database Configuration"
-        android:id="@+id/nav_database_config"
+        android:title="@string/database_import_export"
+        android:id="@+id/nav_import_export"
         android:icon="@drawable/ic_vector_database_config"/>
+
 
     <item
         android:title="@string/logout"

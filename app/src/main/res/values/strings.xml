@@ -25,4 +25,5 @@
     <string name="order_entry">Order Entry</string>
     <string name="receivable">Receivable</string>
     <string name="payable">Payable</string>
+    <string name="database_import_export">Database Import/Export</string>
 </resources>

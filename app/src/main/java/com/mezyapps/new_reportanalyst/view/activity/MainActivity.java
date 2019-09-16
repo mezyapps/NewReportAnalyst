@@ -29,6 +29,7 @@ import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.view.fragment.ChancePasswordFragment;
 import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
+import com.mezyapps.new_reportanalyst.view.fragment.ImportExportFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,8 +95,9 @@ public class MainActivity extends AppCompatActivity {
                 }else if (id == R.id.nav_database_config){
                     Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
                     startActivity(intent);
-                }
-                else if (id == R.id.nav_logout) {
+                }else if (id == R.id.nav_import_export){
+                    loadFragment(new ImportExportFragment());
+                }else if (id == R.id.nav_logout) {
                     logoutApplication();
                 }
 

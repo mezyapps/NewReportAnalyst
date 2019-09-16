@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
+import com.mezyapps.new_reportanalyst.utils.DatabaseConfiguration;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btn_login;
     private TextInputEditText edit_username, edit_password;
     private ShowProgressDialog showProgressDialog;
+    private String is_config="";
 
     private ConnectionCommon connectionCommon;
 
@@ -44,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         connectionCommon = new ConnectionCommon(LoginActivity.this);
         showProgressDialog = new ShowProgressDialog(LoginActivity.this);
+        is_config= DatabaseConfiguration.getDatabaseConfiguration(getApplicationContext());
     }
 
     private void events() {
@@ -95,8 +98,16 @@ public class LoginActivity extends AppCompatActivity {
                         if (resultSet.next()) {
                             String user_id = String.valueOf(resultSet.getInt("USERID"));
                             SharedLoginUtils.putLoginSharedUtils(LoginActivity.this);
-                            startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                            finish();
+
+                            if(is_config.equalsIgnoreCase("") || is_config.equalsIgnoreCase("false"))
+                            {
+                                Intent intent = new Intent(LoginActivity.this, DatabaseConfigActivity.class);
+                                startActivity(intent);
+                            }
+                            else {
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            }
                             msg = "Login successful";
                             isSuccess = true;
                             connection.close();
