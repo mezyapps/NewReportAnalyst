@@ -26,4 +26,11 @@
     <string name="receivable">Receivable</string>
     <string name="payable">Payable</string>
     <string name="database_import_export">Database Import/Export</string>
+    <string name="select_date">Select Date</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="last_month">Last Month</string>
+    <string name="custom">Custom</string>
 </resources>

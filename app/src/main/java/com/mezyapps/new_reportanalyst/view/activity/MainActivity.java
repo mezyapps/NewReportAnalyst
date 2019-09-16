@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     private boolean doubleBackToExitPressedOnce = false;
     private Dialog dialog_logout;
-    private TextView text_version_name;
+    private TextView text_version_name,text_app_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout=findViewById(R.id.drawerLayout);
         navigationView=findViewById(R.id.navigationView);
         text_version_name=findViewById(R.id.text_version_name);
+        text_app_name=findViewById(R.id.text_app_name);
 
         //AppVersion Display
         String versionName = "";
