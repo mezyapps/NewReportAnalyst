@@ -34,6 +34,8 @@ public class DatabaseConfigActivity extends AppCompatActivity {
     private DatabaseConfigModel databaseConfigModel;
     private ArrayList<DatabaseConfigModel> databaseConfigModelArrayList=new ArrayList<>();
     private ShowProgressDialog showProgressDialog;
+    private boolean intentCall=false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +67,21 @@ public class DatabaseConfigActivity extends AppCompatActivity {
             username=databaseConfigModelArrayList.get(0).getUsername();
             password=databaseConfigModelArrayList.get(0).getPassword();
 
+            databaseConfigModelArrayList.clear();
+
             edit_ip_address.setText(ip_address);
             edit_database_name.setText(database);
             edit_username.setText(username);
             edit_password.setText(password);
         }
-
-
+        Bundle bundle=getIntent().getExtras();
+        if(bundle!=null)
+        {
+            String check = bundle.getString("Config");
+            if(check.equalsIgnoreCase("second")) {
+                intentCall = true;
+            }
+        }
     }
     private void events() {
         btn_save.setOnClickListener(new View.OnClickListener() {
@@ -94,8 +104,15 @@ public class DatabaseConfigActivity extends AppCompatActivity {
                         Toast.makeText(DatabaseConfigActivity.this, "Connect Successfully", Toast.LENGTH_SHORT).show();
                         DatabaseConfiguration.addDatabaseConfig(DatabaseConfigActivity.this,databaseConfigModelArrayList);
                         DatabaseConfiguration.putDatabaseConfiguration(DatabaseConfigActivity.this);
-                        startActivity(new Intent(DatabaseConfigActivity.this,MainActivity.class));
-                        finish();
+                        if(intentCall) {
+                            startActivity(new Intent(DatabaseConfigActivity.this, MainActivity.class));
+                            finish();
+                        }
+                        else
+                        {
+                            startActivity(new Intent(DatabaseConfigActivity.this, LoginActivity.class));
+                            finish();
+                        }
                     }
 
                 }

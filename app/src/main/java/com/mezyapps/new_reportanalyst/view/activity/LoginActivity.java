@@ -26,8 +26,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button btn_login;
     private TextInputEditText edit_username, edit_password;
     private ShowProgressDialog showProgressDialog;
-    private String is_config="";
-
     private ConnectionCommon connectionCommon;
 
     @Override
@@ -46,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
         connectionCommon = new ConnectionCommon(LoginActivity.this);
         showProgressDialog = new ShowProgressDialog(LoginActivity.this);
-        is_config= DatabaseConfiguration.getDatabaseConfiguration(getApplicationContext());
+
     }
 
     private void events() {
@@ -98,16 +96,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (resultSet.next()) {
                             String user_id = String.valueOf(resultSet.getInt("USERID"));
                             SharedLoginUtils.putLoginSharedUtils(LoginActivity.this);
-
-                            if(is_config.equalsIgnoreCase("") || is_config.equalsIgnoreCase("false"))
-                            {
-                                Intent intent = new Intent(LoginActivity.this, DatabaseConfigActivity.class);
-                                startActivity(intent);
-                            }
-                            else {
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                finish();
-                            }
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
                             msg = "Login successful";
                             isSuccess = true;
                             connection.close();

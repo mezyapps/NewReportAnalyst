@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                     shareApplication();
                 }else if (id == R.id.nav_database_config){
                     Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
+                    intent.putExtra("Config","second");
                     startActivity(intent);
                 }else if (id == R.id.nav_import_export){
                     loadFragment(new ImportExportFragment());
