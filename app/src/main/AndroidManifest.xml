@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.activity.OrderEnteryActivity"></activity>
+        <activity android:name=".view.activity.OrderEnteryActivity"/>
         <activity android:name=".view.activity.StockReportActivity" />
         <activity android:name=".view.activity.OutstandingPayableActivity" />
         <activity android:name=".view.activity.OutstandingReceivableActivity" />
@@ -50,10 +50,10 @@
             </intent-filter>
         </service>
     </application>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>

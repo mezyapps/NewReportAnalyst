@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 CheckLogin checkLogin = new CheckLogin();
                 checkLogin.execute("");
             }
