@@ -1,6 +1,8 @@
 package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -11,24 +13,32 @@ import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.model.SalesReportModel;
+import com.mezyapps.new_reportanalyst.view.adapter.SalesReportAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class SalesReportActivity extends AppCompatActivity {
 
-    private ImageView iv_back,iv_custom_calender;
+    private ImageView iv_back,iv_custom_calender,iv_search,iv_back_search,iv_export_pdf;
     private TextView textDateStart, textDateEnd,textDateStartCustom, textDateEndCustom,text_today_date;
     private String currentDate;
     private boolean isStartDate;
     private LinearLayout linear_layout_custom_day,linear_layout_today_date;
+    private RecyclerView recyclerView_Sales;
+    private SalesReportAdapter salesReportAdapter;
+    private ArrayList<SalesReportModel> salesReportModelArrayList=new ArrayList<>();
+    private RelativeLayout rr_toolbar,rr_toolbar_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +53,40 @@ public class SalesReportActivity extends AppCompatActivity {
         iv_back = findViewById(R.id.iv_back);
         textDateStart = findViewById(R.id.textDateStart);
         textDateEnd = findViewById(R.id.textDateEnd);
+        iv_search = findViewById(R.id.iv_search);
         iv_custom_calender = findViewById(R.id.iv_custom_calender);
         linear_layout_today_date = findViewById(R.id.linear_layout_today_date);
         linear_layout_custom_day = findViewById(R.id.linear_layout_custom_day);
         text_today_date = findViewById(R.id.text_today_date);
+        recyclerView_Sales = findViewById(R.id.recyclerView_Sales);
+        rr_toolbar = findViewById(R.id.rr_toolbar);
+        rr_toolbar_search = findViewById(R.id.rr_toolbar_search);
+        iv_back_search = findViewById(R.id.iv_back_search);
+        iv_export_pdf = findViewById(R.id.iv_export_pdf);
+
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(SalesReportActivity.this);
+        recyclerView_Sales.setLayoutManager(linearLayoutManager);
 
         currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
         textDateEnd.setText(currentDate);
         textDateStart.setText(currentDate);
 
+
+        for(int i=0;i<=5;i++)
+        {
+            SalesReportModel salesReportModel=new SalesReportModel();
+            salesReportModel.setGroupname("xyz");
+            salesReportModel.setTotalqty("20");
+            salesReportModel.setTotalfinalamt("Bill Amt "+"18000");
+            salesReportModel.setVchno("201");
+            salesReportModel.setVchdt("10-10-2019");
+            salesReportModel.setNarration("abcd");
+            salesReportModelArrayList.add(salesReportModel);
+        }
+
+        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        recyclerView_Sales.setAdapter(salesReportAdapter);
+        salesReportAdapter.notifyDataSetChanged();
     }
 
     private void events() {
@@ -66,6 +101,29 @@ public class SalesReportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 customDateDialog();
+            }
+        });
+
+        iv_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rr_toolbar.setVisibility(View.GONE);
+                rr_toolbar_search.setVisibility(View.VISIBLE);
+            }
+        });
+
+        iv_back_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rr_toolbar_search.setVisibility(View.GONE);
+                rr_toolbar.setVisibility(View.VISIBLE);
+            }
+        });
+
+        iv_export_pdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SalesReportActivity.this, "Working In Progress", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -102,7 +160,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 customDateDialog.dismiss();
                 currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
                 text_today_date.setText(currentDate);
-                Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_yesterday.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +175,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 String yesterday=dateFormat.format(cal.getTime());
 
                 text_today_date.setText(yesterday);
-                Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
             }
         });
         text_this_week.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +194,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
 
-                Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_this_month.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +214,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
 
-                Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_last_month.setOnClickListener(new View.OnClickListener() {
@@ -178,7 +236,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
 
-                Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_custom.setOnClickListener(new View.OnClickListener() {

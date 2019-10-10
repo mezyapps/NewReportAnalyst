@@ -32,6 +32,7 @@ public class ImportExportFragment extends Fragment {
     private DatabaseHandler databaseHandler;
     private TextView text_product_table,text_groups_per,text_sales_table,text_sales_table_DT;
     private TextView text_count;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
