@@ -26,10 +26,16 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.view.fragment.ChancePasswordFragment;
+import com.mezyapps.new_reportanalyst.view.fragment.ExportDatabaseFragment;
 import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
 import com.mezyapps.new_reportanalyst.view.fragment.ImportExportFragment;
+import com.squareup.picasso.Picasso;
+
+import java.sql.Connection;
+import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
     private boolean doubleBackToExitPressedOnce = false;
     private Dialog dialog_logout;
-    private TextView text_version_name,text_app_name;
+    private TextView text_version_name, text_app_name;
+    private ConnectionCommon connectionCommon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +63,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void find_View_IdS() {
         loadFragment(new HomeFragment());
-        iv_drawer=findViewById(R.id.iv_drawer);
-        drawerLayout=findViewById(R.id.drawerLayout);
-        navigationView=findViewById(R.id.navigationView);
-        text_version_name=findViewById(R.id.text_version_name);
-        text_app_name=findViewById(R.id.text_app_name);
+        iv_drawer = findViewById(R.id.iv_drawer);
+        connectionCommon = new ConnectionCommon(MainActivity.this);
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        text_version_name = findViewById(R.id.text_version_name);
+        text_app_name = findViewById(R.id.text_app_name);
 
         //AppVersion Display
         String versionName = "";
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        text_version_name.setText("Version Name : "+versionName);
+        text_version_name.setText("Version Name : " + versionName);
 
         //AppVersion Display
     }
@@ -91,15 +99,26 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new HomeFragment());
                 } else if (id == R.id.nav_change_password) {
                     loadFragment(new ChancePasswordFragment());
-                }else if (id == R.id.nav_share_app){
+                } else if (id == R.id.nav_share_app) {
                     shareApplication();
-                }else if (id == R.id.nav_database_config){
-                    Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
-                    intent.putExtra("Config","second");
+                } else if (id == R.id.nav_database_config) {
+                    Intent intent = new Intent(MainActivity.this, DatabaseConfigActivity.class);
+                    intent.putExtra("Config", "second");
                     startActivity(intent);
-                }else if (id == R.id.nav_import_export){
+                } else if (id == R.id.nav_import_export) {
+                   /* Connection connection = connectionCommon.connectionDatabase();
+                    if (connection == null) {
+                        displayConnectionDialog();
+                    }
+                    else {
+                        loadFragment(new ImportExportFragment());
+                    }
+                    */
+
                     loadFragment(new ImportExportFragment());
-                }else if (id == R.id.nav_logout) {
+                } else if (id == R.id.nav_export) {
+                    loadFragment(new ExportDatabaseFragment());
+                } else if (id == R.id.nav_logout) {
                     logoutApplication();
                 }
 
@@ -108,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -194,4 +215,30 @@ public class MainActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(shareIntent, "Share via"));
     }
 
+   /* private void displayConnectionDialog() {
+        Dialog connectionDialog = new Dialog(MainActivity.this);
+        connectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectionDialog.setContentView(R.layout.connection_check_dialog);
+
+        TextView btn_check_connection = connectionDialog.findViewById(R.id.btn_check_connection);
+
+        connectionDialog.setCancelable(false);
+        connectionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        connectionDialog.show();
+
+        Window window = connectionDialog.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+
+        btn_check_connection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
+                intent.putExtra("Config","second");
+                startActivity(intent);
+            }
+        });
+    }
+*/
 }
+
