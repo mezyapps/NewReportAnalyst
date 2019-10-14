@@ -21,9 +21,9 @@ public class DatabaseConstant {
         public static final String GST = "GST";
 
         public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + PRODID + " INTEGER,"
-                + PMSTCODE + " TEXT," + PMSTNAME + " TEXT," + CATEGORYNAME + " TEXT," + PRODPKGINCASE + " TEXT,"
-                + PACKING + " TEXT," + UNITNAME + " TEXT," + COSTPRICE + " TEXT," + SALERATE + " TEXT," + MRP + " TEXT,"
-                + HSNCODE + " TEXT," + GST + " TEXT" + ")";
+                + PMSTCODE + " TEXT," + PMSTNAME + " TEXT," + CATEGORYNAME + " TEXT," + PRODPKGINCASE + " INTEGER,"
+                + PACKING + " TEXT," + UNITNAME + " TEXT," + COSTPRICE + " REAL," + SALERATE + " REAL," + MRP + " REAL,"
+                + HSNCODE + " TEXT," + GST + " REAL" + ")";
 
     }
 

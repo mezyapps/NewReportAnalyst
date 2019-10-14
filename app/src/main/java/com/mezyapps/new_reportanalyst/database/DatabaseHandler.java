@@ -53,7 +53,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public boolean insertTable(ResultSet resultSet,String TableName) throws SQLException {
-
+        long result = 0;
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -67,10 +67,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String columnValue = resultSet.getString(i);
                 contentValues.put(columnName, columnValue);
             }
+           result= db.insert(TableName, null, contentValues);
         }
 
         /* Inserting Row */
-        long result = db.insert(TableName, null, contentValues);
+       
         if (result == -1) {
             db.close(); // Closing database connection
             return false;

@@ -5,14 +5,32 @@
     android:layout_marginBottom="10dp"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Party Name"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        android:maxLines="2"
+        android:textAllCaps="true"
+        android:id="@+id/textParty_name"
+        style="@style/TextAppearance.AppCompat"
+        android:textStyle="bold" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingTop="10dp"
         android:background="@color/white"
-        android:paddingBottom="10dp"
         android:weightSum="2">
 
         <LinearLayout
@@ -24,26 +42,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Party Name"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/slate_gray"
-                android:maxLines="1"
-                android:textAllCaps="true"
-                android:id="@+id/textParty_name"
-                style="@style/TextAppearance.AppCompat"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="Total Qty"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/slate_gray"
+                android:textColor="@color/black"
                 android:maxLines="1"
                 style="@style/TextAppearance.AppCompat"
                 android:id="@+id/text_total_qty"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -57,7 +63,7 @@
                 android:paddingBottom="5dp"
                 style="@style/TextAppearance.AppCompat"
                 android:background="@color/light_grey"
-                android:textColor="@color/slate_gray"
+                android:textColor="@color/black"
                 android:id="@+id/textBillAmt"
                 android:textStyle="bold" />
 
@@ -77,12 +83,11 @@
                 android:layout_height="wrap_content"
                 android:text="Bill No"
                 android:layout_marginEnd="10dp"
-                android:textColor="@color/slate_gray"
+                android:textColor="@color/black"
                 android:gravity="end"
                 android:maxLines="1"
                 android:id="@+id/textBillNo"
-                style="@style/TextAppearance.AppCompat"
-                android:textStyle="bold" />
+                style="@style/TextAppearance.AppCompat"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -94,23 +99,22 @@
                 android:gravity="end"
                 android:maxLines="1"
                 style="@style/TextAppearance.AppCompat"
-                android:textColor="@color/slate_gray"
-                android:textStyle="bold" />
+                android:textColor="@color/black"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Narration"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="5dp"
-                android:id="@+id/textNarration"
-                android:gravity="end"
-                android:maxLines="1"
-                style="@style/TextAppearance.AppCompat"
-                android:textColor="@color/slate_gray"
-                android:textStyle="bold" />
 
         </LinearLayout>
 
+    </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Narration"
+            android:layout_marginTop="5dp"
+            android:id="@+id/textNarration"
+            android:maxLines="2"
+            android:paddingStart="10dp"
+            style="@style/TextAppearance.AppCompat"
+            android:textColor="@color/black"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

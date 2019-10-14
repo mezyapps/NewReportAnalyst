@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.database.DatabaseConstant;
+import com.mezyapps.new_reportanalyst.database.DatabaseHandler;
 import com.mezyapps.new_reportanalyst.model.SalesReportModel;
 import com.mezyapps.new_reportanalyst.view.adapter.SalesReportAdapter;
 
@@ -31,7 +35,7 @@ import java.util.Locale;
 public class SalesReportActivity extends AppCompatActivity {
 
     private ImageView iv_back,iv_custom_calender,iv_search,iv_back_search,iv_export_pdf;
-    private TextView textDateStart, textDateEnd,textDateStartCustom, textDateEndCustom,text_today_date;
+    private TextView textDateStart, textDateEnd,textDateStartCustom, textDateEndCustom,text_today_date,textTotalAmt;
     private String currentDate;
     private boolean isStartDate;
     private LinearLayout linear_layout_custom_day,linear_layout_today_date;
@@ -39,6 +43,7 @@ public class SalesReportActivity extends AppCompatActivity {
     private SalesReportAdapter salesReportAdapter;
     private ArrayList<SalesReportModel> salesReportModelArrayList=new ArrayList<>();
     private RelativeLayout rr_toolbar,rr_toolbar_search;
+    private DatabaseHandler databaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,10 @@ public class SalesReportActivity extends AppCompatActivity {
         rr_toolbar_search = findViewById(R.id.rr_toolbar_search);
         iv_back_search = findViewById(R.id.iv_back_search);
         iv_export_pdf = findViewById(R.id.iv_export_pdf);
+        textTotalAmt = findViewById(R.id.textTotalAmt);
+
+
+        databaseHandler=new DatabaseHandler(SalesReportActivity.this);
 
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(SalesReportActivity.this);
         recyclerView_Sales.setLayoutManager(linearLayoutManager);
@@ -71,22 +80,6 @@ public class SalesReportActivity extends AppCompatActivity {
         textDateEnd.setText(currentDate);
         textDateStart.setText(currentDate);
 
-
-        for(int i=0;i<=5;i++)
-        {
-            SalesReportModel salesReportModel=new SalesReportModel();
-            salesReportModel.setGroupname("xyz");
-            salesReportModel.setTotalqty("20");
-            salesReportModel.setTotalfinalamt("Bill Amt "+"18000");
-            salesReportModel.setVchno("201");
-            salesReportModel.setVchdt("10-10-2019");
-            salesReportModel.setNarration("abcd");
-            salesReportModelArrayList.add(salesReportModel);
-        }
-
-        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
-        recyclerView_Sales.setAdapter(salesReportAdapter);
-        salesReportAdapter.notifyDataSetChanged();
     }
 
     private void events() {
@@ -126,6 +119,47 @@ public class SalesReportActivity extends AppCompatActivity {
                 Toast.makeText(SalesReportActivity.this, "Working In Progress", Toast.LENGTH_SHORT).show();
             }
         });
+
+        callSalesReportAll();
+    }
+
+    private void callSalesReportAll() {
+
+        String selectQuery =
+                "SELECT  *,"+
+                "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
+                " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
+
+        String TOTAL_AMT ="00";
+
+        SQLiteDatabase db = databaseHandler.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        while (cursor.moveToNext()) {
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
+            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+
+            SalesReportModel salesReportModel=new SalesReportModel();
+            salesReportModel.setGroupname(group_name);
+            salesReportModel.setTotalqty("Total qty : "+qty);
+            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            salesReportModel.setVchno("Bill No : "+group_id);
+            salesReportModel.setVchdt(date);
+            salesReportModel.setNarration(narration);
+            salesReportModelArrayList.add(salesReportModel);
+
+        }
+        textTotalAmt.setText(TOTAL_AMT);
+        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        recyclerView_Sales.setAdapter(salesReportAdapter);
+        salesReportAdapter.notifyDataSetChanged();
+
     }
 
     //Custom Date Dialog

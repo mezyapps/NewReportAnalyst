@@ -36,11 +36,18 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
 
         holder.textParty_name.setText(salesReportModel.getGroupname());
         holder.text_total_qty.setText(salesReportModel.getTotalqty());
-        holder.textBillAmt.setText(salesReportModel.getTotalfinalamt());
+        holder.textBillAmt.setText(salesReportModel.getTotalbillamt());
 
         holder.textBillNo.setText(salesReportModel.getVchno());
         holder.textBillDate.setText(salesReportModel.getVchdt());
-        holder.textNarration.setText(salesReportModel.getNarration());
+        String narration=salesReportModel.getNarration();
+        if(narration.equalsIgnoreCase("")) {
+            holder.textNarration.setVisibility(View.GONE);
+        }
+        else
+        {
+            holder.textNarration.setText(narration);
+        }
 
     }
 

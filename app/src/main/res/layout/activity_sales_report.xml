@@ -185,6 +185,7 @@
             android:padding="5dp"
             android:layout_alignParentEnd="true"
             android:text="00"
+            android:id="@+id/textTotalAmt"
             android:textSize="18sp"
             android:textStyle="bold|italic"
             android:layout_marginEnd="5dp"
