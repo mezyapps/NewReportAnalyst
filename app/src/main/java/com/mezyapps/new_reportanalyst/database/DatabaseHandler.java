@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -64,8 +65,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             int columnCount = resultSetMetaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = resultSetMetaData.getColumnName(i);
-                String columnValue = resultSet.getString(i);
-                contentValues.put(columnName, columnValue);
+                if(columnName.equalsIgnoreCase("VCHDT_Y_M_D"))
+                {
+                    String columnValue = resultSet.getString(i);
+                    StringTokenizer stringTokenizer=new StringTokenizer(columnValue,"/");
+                    String year=stringTokenizer.nextToken().trim();
+                    String month=stringTokenizer.nextToken().trim();
+                    String day=stringTokenizer.nextToken().trim();
+                    String year_month_day=year+"-"+month+"-"+day;
+                    contentValues.put(columnName, year_month_day);
+                }
+                else {
+                    String columnValue = resultSet.getString(i);
+                    contentValues.put(columnName, columnValue);
+                }
             }
            result= db.insert(TableName, null, contentValues);
         }

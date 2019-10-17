@@ -10,9 +10,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -44,6 +47,7 @@ public class SalesReportActivity extends AppCompatActivity {
     private ArrayList<SalesReportModel> salesReportModelArrayList=new ArrayList<>();
     private RelativeLayout rr_toolbar,rr_toolbar_search;
     private DatabaseHandler databaseHandler;
+    private EditText edit_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,7 @@ public class SalesReportActivity extends AppCompatActivity {
         iv_back_search = findViewById(R.id.iv_back_search);
         iv_export_pdf = findViewById(R.id.iv_export_pdf);
         textTotalAmt = findViewById(R.id.textTotalAmt);
+        edit_search = findViewById(R.id.edit_search);
 
 
         databaseHandler=new DatabaseHandler(SalesReportActivity.this);
@@ -120,6 +125,23 @@ public class SalesReportActivity extends AppCompatActivity {
             }
         });
 
+        edit_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                salesReportAdapter.getFilter().filter(edit_search.getText().toString().trim());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         callSalesReportAll();
     }
 
@@ -132,6 +154,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
         String TOTAL_AMT ="00";
+        salesReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -161,6 +184,89 @@ public class SalesReportActivity extends AppCompatActivity {
         salesReportAdapter.notifyDataSetChanged();
 
     }
+
+    public void callSingleDateFilter(String dateStr)
+    {
+        String selectQuery =
+                "SELECT  *,"+
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
+                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                        " WHERE VCHDT_Y_M_D='"+dateStr+"'"+
+                        " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
+
+        String TOTAL_AMT ="00";
+        salesReportModelArrayList.clear();
+
+        SQLiteDatabase db = databaseHandler.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        while (cursor.moveToNext()) {
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
+            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+
+            SalesReportModel salesReportModel=new SalesReportModel();
+            salesReportModel.setGroupname(group_name);
+            salesReportModel.setTotalqty("Total qty : "+qty);
+            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            salesReportModel.setVchno("Bill No : "+group_id);
+            salesReportModel.setVchdt(date);
+            salesReportModel.setNarration(narration);
+            salesReportModelArrayList.add(salesReportModel);
+
+        }
+        textTotalAmt.setText(TOTAL_AMT);
+        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        recyclerView_Sales.setAdapter(salesReportAdapter);
+        salesReportAdapter.notifyDataSetChanged();
+
+    }
+    public void callTwoDateFilter(String dateStr1,String dateStr2)
+    {
+        String selectQuery =
+                "SELECT  *,"+
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
+                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                        " WHERE VCHDT_Y_M_D BETWEEN '"+dateStr1+"' AND '"+dateStr2+"'"+
+                        " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
+
+        String TOTAL_AMT ="00";
+        salesReportModelArrayList.clear();
+
+        SQLiteDatabase db = databaseHandler.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        while (cursor.moveToNext()) {
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
+            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+
+            SalesReportModel salesReportModel=new SalesReportModel();
+            salesReportModel.setGroupname(group_name);
+            salesReportModel.setTotalqty("Total qty : "+qty);
+            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            salesReportModel.setVchno("Bill No : "+group_id);
+            salesReportModel.setVchdt(date);
+            salesReportModel.setNarration(narration);
+            salesReportModelArrayList.add(salesReportModel);
+
+        }
+        textTotalAmt.setText(TOTAL_AMT);
+        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        recyclerView_Sales.setAdapter(salesReportAdapter);
+        salesReportAdapter.notifyDataSetChanged();
+
+    }
+
+
 
     //Custom Date Dialog
     private void customDateDialog() {
@@ -193,7 +299,10 @@ public class SalesReportActivity extends AppCompatActivity {
                 linear_layout_custom_day.setVisibility(View.GONE);
                 customDateDialog.dismiss();
                 currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+                String SendDate= new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 text_today_date.setText(currentDate);
+                callSingleDateFilter(SendDate);
              //   Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -207,8 +316,17 @@ public class SalesReportActivity extends AppCompatActivity {
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
                 String yesterday=dateFormat.format(cal.getTime());
-
                 text_today_date.setText(yesterday);
+
+
+                DateFormat sendDateFormat = new SimpleDateFormat("yyy-MM-dd");
+                Calendar calSend = Calendar.getInstance();
+                calSend.add(Calendar.DATE, -1);
+                String yesterdaySend=sendDateFormat.format(calSend.getTime());
+                text_today_date.setText(yesterday);
+
+
+                callSingleDateFilter(yesterdaySend);
                // Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
             }
         });
@@ -218,6 +336,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 linear_layout_today_date.setVisibility(View.GONE);
                 linear_layout_custom_day.setVisibility(View.VISIBLE);
                 customDateDialog.dismiss();
+
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -225,8 +344,16 @@ public class SalesReportActivity extends AppCompatActivity {
                 cal.add(Calendar.DATE, 6);
                 String endDate = dateFormat.format(cal.getTime());
 
+                DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar calSend = Calendar.getInstance();
+                calSend.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                String startDateSend=dateFormatSend.format(calSend.getTime());
+                calSend.add(Calendar.DATE, 6);
+                String endDateSend = dateFormatSend.format(calSend.getTime());
+
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
+                callTwoDateFilter(startDateSend,endDateSend);
 
                // Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
@@ -245,9 +372,17 @@ public class SalesReportActivity extends AppCompatActivity {
                 cal.add(Calendar.DATE, -1);
                 String endDate = dateFormat.format(cal.getTime());
 
+                DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar calSend = Calendar.getInstance();
+                calSend.set(Calendar.DAY_OF_MONTH, 1);
+                String startDateSend=dateFormatSend.format(calSend.getTime());
+                calSend.add(Calendar.MONTH, 1);
+                calSend.add(Calendar.DATE, -1);
+                String endDateSend = dateFormatSend.format(calSend.getTime());
+
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-
+                callTwoDateFilter(startDateSend,endDateSend);
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -267,9 +402,21 @@ public class SalesReportActivity extends AppCompatActivity {
                 Date firstDateOfPreviousMonth = cal.getTime();
                 String startDate=dateFormat.format(firstDateOfPreviousMonth);
 
+
+                DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar calSend = Calendar.getInstance();
+                calSend.set(Calendar.DATE, 1);
+                calSend.add(Calendar.DAY_OF_MONTH, -1);
+                Date lastDateOfPreviousMonthSend = calSend.getTime();
+                String endDateSend=dateFormatSend.format(lastDateOfPreviousMonthSend);
+                calSend.set(Calendar.DATE, 1);
+                Date firstDateOfPreviousMonthSend = calSend.getTime();
+                String startDateSend=dateFormatSend.format(firstDateOfPreviousMonthSend);
+
+
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-
+                callTwoDateFilter(startDateSend,endDateSend);
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -287,7 +434,8 @@ public class SalesReportActivity extends AppCompatActivity {
                 textDateEndCustom = customDateDialogDate.findViewById(R.id.textDateEnd);
                 TextView textAll = customDateDialogDate.findViewById(R.id.textAll);
 
-                currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
                 textDateStartCustom.setText(currentDate);
                 textDateEndCustom.setText(currentDate);
 
@@ -321,6 +469,8 @@ public class SalesReportActivity extends AppCompatActivity {
                         String endDate=textDateEndCustom.getText().toString();
                         textDateStart.setText(startDate);
                         textDateEnd.setText(endDate);
+
+                        callTwoDateFilter(startDate,endDate);
                     }
                 });
             }
@@ -342,7 +492,7 @@ public class SalesReportActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
                         String dateString = format.format(calendar.getTime());
 
                         if(isStartDate) {

@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mezyapps.new_reportanalyst">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,12 +19,30 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.activity.OrderEnteryActivity"/>
-        <activity android:name=".view.activity.StockReportActivity" />
-        <activity android:name=".view.activity.OutstandingPayableActivity" />
-        <activity android:name=".view.activity.OutstandingReceivableActivity" />
-        <activity android:name=".view.activity.PurchaseReportActivity" />
-        <activity android:name=".view.activity.SalesReportActivity" />
+
+        <activity android:name=".view.activity.PurchaseDetailsActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".view.activity.SaleDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.OrderEnteryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.StockReportActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.OutstandingPayableActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.OutstandingReceivableActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.PurchaseReportActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.SalesReportActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.activity.DatabaseConfigActivity"
             android:screenOrientation="portrait" />
@@ -50,10 +73,5 @@
             </intent-filter>
         </service>
     </application>
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>
