@@ -1,7 +1,9 @@
 package com.mezyapps.new_reportanalyst.view.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,17 +40,23 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
         return new MyViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
         final  SalesReportModel salesReportModel=salesReportModelArrayList.get(position);
 
         holder.textParty_name.setText(salesReportModel.getGroupname());
-        holder.text_total_qty.setText(salesReportModel.getTotalqty());
-        holder.textBillAmt.setText(salesReportModel.getTotalbillamt());
+        String total_qty=salesReportModel.getTotalqty();
+        String bill_amt=salesReportModel.getTotalbillamt();
+        String bill_no=salesReportModel.getVchno();
 
-        holder.textBillNo.setText(salesReportModel.getVchno());
+        holder.text_total_qty.setText(total_qty);
+        holder.textBillAmt.setText(bill_amt);
+        holder.textBillNo.setText(bill_no);
+
         holder.textBillDate.setText(salesReportModel.getVchdt());
         String narration=salesReportModel.getNarration();
+
         if(narration.equalsIgnoreCase("")) {
             holder.textNarration.setVisibility(View.GONE);
         }
@@ -60,7 +68,10 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             mContext.startActivity(new Intent(mContext, SaleDetailsActivity.class));
+                Intent intent=new Intent(mContext, SaleDetailsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("SALES_REPORT", (Parcelable) salesReportModelArrayList.get(position));
+                mContext.startActivity(intent);
             }
         });
 

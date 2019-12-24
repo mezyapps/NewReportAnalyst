@@ -241,21 +241,30 @@ public class SalesReportActivity extends AppCompatActivity {
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
-            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
-            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            String entryid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.ENTRYID));
+            String transtyp_id=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TRANSTYP_ID));
+            String prefixid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.PREFIXID));
+            String prefixno=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.PREFIXNO));
+            String vchno=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
+            String vchdt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            String vchdt_y_m_d=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT_Y_M_D));
+            String groupid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPID));
+            String groupname=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
+            String totalcase=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALCASE));
+            String totalqty=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String totalgrossamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALGROSSAMT));
+            String total_td_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTAL_TD_AMT));
+            String total_sp_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTAL_SP_AMT));
+            String totalnetamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALNETAMT));
+            String totalcgst_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALCGST_AMT));
+            String totalsget_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALSGST_AMT));
+            String totaligst_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALIGST_AMT));
+            String totalfinalamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALFINALAMT));
+            String totalbillamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
             TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
-            salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
-            salesReportModel.setVchdt(date);
-            salesReportModel.setNarration(narration);
+            SalesReportModel salesReportModel=new SalesReportModel(entryid,transtyp_id,prefixid,prefixno,vchno,vchdt,vchdt_y_m_d,groupid,groupname,totalcase,totalqty,totalgrossamt,total_td_amt,total_sp_amt,totalnetamt,totalcgst_amt,totalsget_amt,totaligst_amt,totalfinalamt,totalbillamt,narration);
             salesReportModelArrayList.add(salesReportModel);
 
         }
@@ -319,7 +328,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 text_today_date.setText(yesterday);
 
 
-                DateFormat sendDateFormat = new SimpleDateFormat("yyy-MM-dd");
+                DateFormat sendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.add(Calendar.DATE, -1);
                 String yesterdaySend=sendDateFormat.format(calSend.getTime());
@@ -492,7 +501,7 @@ public class SalesReportActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                         String dateString = format.format(calendar.getTime());
 
                         if(isStartDate) {
