@@ -25,6 +25,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(DatabaseConstant.GroupPer.CREATE_GROUPS_PER_TABLE);
         db.execSQL(DatabaseConstant.SalesTable.CREATE_SALES_TABLE);
         db.execSQL(DatabaseConstant.SalesDetails.CREATE_SALES_DETAILS);
+        db.execSQL(DatabaseConstant.PurchaseTableHD.CREATE_PURCHASE_TABLE);
+        db.execSQL(DatabaseConstant.PurchaseDetails.CREATE_PURCHASE_DETAILS);
     }
 
     @Override
@@ -34,64 +36,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstant.GroupPer.GROUP_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstant.SalesTable.SALES_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstant.SalesDetails.SALES_DETAILS_TABLE);
-        // Create tables again
+        db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstant.PurchaseTableHD.PURCHASE_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + DatabaseConstant.PurchaseDetails.PURCHASE_DETAILS_TABLE);
         onCreate(db);
     }
-    public void deleteAllTable()
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        try {
-            db.execSQL("delete from " + DatabaseConstant.ProductMaster.TABLE_NAME);
-            db.execSQL("delete from " + DatabaseConstant.GroupPer.GROUP_TABLE);
-            db.execSQL("delete from " + DatabaseConstant.SalesTable.SALES_TABLE);
-            db.execSQL("delete from " + DatabaseConstant.SalesDetails.SALES_DETAILS_TABLE);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        db.close();
-    }
-
-    public boolean insertTable(ResultSet resultSet,String TableName) throws SQLException {
-        long result = 0;
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-
-        while(resultSet.next()) {
-            int columnCount = resultSetMetaData.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                String columnName = resultSetMetaData.getColumnName(i);
-                if(columnName.equalsIgnoreCase("VCHDT_Y_M_D"))
-                {
-                    String columnValue = resultSet.getString(i);
-                    StringTokenizer stringTokenizer=new StringTokenizer(columnValue,"/");
-                    String year=stringTokenizer.nextToken().trim();
-                    String month=stringTokenizer.nextToken().trim();
-                    String day=stringTokenizer.nextToken().trim();
-                    String year_month_day=year+"-"+month+"-"+day;
-                    contentValues.put(columnName, year_month_day);
-                }
-                else {
-                    String columnValue = resultSet.getString(i);
-                    contentValues.put(columnName, columnValue);
-                }
-            }
-           result= db.insert(TableName, null, contentValues);
-        }
-
-        /* Inserting Row */
-       
-        if (result == -1) {
-            db.close(); // Closing database connection
-            return false;
-        } else {
-            db.close(); // Closing database connection
-            return true;
-        }
-    }
-
 }

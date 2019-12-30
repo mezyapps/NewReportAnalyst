@@ -27,7 +27,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private Context mContext;
     private static final String TAG = "FCM Service";
-    String doctor_name;
     public static final String CHANNEL_ID = "mychannelid";
 
 

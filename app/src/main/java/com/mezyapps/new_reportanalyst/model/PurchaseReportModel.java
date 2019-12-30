@@ -3,7 +3,7 @@ package com.mezyapps.new_reportanalyst.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SalesReportModel implements Parcelable {
+public class PurchaseReportModel implements Parcelable {
 
     String entryid, transtyp_id,prefixid,prefixno,vchno,vchdt,vchdt_y_m_d,groupid,groupname,
             totalcase,totalqty,totalgrossamt,total_td_amt,total_sp_amt,totalnetamt,totalcgst_amt,
@@ -15,20 +15,20 @@ public class SalesReportModel implements Parcelable {
 
 
         @Override
-        public SalesReportModel createFromParcel(Parcel source) {
-            return new SalesReportModel(source);
+        public PurchaseReportModel createFromParcel(Parcel source) {
+            return new PurchaseReportModel(source);
         }
 
         @Override
-        public SalesReportModel[] newArray(int size) {
-            return new SalesReportModel[0];
+        public PurchaseReportModel[] newArray(int size) {
+            return new PurchaseReportModel[0];
         }
     };
 
-    public SalesReportModel() {
+    public PurchaseReportModel() {
     }
 
-    public SalesReportModel(Parcel source) {
+    public PurchaseReportModel(Parcel source) {
         this.entryid=source.readString();
         this.transtyp_id = source.readString();
         this.prefixid = source.readString();
@@ -60,7 +60,7 @@ public class SalesReportModel implements Parcelable {
         return 0;
     }
 
-    public SalesReportModel(String entryid, String transtyp_id, String prefixid, String prefixno, String vchno, String vchdt, String vchdt_y_m_d, String groupid, String groupname, String totalcase, String totalqty, String totalgrossamt, String total_td_amt, String total_sp_amt, String totalnetamt, String totalcgst_amt, String totalsget_amt, String totaligst_amt, String totalfinalamt, String totalbillamt, String narration,String total_amt,String total_qty) {
+    public PurchaseReportModel(String entryid, String transtyp_id, String prefixid, String prefixno, String vchno, String vchdt, String vchdt_y_m_d, String groupid, String groupname, String totalcase, String totalqty, String totalgrossamt, String total_td_amt, String total_sp_amt, String totalnetamt, String totalcgst_amt, String totalsget_amt, String totaligst_amt, String totalfinalamt, String totalbillamt, String narration,String total_amt,String total_qty) {
         this.entryid = entryid;
         this.transtyp_id = transtyp_id;
         this.prefixid = prefixid;
@@ -82,8 +82,9 @@ public class SalesReportModel implements Parcelable {
         this.totalfinalamt = totalfinalamt;
         this.totalbillamt = totalbillamt;
         this.narration = narration;
-        this.total_qty =total_qty;
         this.total_amt = total_amt;
+        this.total_qty =total_qty;
+
     }
 
     @Override

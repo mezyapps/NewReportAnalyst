@@ -16,33 +16,35 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.model.PurchaseReportModel;
 import com.mezyapps.new_reportanalyst.model.SalesReportModel;
+import com.mezyapps.new_reportanalyst.view.activity.PurchaseDetailsActivity;
 import com.mezyapps.new_reportanalyst.view.activity.SaleDetailsActivity;
 
 import java.util.ArrayList;
 
-public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.MyViewHolder> implements Filterable {
+public class PurchaseReportAdapter  extends RecyclerView.Adapter<PurchaseReportAdapter.MyViewHolder> implements Filterable {
     private Context mContext;
-    private ArrayList<SalesReportModel> salesReportModelArrayList;
-    private  ArrayList<SalesReportModel> arrayListFiltered;
+    private ArrayList<PurchaseReportModel> purchaseReportModelArrayList;
+    private  ArrayList<PurchaseReportModel> arrayListFiltered;
 
-    public SalesReportAdapter(Context mContext, ArrayList<SalesReportModel> salesReportModelArrayList) {
+    public PurchaseReportAdapter(Context mContext, ArrayList<PurchaseReportModel> purchaseReportModelArrayList) {
         this.mContext = mContext;
-        this.salesReportModelArrayList = salesReportModelArrayList;
-        this.arrayListFiltered=salesReportModelArrayList;
+        this.purchaseReportModelArrayList = purchaseReportModelArrayList;
+        this.arrayListFiltered=purchaseReportModelArrayList;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PurchaseReportAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_report_item_adpter, parent, false);
-        return new MyViewHolder(view);
+        return new PurchaseReportAdapter.MyViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
-        final  SalesReportModel salesReportModel=salesReportModelArrayList.get(position);
+    public void onBindViewHolder(@NonNull PurchaseReportAdapter.MyViewHolder holder, final int position) {
+        final  PurchaseReportModel salesReportModel=purchaseReportModelArrayList.get(position);
 
         holder.textParty_name.setText(salesReportModel.getGroupname());
         String total_qty=salesReportModel.getTotalqty();
@@ -67,9 +69,9 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext, SaleDetailsActivity.class);
+                Intent intent=new Intent(mContext, PurchaseDetailsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("SALES_REPORT", (Parcelable) salesReportModelArrayList.get(position));
+                intent.putExtra("PURCHASE_REPORT", (Parcelable) purchaseReportModelArrayList.get(position));
                 mContext.startActivity(intent);
             }
         });
@@ -78,7 +80,7 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
 
     @Override
     public int getItemCount() {
-        return salesReportModelArrayList.size();
+        return purchaseReportModelArrayList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -103,32 +105,32 @@ public class SalesReportAdapter extends RecyclerView.Adapter<SalesReportAdapter.
             protected FilterResults performFiltering(CharSequence charSequence) {
                 String charString = charSequence.toString().replaceAll("\\s","").toLowerCase().trim();
                 if (charString.isEmpty() || charSequence.equals("")) {
-                    salesReportModelArrayList = arrayListFiltered;
+                    purchaseReportModelArrayList = arrayListFiltered;
                 } else {
-                    ArrayList<SalesReportModel> filteredList = new ArrayList<>();
-                    for (int i = 0; i < salesReportModelArrayList.size(); i++) {
-                        String bill_no=salesReportModelArrayList.get(i).getVchno().replaceAll("\\s","").toLowerCase().trim();
-                        String  party_name=salesReportModelArrayList.get(i).getGroupname().toLowerCase().replaceAll("\\s","").toLowerCase().trim();
-                        String  date=salesReportModelArrayList.get(i).getVchdt().toLowerCase().replaceAll("\\s","").toLowerCase().trim();
+                    ArrayList<PurchaseReportModel> filteredList = new ArrayList<>();
+                    for (int i = 0; i < purchaseReportModelArrayList.size(); i++) {
+                        String bill_no=purchaseReportModelArrayList.get(i).getVchno().replaceAll("\\s","").toLowerCase().trim();
+                        String  party_name=purchaseReportModelArrayList.get(i).getGroupname().toLowerCase().replaceAll("\\s","").toLowerCase().trim();
+                        String  date=purchaseReportModelArrayList.get(i).getVchdt().toLowerCase().replaceAll("\\s","").toLowerCase().trim();
                         if ((bill_no.contains(charString))||(party_name.contains(charString))||(date.contains(charString))) {
-                            filteredList.add(salesReportModelArrayList.get(i));
+                            filteredList.add(purchaseReportModelArrayList.get(i));
                         }
                     }
                     if (filteredList.size() > 0) {
-                        salesReportModelArrayList = filteredList;
+                        purchaseReportModelArrayList = filteredList;
                     } else {
-                        salesReportModelArrayList = arrayListFiltered;
+                        purchaseReportModelArrayList = arrayListFiltered;
                     }
                 }
 
                 FilterResults filterResults = new FilterResults();
-                filterResults.values = salesReportModelArrayList;
+                filterResults.values = purchaseReportModelArrayList;
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                salesReportModelArrayList = (ArrayList<SalesReportModel>) filterResults.values;
+                purchaseReportModelArrayList = (ArrayList<PurchaseReportModel>) filterResults.values;
                 notifyDataSetChanged();
             }
         };

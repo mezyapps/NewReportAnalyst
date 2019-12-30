@@ -25,7 +25,9 @@ import android.widget.Toast;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.database.DatabaseConstant;
 import com.mezyapps.new_reportanalyst.database.DatabaseHandler;
+import com.mezyapps.new_reportanalyst.model.PurchaseReportModel;
 import com.mezyapps.new_reportanalyst.model.SalesReportModel;
+import com.mezyapps.new_reportanalyst.view.adapter.PurchaseReportAdapter;
 import com.mezyapps.new_reportanalyst.view.adapter.SalesReportAdapter;
 
 import java.text.DateFormat;
@@ -43,8 +45,8 @@ public class PurchaseReportActivity extends AppCompatActivity {
     private boolean isStartDate;
     private LinearLayout linear_layout_custom_day,linear_layout_today_date;
     private RecyclerView recyclerView_Sales;
-    private SalesReportAdapter salesReportAdapter;
-    private ArrayList<SalesReportModel> salesReportModelArrayList=new ArrayList<>();
+    private PurchaseReportAdapter purchaseReportAdapter;
+    private ArrayList<PurchaseReportModel> purchaseReportModelArrayList=new ArrayList<>();
     private RelativeLayout rr_toolbar,rr_toolbar_search;
     private DatabaseHandler databaseHandler;
     private EditText edit_search;
@@ -134,8 +136,8 @@ public class PurchaseReportActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                salesReportAdapter.getFilter().filter(edit_search.getText().toString().trim());
-                salesReportAdapter.notifyDataSetChanged();
+                purchaseReportAdapter.getFilter().filter(edit_search.getText().toString().trim());
+                purchaseReportAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -151,39 +153,46 @@ public class PurchaseReportActivity extends AppCompatActivity {
 
         String selectQuery =
                 "SELECT  *,"+
-                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                        "(select sum(TOTALBILLAMT) from TBL_PURCH_HD) as[TOTAL_AMT],"+
+                        "(select sum(TOTALQTY) from TBL_PURCH_HD) as[TOTAL_QTY]" +
+                        " FROM "+ DatabaseConstant.PurchaseTableHD.PURCHASE_TABLE +
                         " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
-        salesReportModelArrayList.clear();
+        String TOTAL_AMT ="00", TOTAL_QTY = "00";;
+        purchaseReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
-            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
-            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.ENTRYID));
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHNO));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
-            salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
-            salesReportModel.setVchdt(date);
-            salesReportModel.setNarration(narration);
-            salesReportModelArrayList.add(salesReportModel);
+
+            PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
+            purchaseReportModel.setGroupname(group_name);
+            purchaseReportModel.setEntryid(entryid);
+            purchaseReportModel.setTotalqty("Total qty : "+qty);
+            purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            purchaseReportModel.setVchno("Bill No : "+group_id);
+            purchaseReportModel.setTotal_qty(TOTAL_QTY);
+            purchaseReportModel.setTotal_amt(TOTAL_AMT);
+            purchaseReportModel.setVchdt(date);
+            purchaseReportModel.setNarration(narration);
+            purchaseReportModelArrayList.add(purchaseReportModel);
 
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(PurchaseReportActivity.this,salesReportModelArrayList);
-        recyclerView_Sales.setAdapter(salesReportAdapter);
-        salesReportAdapter.notifyDataSetChanged();
+        purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
+        recyclerView_Sales.setAdapter(purchaseReportAdapter);
+        purchaseReportAdapter.notifyDataSetChanged();
 
     }
 
@@ -191,80 +200,94 @@ public class PurchaseReportActivity extends AppCompatActivity {
     {
         String selectQuery =
                 "SELECT  *,"+
-                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                        "(select sum(TOTALBILLAMT) from TBL_PURCH_HD) as[TOTAL_AMT],"+
+                        "(select sum(TOTALQTY) from TBL_PURCH_HD) as[TOTAL_QTY]" +
+                        " FROM "+ DatabaseConstant.PurchaseTableHD.PURCHASE_TABLE +
                         " WHERE VCHDT_Y_M_D='"+dateStr+"'"+
                         " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
-        salesReportModelArrayList.clear();
+        String TOTAL_AMT ="00",TOTAL_QTY="00";
+        purchaseReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
-            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
-            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.ENTRYID));
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHNO));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
-            salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
-            salesReportModel.setVchdt(date);
-            salesReportModel.setNarration(narration);
-            salesReportModelArrayList.add(salesReportModel);
+
+            PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
+            purchaseReportModel.setGroupname(group_name);
+            purchaseReportModel.setEntryid(entryid);
+            purchaseReportModel.setTotalqty("Total qty : "+qty);
+            purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            purchaseReportModel.setVchno("Bill No : "+group_id);
+            purchaseReportModel.setTotal_qty(TOTAL_QTY);
+            purchaseReportModel.setTotal_amt(TOTAL_AMT);
+            purchaseReportModel.setVchdt(date);
+            purchaseReportModel.setNarration(narration);
+            purchaseReportModelArrayList.add(purchaseReportModel);
 
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(PurchaseReportActivity.this,salesReportModelArrayList);
-        recyclerView_Sales.setAdapter(salesReportAdapter);
-        salesReportAdapter.notifyDataSetChanged();
+        purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
+        recyclerView_Sales.setAdapter(purchaseReportAdapter);
+        purchaseReportAdapter.notifyDataSetChanged();
 
     }
     public void callTwoDateFilter(String dateStr1,String dateStr2)
     {
         String selectQuery =
                 "SELECT  *,"+
-                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT],"+
+                        "(select sum(TOTALQTY) from TBL_PURCH_HD) as[TOTAL_QTY]" +
+                        " FROM "+ DatabaseConstant.PurchaseTableHD.PURCHASE_TABLE +
                         " WHERE VCHDT_Y_M_D BETWEEN '"+dateStr1+"' AND '"+dateStr2+"'"+
                         " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
-        salesReportModelArrayList.clear();
+        String TOTAL_AMT ="00",TOTAL_QTY="00";
+        purchaseReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
-            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
-            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.ENTRYID));
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHNO));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.PurchaseTableHD.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
-            salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
-            salesReportModel.setVchdt(date);
-            salesReportModel.setNarration(narration);
-            salesReportModelArrayList.add(salesReportModel);
+
+            PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
+            purchaseReportModel.setGroupname(group_name);
+            purchaseReportModel.setEntryid(entryid);
+            purchaseReportModel.setTotalqty("Total qty : "+qty);
+            purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
+            purchaseReportModel.setVchno("Bill No : "+group_id);
+            purchaseReportModel.setTotal_qty(TOTAL_QTY);
+            purchaseReportModel.setTotal_amt(TOTAL_AMT);
+            purchaseReportModel.setVchdt(date);
+            purchaseReportModel.setNarration(narration);
+            purchaseReportModelArrayList.add(purchaseReportModel);
 
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(PurchaseReportActivity.this,salesReportModelArrayList);
-        recyclerView_Sales.setAdapter(salesReportAdapter);
-        salesReportAdapter.notifyDataSetChanged();
+        purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
+        recyclerView_Sales.setAdapter(purchaseReportAdapter);
+        purchaseReportAdapter.notifyDataSetChanged();
 
     }
 
@@ -321,7 +344,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 text_today_date.setText(yesterday);
 
 
-                DateFormat sendDateFormat = new SimpleDateFormat("yyy-MM-dd");
+                DateFormat sendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.add(Calendar.DATE, -1);
                 String yesterdaySend=sendDateFormat.format(calSend.getTime());
@@ -436,7 +459,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 textDateEndCustom = customDateDialogDate.findViewById(R.id.textDateEnd);
                 TextView textAll = customDateDialogDate.findViewById(R.id.textAll);
 
-                currentDate = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault()).format(new Date());
+                currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
                 textDateStartCustom.setText(currentDate);
                 textDateEndCustom.setText(currentDate);
@@ -494,7 +517,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                         String dateString = format.format(calendar.getTime());
 
                         if(isStartDate) {

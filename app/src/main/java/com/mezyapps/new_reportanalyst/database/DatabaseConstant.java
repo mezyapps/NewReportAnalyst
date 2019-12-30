@@ -119,4 +119,73 @@ public class DatabaseConstant {
                 + SP_PER + " TEXT,"+SP_AMT + " TEXT,"+PRODNETAMT + " TEXT,"+CGST_PER + " TEXT,"
                 + CGST_AMT + " TEXT,"+SGST_PER + " TEXT,"+SGST_AMT + " TEXT,"+IGST_PER + " TEXT,"+IGST_AMT + " TEXT,"+FINAL_AMT + " TEXT"+")";
     }
+
+    public class PurchaseTableHD
+    {
+        public static final String PURCHASE_TABLE="TBL_PURCH_HD";
+        public static final String ENTRYID="ENTRYID";
+        public static final String TRANSTYP_ID="TRANSTYP_ID";
+        public static final String GROUPNAME="GROUPNAME";
+        public static final String PREFIXID="PREFIXID";
+        public static final String PREFIXNO="PREFIXNO";
+        public static final String VCHNO="VCHNO";
+        public static final String VCHDT="VCHDT";
+        public static final String VCHDT_Y_M_D="VCHDT_Y_M_D";
+        public static final String GROUPID="GROUPID";
+        public static final String TOTALCASE="TOTALCASE";
+        public static final String TOTALQTY="TOTALQTY";
+        public static final String TOTALGROSSAMT="TOTALGROSSAMT";
+        public static final String TOTAL_TD_AMT="TOTAL_TD_AMT";
+        public static final String TOTAL_SP_AMT="TOTAL_SP_AMT";
+        public static final String TOTALNETAMT="TOTALNETAMT";
+        public static final String TOTALCGST_AMT="TOTALCGST_AMT";
+        public static final String TOTALSGST_AMT="TOTALSGST_AMT";
+        public static final String TOTALIGST_AMT="TOTALIGST_AMT";
+        public static final String TOTALFINALAMT="TOTALFINALAMT";
+        public static final String TOTALBILLAMT="TOTALBILLAMT";
+        public static final String NARRATION="NARRATION";
+
+        public static final String CREATE_PURCHASE_TABLE = "CREATE TABLE " +PURCHASE_TABLE + "(" + ENTRYID + " INTEGER,"
+                + TRANSTYP_ID + " TEXT," + PREFIXID + " TEXT," + PREFIXNO + " TEXT," + VCHNO + " TEXT,"
+                + VCHDT + " TEXT," + VCHDT_Y_M_D + " TEXT," + GROUPID + " TEXT," + GROUPNAME + " TEXT," + TOTALCASE + " TEXT,"
+                + TOTALQTY + " TEXT," + TOTALGROSSAMT + " TEXT," + TOTAL_TD_AMT + " TEXT," + TOTAL_SP_AMT + " TEXT,"
+                +TOTALNETAMT + " TEXT,"+TOTALCGST_AMT + " TEXT,"+TOTALSGST_AMT + " TEXT,"+TOTALIGST_AMT + " TEXT,"
+                +TOTALFINALAMT + " TEXT,"+TOTALBILLAMT + " TEXT,"+NARRATION + " TEXT"+")";
+    }
+    public class PurchaseDetails
+    {
+        public static final String PURCHASE_DETAILS_TABLE="TBL_PURCH_DT";
+        public static final String ENTRYID="ENTRYID";
+        public static final String TRANSTYP_ID="TRANSTYP_ID";
+        public static final String PRODID="PRODID";
+        public static final String PMSTCODE="PMSTCODE";
+        public static final String PMSTNAME="PMSTNAME";
+        public static final String PRODCASE="PRODCASE";
+        public static final String PRODPKGINCASE="PRODPKGINCASE";
+        public static final String PRODQTY="PRODQTY";
+        public static final String COSTRATE="COSTRATE";
+        public static final String UNITID="UNITID";
+        public static final String UNITNAME="UNITNAME";
+        public static final String PRODGROSSAMT="PRODGROSSAMT";
+        public static final String TD_PER="TD_PER";
+        public static final String TD_AMT="TD_AMT";
+        public static final String SP_PER="SP_PER";
+        public static final String SP_AMT="SP_AMT";
+        public static final String PRODNETAMT="PRODNETAMT";
+        public static final String CGST_PER="CGST_PER";
+        public static final String CGST_AMT="CGST_AMT";
+        public static final String SGST_PER="SGST_PER";
+        public static final String SGST_AMT="SGST_AMT";
+        public static final String IGST_PER="IGST_PER";
+        public static final String IGST_AMT="IGST_AMT";
+        public static final String FINAL_AMT="FINAL_AMT";
+
+
+        public static final String CREATE_PURCHASE_DETAILS = "CREATE TABLE " +PURCHASE_DETAILS_TABLE + "(" + ENTRYID + " INTEGER,"
+                + TRANSTYP_ID + " TEXT," + PRODID + " TEXT," + PMSTCODE + " TEXT," + PMSTNAME + " TEXT,"
+                + PRODCASE + " TEXT," + PRODPKGINCASE + " TEXT," + PRODQTY + " TEXT," + COSTRATE + " TEXT," + UNITID + " TEXT,"
+                + UNITNAME + " TEXT," + PRODGROSSAMT + " TEXT," + TD_PER + " TEXT," + TD_AMT + " TEXT,"
+                + SP_PER + " TEXT,"+SP_AMT + " TEXT,"+PRODNETAMT + " TEXT,"+CGST_PER + " TEXT,"
+                + CGST_AMT + " TEXT,"+SGST_PER + " TEXT,"+SGST_AMT + " TEXT,"+IGST_PER + " TEXT,"+IGST_AMT + " TEXT,"+FINAL_AMT + " TEXT"+")";
+    }
 }

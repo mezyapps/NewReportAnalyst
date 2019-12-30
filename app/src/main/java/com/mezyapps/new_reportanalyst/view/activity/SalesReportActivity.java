@@ -37,15 +37,15 @@ import java.util.Locale;
 
 public class SalesReportActivity extends AppCompatActivity {
 
-    private ImageView iv_back,iv_custom_calender,iv_search,iv_back_search,iv_export_pdf;
-    private TextView textDateStart, textDateEnd,textDateStartCustom, textDateEndCustom,text_today_date,textTotalAmt;
+    private ImageView iv_back, iv_custom_calender, iv_search, iv_back_search, iv_export_pdf;
+    private TextView textDateStart, textDateEnd, textDateStartCustom, textDateEndCustom, text_today_date, textTotalAmt;
     private String currentDate;
     private boolean isStartDate;
-    private LinearLayout linear_layout_custom_day,linear_layout_today_date;
+    private LinearLayout linear_layout_custom_day, linear_layout_today_date;
     private RecyclerView recyclerView_Sales;
     private SalesReportAdapter salesReportAdapter;
-    private ArrayList<SalesReportModel> salesReportModelArrayList=new ArrayList<>();
-    private RelativeLayout rr_toolbar,rr_toolbar_search;
+    private ArrayList<SalesReportModel> salesReportModelArrayList = new ArrayList<>();
+    private RelativeLayout rr_toolbar, rr_toolbar_search;
     private DatabaseHandler databaseHandler;
     private EditText edit_search;
 
@@ -76,9 +76,9 @@ public class SalesReportActivity extends AppCompatActivity {
         edit_search = findViewById(R.id.edit_search);
 
 
-        databaseHandler=new DatabaseHandler(SalesReportActivity.this);
+        databaseHandler = new DatabaseHandler(SalesReportActivity.this);
 
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(SalesReportActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SalesReportActivity.this);
         recyclerView_Sales.setLayoutManager(linearLayoutManager);
 
         currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
@@ -148,138 +148,144 @@ public class SalesReportActivity extends AppCompatActivity {
     private void callSalesReportAll() {
 
         String selectQuery =
-                "SELECT  *,"+
-                "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
-                " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
+                "SELECT  *," +
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
+                        "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
+                        " FROM " + DatabaseConstant.SalesTable.SALES_TABLE +
+                        " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
+        String TOTAL_AMT = "00", TOTAL_QTY = "00";
         salesReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.ENTRYID));
             String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
             String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
+            SalesReportModel salesReportModel = new SalesReportModel();
             salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
+            salesReportModel.setEntryid(entryid);
+            salesReportModel.setTotalqty("Total qty : " + qty);
+            salesReportModel.setTotalbillamt("Bill Amt : " + finalAmt);
+            salesReportModel.setVchno("Bill No : " + group_id);
             salesReportModel.setVchdt(date);
+            salesReportModel.setTotal_qty(TOTAL_QTY);
+            salesReportModel.setTotal_amt(TOTAL_AMT);
             salesReportModel.setNarration(narration);
             salesReportModelArrayList.add(salesReportModel);
 
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        salesReportAdapter = new SalesReportAdapter(SalesReportActivity.this, salesReportModelArrayList);
         recyclerView_Sales.setAdapter(salesReportAdapter);
         salesReportAdapter.notifyDataSetChanged();
 
     }
 
-    public void callSingleDateFilter(String dateStr)
-    {
+    public void callSingleDateFilter(String dateStr) {
         String selectQuery =
-                "SELECT  *,"+
-                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
-                        " WHERE VCHDT_Y_M_D='"+dateStr+"'"+
+                "SELECT  *," +
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
+                        "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
+                        " FROM " + DatabaseConstant.SalesTable.SALES_TABLE +
+                        " WHERE VCHDT_Y_M_D='" + dateStr + "'" +
                         " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
+        String TOTAL_AMT = "00", TOTAL_QTY = "00";
         salesReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.ENTRYID));
             String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
             String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String qty= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String finalAmt= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            String date= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel();
+            SalesReportModel salesReportModel = new SalesReportModel();
             salesReportModel.setGroupname(group_name);
-            salesReportModel.setTotalqty("Total qty : "+qty);
-            salesReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-            salesReportModel.setVchno("Bill No : "+group_id);
+            salesReportModel.setEntryid(entryid);
+            salesReportModel.setTotalqty("Total qty : " + qty);
+            salesReportModel.setTotalbillamt("Bill Amt : " + finalAmt);
+            salesReportModel.setVchno("Bill No : " + group_id);
             salesReportModel.setVchdt(date);
+            salesReportModel.setTotal_qty(TOTAL_QTY);
+            salesReportModel.setTotal_amt(TOTAL_AMT);
             salesReportModel.setNarration(narration);
             salesReportModelArrayList.add(salesReportModel);
 
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        salesReportAdapter = new SalesReportAdapter(SalesReportActivity.this, salesReportModelArrayList);
         recyclerView_Sales.setAdapter(salesReportAdapter);
         salesReportAdapter.notifyDataSetChanged();
 
     }
-    public void callTwoDateFilter(String dateStr1,String dateStr2)
-    {
+
+    public void callTwoDateFilter(String dateStr1, String dateStr2) {
         String selectQuery =
-                "SELECT  *,"+
-                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]"+
-                        " FROM "+ DatabaseConstant.SalesTable.SALES_TABLE +
-                        " WHERE VCHDT_Y_M_D BETWEEN '"+dateStr1+"' AND '"+dateStr2+"'"+
+                "SELECT  *," +
+                        "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
+                        "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
+                        " FROM " + DatabaseConstant.SalesTable.SALES_TABLE +
+                        " WHERE VCHDT_Y_M_D BETWEEN '" + dateStr1 + "' AND '" + dateStr2 + "'" +
                         " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
-        String TOTAL_AMT ="00";
+        String TOTAL_AMT = "00", TOTAL_QTY = "00";
         salesReportModelArrayList.clear();
 
         SQLiteDatabase db = databaseHandler.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         while (cursor.moveToNext()) {
-            String entryid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.ENTRYID));
-            String transtyp_id=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TRANSTYP_ID));
-            String prefixid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.PREFIXID));
-            String prefixno=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.PREFIXNO));
-            String vchno=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
-            String vchdt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
-            String vchdt_y_m_d=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT_Y_M_D));
-            String groupid=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPID));
-            String groupname=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
-            String totalcase=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALCASE));
-            String totalqty=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
-            String totalgrossamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALGROSSAMT));
-            String total_td_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTAL_TD_AMT));
-            String total_sp_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTAL_SP_AMT));
-            String totalnetamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALNETAMT));
-            String totalcgst_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALCGST_AMT));
-            String totalsget_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALSGST_AMT));
-            String totaligst_amt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALIGST_AMT));
-            String totalfinalamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALFINALAMT));
-            String totalbillamt=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
-            String narration=cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
-            TOTAL_AMT= cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            String entryid = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.ENTRYID));
+            String group_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.GROUPNAME));
+            String group_id = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHNO));
+            String qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALQTY));
+            String finalAmt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.TOTALBILLAMT));
+            String narration = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.NARRATION));
+            String date = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesTable.VCHDT));
+            TOTAL_AMT = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+            TOTAL_QTY = cursor.getString(cursor.getColumnIndex("TOTAL_QTY"));
 
-            SalesReportModel salesReportModel=new SalesReportModel(entryid,transtyp_id,prefixid,prefixno,vchno,vchdt,vchdt_y_m_d,groupid,groupname,totalcase,totalqty,totalgrossamt,total_td_amt,total_sp_amt,totalnetamt,totalcgst_amt,totalsget_amt,totaligst_amt,totalfinalamt,totalbillamt,narration);
+            SalesReportModel salesReportModel = new SalesReportModel();
+            salesReportModel.setGroupname(group_name);
+            salesReportModel.setEntryid(entryid);
+            salesReportModel.setTotalqty("Total qty : " + qty);
+            salesReportModel.setTotalbillamt("Bill Amt : " + finalAmt);
+            salesReportModel.setVchno("Bill No : " + group_id);
+            salesReportModel.setVchdt(date);
+            salesReportModel.setTotal_qty(TOTAL_QTY);
+            salesReportModel.setTotal_amt(TOTAL_AMT);
+            salesReportModel.setNarration(narration);
             salesReportModelArrayList.add(salesReportModel);
-
         }
         textTotalAmt.setText(TOTAL_AMT);
-        salesReportAdapter=new SalesReportAdapter(SalesReportActivity.this,salesReportModelArrayList);
+        salesReportAdapter = new SalesReportAdapter(SalesReportActivity.this, salesReportModelArrayList);
         recyclerView_Sales.setAdapter(salesReportAdapter);
         salesReportAdapter.notifyDataSetChanged();
 
     }
-
 
 
     //Custom Date Dialog
     private void customDateDialog() {
-        final Dialog customDateDialog= new Dialog(SalesReportActivity.this);
+        final Dialog customDateDialog = new Dialog(SalesReportActivity.this);
         customDateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         customDateDialog.setContentView(R.layout.custom_date);
 
@@ -297,7 +303,7 @@ public class SalesReportActivity extends AppCompatActivity {
         customDateDialog.show();
 
         Window window = customDateDialog.getWindow();
-        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 
         //Events Custom Date
@@ -309,10 +315,10 @@ public class SalesReportActivity extends AppCompatActivity {
                 customDateDialog.dismiss();
                 currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-                String SendDate= new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String SendDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 text_today_date.setText(currentDate);
                 callSingleDateFilter(SendDate);
-             //   Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_yesterday.setOnClickListener(new View.OnClickListener() {
@@ -324,19 +330,19 @@ public class SalesReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
-                String yesterday=dateFormat.format(cal.getTime());
+                String yesterday = dateFormat.format(cal.getTime());
                 text_today_date.setText(yesterday);
 
 
                 DateFormat sendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.add(Calendar.DATE, -1);
-                String yesterdaySend=sendDateFormat.format(calSend.getTime());
+                String yesterdaySend = sendDateFormat.format(calSend.getTime());
                 text_today_date.setText(yesterday);
 
 
                 callSingleDateFilter(yesterdaySend);
-               // Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
             }
         });
         text_this_week.setOnClickListener(new View.OnClickListener() {
@@ -349,22 +355,22 @@ public class SalesReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                String startDate=dateFormat.format(cal.getTime());
+                String startDate = dateFormat.format(cal.getTime());
                 cal.add(Calendar.DATE, 6);
                 String endDate = dateFormat.format(cal.getTime());
 
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                String startDateSend=dateFormatSend.format(calSend.getTime());
+                String startDateSend = dateFormatSend.format(calSend.getTime());
                 calSend.add(Calendar.DATE, 6);
                 String endDateSend = dateFormatSend.format(calSend.getTime());
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-                callTwoDateFilter(startDateSend,endDateSend);
+                callTwoDateFilter(startDateSend, endDateSend);
 
-               // Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_this_month.setOnClickListener(new View.OnClickListener() {
@@ -376,7 +382,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.DAY_OF_MONTH, 1);
-                String startDate=dateFormat.format(cal.getTime());
+                String startDate = dateFormat.format(cal.getTime());
                 cal.add(Calendar.MONTH, 1);
                 cal.add(Calendar.DATE, -1);
                 String endDate = dateFormat.format(cal.getTime());
@@ -384,14 +390,14 @@ public class SalesReportActivity extends AppCompatActivity {
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.set(Calendar.DAY_OF_MONTH, 1);
-                String startDateSend=dateFormatSend.format(calSend.getTime());
+                String startDateSend = dateFormatSend.format(calSend.getTime());
                 calSend.add(Calendar.MONTH, 1);
                 calSend.add(Calendar.DATE, -1);
                 String endDateSend = dateFormatSend.format(calSend.getTime());
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-                callTwoDateFilter(startDateSend,endDateSend);
+                callTwoDateFilter(startDateSend, endDateSend);
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -406,10 +412,10 @@ public class SalesReportActivity extends AppCompatActivity {
                 cal.set(Calendar.DATE, 1);
                 cal.add(Calendar.DAY_OF_MONTH, -1);
                 Date lastDateOfPreviousMonth = cal.getTime();
-                String endDate=dateFormat.format(lastDateOfPreviousMonth);
+                String endDate = dateFormat.format(lastDateOfPreviousMonth);
                 cal.set(Calendar.DATE, 1);
                 Date firstDateOfPreviousMonth = cal.getTime();
-                String startDate=dateFormat.format(firstDateOfPreviousMonth);
+                String startDate = dateFormat.format(firstDateOfPreviousMonth);
 
 
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy-MM-dd");
@@ -417,15 +423,15 @@ public class SalesReportActivity extends AppCompatActivity {
                 calSend.set(Calendar.DATE, 1);
                 calSend.add(Calendar.DAY_OF_MONTH, -1);
                 Date lastDateOfPreviousMonthSend = calSend.getTime();
-                String endDateSend=dateFormatSend.format(lastDateOfPreviousMonthSend);
+                String endDateSend = dateFormatSend.format(lastDateOfPreviousMonthSend);
                 calSend.set(Calendar.DATE, 1);
                 Date firstDateOfPreviousMonthSend = calSend.getTime();
-                String startDateSend=dateFormatSend.format(firstDateOfPreviousMonthSend);
+                String startDateSend = dateFormatSend.format(firstDateOfPreviousMonthSend);
 
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-                callTwoDateFilter(startDateSend,endDateSend);
+                callTwoDateFilter(startDateSend, endDateSend);
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -435,7 +441,7 @@ public class SalesReportActivity extends AppCompatActivity {
                 linear_layout_today_date.setVisibility(View.GONE);
                 linear_layout_custom_day.setVisibility(View.VISIBLE);
                 customDateDialog.dismiss();
-                final Dialog customDateDialogDate= new Dialog(SalesReportActivity.this);
+                final Dialog customDateDialogDate = new Dialog(SalesReportActivity.this);
                 customDateDialogDate.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 customDateDialogDate.setContentView(R.layout.custom_date_calendar);
 
@@ -453,19 +459,19 @@ public class SalesReportActivity extends AppCompatActivity {
 
                 customDateDialogDate.show();
                 Window window = customDateDialogDate.getWindow();
-                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                 textDateStartCustom.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isStartDate=true;
+                        isStartDate = true;
                         customDatePickerDialog();
                     }
                 });
                 textDateEndCustom.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isStartDate=false;
+                        isStartDate = false;
                         customDatePickerDialog();
                     }
                 });
@@ -474,12 +480,12 @@ public class SalesReportActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         customDateDialogDate.dismiss();
-                        String startDate=textDateStartCustom.getText().toString();
-                        String endDate=textDateEndCustom.getText().toString();
+                        String startDate = textDateStartCustom.getText().toString();
+                        String endDate = textDateEndCustom.getText().toString();
                         textDateStart.setText(startDate);
                         textDateEnd.setText(endDate);
 
-                        callTwoDateFilter(startDate,endDate);
+                        callTwoDateFilter(startDate, endDate);
                     }
                 });
             }
@@ -504,10 +510,9 @@ public class SalesReportActivity extends AppCompatActivity {
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                         String dateString = format.format(calendar.getTime());
 
-                        if(isStartDate) {
+                        if (isStartDate) {
                             textDateStartCustom.setText(dateString);
-                        }
-                        else {
+                        } else {
                             textDateEndCustom.setText(dateString);
                         }
                     }
