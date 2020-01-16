@@ -15,6 +15,7 @@
         app:headerLayout="@layout/layout_navigation_header"
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
+        android:layout_above="@+id/text_version_name"
         app:menu="@menu/navigation_menu" />
 
     <TextView

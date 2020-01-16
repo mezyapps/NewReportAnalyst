@@ -44,12 +44,6 @@
             android:name=".view.activity.SalesReportActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.activity.DatabaseConfigActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.activity.LicenseKeyActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".view.activity.LoginActivity"
             android:screenOrientation="portrait" />
         <activity

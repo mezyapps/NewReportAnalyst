@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.widget.ImageView;
 
 import com.mezyapps.new_reportanalyst.R;
-import com.mezyapps.new_reportanalyst.utils.DatabaseConfiguration;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
@@ -22,7 +21,6 @@ public class SplashActivity extends AppCompatActivity {
     String is_login="";
     Handler handler;
     ImageView iv_splash_image;
-    private String is_config="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +28,6 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         iv_splash_image=findViewById(R.id.iv_splash_image);
-        is_config= DatabaseConfiguration.getDatabaseConfiguration(getApplicationContext());
 
         is_login = SharedLoginUtils.getLoginSharedUtils(getApplicationContext());
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -88,12 +85,7 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                if(is_config.equalsIgnoreCase("") || is_config.equalsIgnoreCase("false"))
-                {
-                    Intent intent = new Intent(SplashActivity.this, DatabaseConfigActivity.class);
-                    startActivity(intent);
-                }else if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
+                if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
                     Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(intent);
                 }else  {

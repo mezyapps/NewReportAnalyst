@@ -29,13 +29,7 @@ import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.view.fragment.ChancePasswordFragment;
-import com.mezyapps.new_reportanalyst.view.fragment.ExportDatabaseFragment;
 import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
-import com.mezyapps.new_reportanalyst.view.fragment.ImportExportFragment;
-import com.squareup.picasso.Picasso;
-
-import java.sql.Connection;
-import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,23 +95,6 @@ public class MainActivity extends AppCompatActivity {
                         loadFragment(new ChancePasswordFragment());
                     } else if (id == R.id.nav_share_app) {
                         shareApplication();
-                    } else if (id == R.id.nav_database_config) {
-                        Intent intent = new Intent(MainActivity.this, DatabaseConfigActivity.class);
-                        intent.putExtra("Config", "second");
-                        startActivity(intent);
-                    } else if (id == R.id.nav_import_export) {
-                       /* Connection connection = connectionCommon.connectionDatabase();
-                        if (connection == null) {
-                            displayConnectionDialog();
-                        }
-                        else {
-                            loadFragment(new ImportExportFragment());
-                        }
-                        */
-
-                        loadFragment(new ImportExportFragment());
-                    } else if (id == R.id.nav_export) {
-                        loadFragment(new ExportDatabaseFragment());
                     } else if (id == R.id.nav_logout) {
                         logoutApplication();
                     }
@@ -209,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
         private void shareApplication() {
             Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Biz Protect Application");
-            String app_url = "https://play.google.com/store/apps/details?id=com.mezyapps.reportanalyst";
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
+            String app_url = "https://play.google.com/store/apps/details?id="+getPackageName();
             shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, app_url);
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         }

@@ -4,21 +4,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mezyapps.new_reportanalyst.R;
-import com.mezyapps.new_reportanalyst.database.DatabaseConstant;
-import com.mezyapps.new_reportanalyst.database.DatabaseHandler;
+import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.model.SalesDetailsModel;
 import com.mezyapps.new_reportanalyst.model.SalesReportModel;
+import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
+import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.adapter.SalesDetailsAdapter;
 import com.mezyapps.new_reportanalyst.view.adapter.SalesReportAdapter;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class SaleDetailsActivity extends AppCompatActivity {
@@ -26,11 +33,13 @@ public class SaleDetailsActivity extends AppCompatActivity {
     private ImageView iv_back;
     private SalesReportModel salesReportModel;
     private TextView textBillNO,textDate,textPartyName,text_total_qty,textBillAMT;
-    private String entry_id;
+    private String entry_id,databaseName;
     private RecyclerView recyclerView_product_list;
-    private DatabaseHandler databaseHandler;
     private ArrayList<SalesDetailsModel> salesDetailsModelArrayList=new ArrayList<>();
     private SalesDetailsAdapter salesDetailsAdapter;
+    private ConnectionCommon connectionCommon;
+    private ShowProgressDialog showProgressDialog;
+    private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +51,8 @@ public class SaleDetailsActivity extends AppCompatActivity {
     }
 
     private void find_View_IDs() {
-        databaseHandler = new DatabaseHandler(SaleDetailsActivity.this);
+        connectionCommon = new ConnectionCommon();
+        showProgressDialog = new ShowProgressDialog(SaleDetailsActivity.this);
         iv_back=findViewById(R.id.iv_back);
         textBillNO=findViewById(R.id.textBillNO);
         textDate=findViewById(R.id.textDate);
@@ -64,6 +74,9 @@ public class SaleDetailsActivity extends AppCompatActivity {
         String total_qty="Bill Qty :"+salesReportModel.getTotal_qty();
         String total_amt="Bill Amt :"+salesReportModel.getTotal_amt();
 
+        userProfileModelArrayList= SharedLoginUtils.getUserProfile(SaleDetailsActivity.this);
+        databaseName = userProfileModelArrayList.get(0).getDb_name();
+
         textBillNO.setText(bill_no);
         textDate.setText(date);
         textPartyName.setText(party_name);
@@ -72,7 +85,8 @@ public class SaleDetailsActivity extends AppCompatActivity {
     }
 
     private void events() {
-        callGetProduct();
+        SalesDetails salesDetails = new SalesDetails();
+        salesDetails.execute("");
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,56 +95,97 @@ public class SaleDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void callGetProduct() {
-        String selectQuery =
-                "SELECT  * FROM "+DatabaseConstant.SalesDetails.SALES_DETAILS_TABLE+" WHERE "+
-                DatabaseConstant.SalesDetails.ENTRYID+"="+entry_id;
+    @SuppressLint("StaticFieldLeak")
+    public class SalesDetails extends AsyncTask<String, String, String> {
 
+        String msg = "";
+        boolean isSuccess = false;
+        String TOTAL_AMT = "00", TOTAL_QTY = "00";
 
-        SQLiteDatabase db = databaseHandler.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        while (cursor.moveToNext()) {
-            String prod_name = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.PMSTNAME));
-            String prod_qty = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.PRODQTY));
-            String cost_rate = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.COSTRATE));
-            String prod_gross_amt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.PRODGROSSAMT));
-            String dist_per1 = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.TD_PER));
-            String dist_per2= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.SP_PER));
-            String dist1 = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.TD_AMT));
-            String dist2= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.SP_AMT));
-            String cgst_per = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.CGST_PER));
-            String sgst_per= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.SGST_PER));
-            String igst_per= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.IGST_PER));
-            String cgst = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.CGST_AMT));
-            String sgst= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.SGST_AMT));
-            String igst= cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.IGST_AMT));
-            String final_Amt = cursor.getString(cursor.getColumnIndex(DatabaseConstant.SalesDetails.FINAL_AMT));
-
-
-            SalesDetailsModel salesDetailsModel = new SalesDetailsModel();
-            salesDetailsModel.setProd_name(prod_name);
-            salesDetailsModel.setProd_qty(prod_qty);
-            salesDetailsModel.setCost_rate(cost_rate);
-            salesDetailsModel.setProd_gross_amt(prod_gross_amt);
-            salesDetailsModel.setDist_per1(dist_per1);
-            salesDetailsModel.setDist_per2(dist_per2);
-            salesDetailsModel.setDist(dist1);
-            salesDetailsModel.setDist1(dist2);
-            salesDetailsModel.setCgst_per(cgst_per);
-            salesDetailsModel.setSgst_per(sgst_per);
-            salesDetailsModel.setIgst_per(igst_per);
-            salesDetailsModel.setCgst(cgst);
-            salesDetailsModel.setSgst(sgst);
-            salesDetailsModel.setIgst(igst);
-            salesDetailsModel.setFinal_Amt(final_Amt);
-
-            salesDetailsModelArrayList.add(salesDetailsModel);
-
+        @Override
+        protected void onPreExecute() {
+            showProgressDialog.showDialog();
         }
 
-        salesDetailsAdapter = new SalesDetailsAdapter(SaleDetailsActivity.this, salesDetailsModelArrayList);
-        recyclerView_product_list.setAdapter(salesDetailsAdapter);
-        salesDetailsAdapter.notifyDataSetChanged();
+        @Override
+        protected void onPostExecute(String message) {
+            showProgressDialog.dismissDialog();
+            if (message.equalsIgnoreCase("success")) {
+                salesDetailsAdapter = new SalesDetailsAdapter(SaleDetailsActivity.this, salesDetailsModelArrayList);
+                recyclerView_product_list.setAdapter(salesDetailsAdapter);
+                salesDetailsAdapter.notifyDataSetChanged();
+            }
+            else
+            {
+                salesDetailsAdapter.notifyDataSetChanged();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                Connection connection = connectionCommon.checkUserConnection(databaseName);
+                if (connection == null) {
+                    msg = "Check Your Internet Access!";
+                } else {
+                    String query =
+                            "SELECT  * FROM TBL_SALE_DT WHERE ENTRYID="+entry_id;
+
+                    Statement stmt = connection.createStatement();
+                    ResultSet resultSet = stmt.executeQuery(query);
+                    salesDetailsModelArrayList.clear();
+                    while (resultSet.next()) {
+                        String prod_name = resultSet.getString("PMSTNAME");
+                        String prod_qty = resultSet.getString("PRODQTY");
+                        String cost_rate = resultSet.getString("COSTRATE");
+                        String prod_gross_amt = resultSet.getString("PRODGROSSAMT");
+                        String dist_per1 = resultSet.getString("TD_PER");
+                        String dist_per2= resultSet.getString("SP_PER");
+                        String dist1 = resultSet.getString("TD_AMT");
+                        String dist2= resultSet.getString("SP_AMT");
+                        String cgst_per = resultSet.getString("CGST_PER");
+                        String sgst_per= resultSet.getString("SGST_PER");
+                        String igst_per= resultSet.getString("IGST_AMT");
+                        String cgst = resultSet.getString("CGST_AMT");
+                        String sgst= resultSet.getString("SGST_AMT");
+                        String igst= resultSet.getString("IGST_AMT");
+                        String final_Amt = resultSet.getString("FINAL_AMT");
+
+
+                        SalesDetailsModel salesDetailsModel = new SalesDetailsModel();
+                        salesDetailsModel.setProd_name(prod_name);
+                        salesDetailsModel.setProd_qty(prod_qty);
+                        salesDetailsModel.setCost_rate(cost_rate);
+                        salesDetailsModel.setProd_gross_amt(prod_gross_amt);
+                        salesDetailsModel.setDist_per1(dist_per1);
+                        salesDetailsModel.setDist_per2(dist_per2);
+                        salesDetailsModel.setDist(dist1);
+                        salesDetailsModel.setDist1(dist2);
+                        salesDetailsModel.setCgst_per(cgst_per);
+                        salesDetailsModel.setSgst_per(sgst_per);
+                        salesDetailsModel.setIgst_per(igst_per);
+                        salesDetailsModel.setCgst(cgst);
+                        salesDetailsModel.setSgst(sgst);
+                        salesDetailsModel.setIgst(igst);
+                        salesDetailsModel.setFinal_Amt(final_Amt);
+
+                        salesDetailsModelArrayList.add(salesDetailsModel);
+
+                    }
+                    if (salesDetailsModelArrayList.size() != 0) {
+                        msg = "success";
+                        isSuccess = true;
+                    } else {
+                        msg = "fail";
+                        isSuccess = false;
+                    }
+                    connection.close();
+                }
+            } catch (Exception ex) {
+                isSuccess = false;
+                msg = ex.getMessage();
+            }
+            return msg;
+        }
     }
 }

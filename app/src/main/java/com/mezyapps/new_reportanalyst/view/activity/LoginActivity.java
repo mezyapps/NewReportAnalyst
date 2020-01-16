@@ -13,13 +13,14 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
-import com.mezyapps.new_reportanalyst.utils.DatabaseConfiguration;
+import com.mezyapps.new_reportanalyst.model.UserProfileModel;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText edit_username, edit_password;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
+    private ArrayList<UserProfileModel> userProfileModelArrayList=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,16 +91,34 @@ public class LoginActivity extends AppCompatActivity {
                     if (connection == null) {
                         msg = "Check Your Internet Access!";
                     } else {
-                        String query = "select USERID from UACCESS where USERNAME='" + username + "' and USERPASSWORD='" + password + "'";
+                        String query = "select * from UACCESS where USER_NAME='" + username + "' and USER_PASS='" + password + "'";
                         Statement stmt = connection.createStatement();
                         ResultSet resultSet = stmt.executeQuery(query);
                         if (resultSet.next()) {
-                            String user_id = String.valueOf(resultSet.getInt("USERID"));
-                            SharedLoginUtils.putLoginSharedUtils(LoginActivity.this);
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                            msg = "Login successful";
-                            isSuccess = true;
+                            String user_id = String.valueOf(resultSet.getInt("USER_ID"));
+                            String user_name = String.valueOf(resultSet.getString("USER_NAME"));
+                            String user_pass = String.valueOf(resultSet.getString("USER_PASS"));
+                            String db_name = String.valueOf(resultSet.getString("DB_NAME"));
+                            String db_user_name = String.valueOf(resultSet.getString("DB_USER_NAME"));
+                            String db_user_pass = String.valueOf(resultSet.getString("DB_USER_PASS"));
+                            String user_type = String.valueOf(resultSet.getString("USER_TYPE"));
+                            String SALESMAN_ID = String.valueOf(resultSet.getString("SALESMAN_ID"));
+                            UserProfileModel userProfileModel=new UserProfileModel(user_id,user_name,user_pass,db_name,db_user_name,db_user_pass,user_type,SALESMAN_ID);
+                            userProfileModelArrayList.add(userProfileModel);
+                            Connection connection1=connectionCommon.checkUserConnection(db_name);
+                            if (connection1!=null) {
+                                SharedLoginUtils.putLoginSharedUtils(LoginActivity.this);
+                                SharedLoginUtils.addUserProfile(LoginActivity.this, userProfileModelArrayList);
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                                msg = "Login successful";
+                                isSuccess = true;
+                            }
+                            else
+                            {
+                                msg = "Invalid Credentials!";
+                                isSuccess = false;
+                            }
                             connection.close();
                         } else {
                             msg = "Invalid Credentials!";

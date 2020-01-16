@@ -7,17 +7,13 @@ public class ConstantFields {
     public static final String IS_LOGIN = "IS_LOGIN";
     public static final String IS_CONFIG = "IS_CONFIG";
 
-    public static final String IP_ADDRESS = "IP_ADDRESS";
-    public static final String DATABASE_NAME = "DATABASE_NAME";
-    public static final String USERNAME = "USERNAME";
-    public static final String PASSWORD = "PASSWORD";
-
-    public static class DatabaseConnection {
-        public static final String ip_address = "67.211.45.179:1091";
-        public static final String connection_class = "net.sourceforge.jtds.jdbc.Driver";
-        public static final String database = "ANDROID_CONN";
-        public static final String database_user = "JMDINFOTECH";
-        public static final String password = "Jmd&23Info$10Tech~79";
-    }
+    public static final String USER_ID="user_id";
+    public static final String USER_NAME="user_name";
+    public static final String USER_PASS="user_pass";
+    public static final String DB_NAME="db_name";
+    public static final String DB_USER_NAME="db_user_name";
+    public static final String DB_USER_PASS="db_user_pass";
+    public static final String USER_TYPE="user_type";
+    public static final String SALESMAN_ID="salesman_id";
 
 }
