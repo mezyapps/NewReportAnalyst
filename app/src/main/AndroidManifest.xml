@@ -18,10 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
-
-        <activity android:name=".view.activity.PurchaseDetailsActivity"
-            android:screenOrientation="portrait"/>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="n">
+        <activity
+            android:name=".view.activity.AddProductActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.activity.PurchaseDetailsActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.activity.SaleDetailsActivity"
             android:screenOrientation="portrait" />

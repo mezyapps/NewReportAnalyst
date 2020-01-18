@@ -658,7 +658,7 @@ public class SalesReportActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("yyy/MM/dd");
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
                         String dateString = format.format(calendar.getTime());
 
                         if (isStartDate) {

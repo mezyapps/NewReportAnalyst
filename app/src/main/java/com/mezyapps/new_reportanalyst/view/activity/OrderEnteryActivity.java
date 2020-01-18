@@ -2,15 +2,29 @@ package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mezyapps.new_reportanalyst.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class OrderEnteryActivity extends AppCompatActivity {
 
     private ImageView iv_back;
+    private TextView textDate;
+    private String currentDate;
+    private FloatingActionButton fab_add_product;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +37,10 @@ public class OrderEnteryActivity extends AppCompatActivity {
 
     private void find_View_IdS() {
         iv_back = findViewById(R.id.iv_back);
+        textDate = findViewById(R.id.textDate);
+        fab_add_product = findViewById(R.id.fab_add_product);
+        currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        textDate.setText(currentDate);
     }
 
     private void events() {
@@ -30,6 +48,38 @@ public class OrderEnteryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        textDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int mYear = calendar.get(Calendar.YEAR);
+                int mMonth = calendar.get(Calendar.MONTH);
+                int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(OrderEnteryActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.set(year, monthOfYear, dayOfMonth);
+
+                                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                                String dateString = format.format(calendar.getTime());
+                                textDate.setText(dateString);
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
+            }
+        });
+        fab_add_product.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OrderEnteryActivity.this,AddProductActivity.class));
             }
         });
     }
