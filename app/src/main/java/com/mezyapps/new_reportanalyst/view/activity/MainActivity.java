@@ -192,30 +192,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         }
 
-   /* private void displayConnectionDialog() {
-        Dialog connectionDialog = new Dialog(MainActivity.this);
-        connectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        connectionDialog.setContentView(R.layout.connection_check_dialog);
-
-        TextView btn_check_connection = connectionDialog.findViewById(R.id.btn_check_connection);
-
-        connectionDialog.setCancelable(false);
-        connectionDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        connectionDialog.show();
-
-        Window window = connectionDialog.getWindow();
-        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
-
-        btn_check_connection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,DatabaseConfigActivity.class);
-                intent.putExtra("Config","second");
-                startActivity(intent);
-            }
-        });
-    }
-*/
 }
 
