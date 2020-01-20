@@ -1,6 +1,7 @@
 package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -13,8 +14,11 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.db.AppDatabase;
+import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProduct;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -25,6 +29,8 @@ public class OrderEnteryActivity extends AppCompatActivity {
     private TextView textDate;
     private String currentDate;
     private FloatingActionButton fab_add_product;
+    private ArrayList<OrderEntryProduct> orderEntryProductArrayList=new ArrayList<>();
+    private AppDatabase appDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +42,14 @@ public class OrderEnteryActivity extends AppCompatActivity {
     }
 
     private void find_View_IdS() {
+        appDatabase= Room.databaseBuilder(getApplicationContext(),AppDatabase.class,"ReportAnalyst").allowMainThreadQueries().build();
         iv_back = findViewById(R.id.iv_back);
         textDate = findViewById(R.id.textDate);
         fab_add_product = findViewById(R.id.fab_add_product);
         currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         textDate.setText(currentDate);
+
+        orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
     }
 
     private void events() {

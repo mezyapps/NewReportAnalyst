@@ -36,4 +36,14 @@
     <string name="export_database">Export Database</string>
     <string name="total">Total =</string>
     <string name="product_name">Product Name</string>
+
+
+    <string-array name="array_gst">
+        <item>Select GST</item>
+        <item>3</item>
+        <item>5</item>
+        <item>12</item>
+        <item>18</item>
+        <item>28</item>
+    </string-array>
 </resources>
