@@ -26,7 +26,7 @@ import java.util.Locale;
 public class OrderEnteryActivity extends AppCompatActivity {
 
     private ImageView iv_back;
-    private TextView textDate;
+    private TextView textDate,textTotalQty,textTotalAmt;
     private String currentDate;
     private FloatingActionButton fab_add_product;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList=new ArrayList<>();
@@ -46,10 +46,21 @@ public class OrderEnteryActivity extends AppCompatActivity {
         iv_back = findViewById(R.id.iv_back);
         textDate = findViewById(R.id.textDate);
         fab_add_product = findViewById(R.id.fab_add_product);
+        textTotalQty = findViewById(R.id.textTotalQty);
+        textTotalAmt = findViewById(R.id.textTotalAmt);
         currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         textDate.setText(currentDate);
 
         orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
+        if (orderEntryProductArrayList.size()>0) {
+            double total_qty = 0.0, total_amt = 0.0;
+            for (int i = 0; i < orderEntryProductArrayList.size(); i++) {
+                total_amt = total_amt + Double.parseDouble(orderEntryProductArrayList.get(i).getFinal_total());
+                total_qty = total_qty + Double.parseDouble(orderEntryProductArrayList.get(i).getQty());
+            }
+            textTotalQty.setText(String.valueOf(total_qty));
+            textTotalAmt.setText(String.valueOf(total_amt));
+        }
     }
 
     private void events() {

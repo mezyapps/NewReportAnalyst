@@ -106,8 +106,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_margin="5dp"
+                android:orientation="vertical"
                 android:textColor="@color/app_color">
 
                 <TextView
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:text="Party Name"
                     android:textColor="@color/app_color"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <EditText
                     android:layout_width="match_parent"
@@ -138,8 +138,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginTop="5dp"
+                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -148,7 +148,7 @@
                         android:layout_marginEnd="5dp"
                         android:text="Balance : "
                         android:textColor="@color/red"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -170,10 +170,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:layout_marginTop="5dp"
                 android:weightSum="2">
 
                 <LinearLayout
@@ -188,18 +188,22 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:text="Total Qty : "
-                        android:textStyle="bold"
-                        android:textColor="@color/gray" />
+                        android:textColor="@color/gray"
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/textTotalQty"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/app_color"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end"
                     android:layout_marginStart="5dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -209,12 +213,16 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="5dp"
                         android:text="Total Amt : "
-                        android:textStyle="bold"
-                        android:textColor="@color/grey" />
+                        android:textColor="@color/grey"
+                        android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/textTotalAmt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:gravity="end"
+                        android:textColor="@color/app_color"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -260,11 +268,11 @@
 
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fab_add_product"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_vector_plus"
-                        app:fabSize="mini"
-                        android:id="@+id/fab_add_product"/>
+                        app:fabSize="mini" />
 
                 </LinearLayout>
 
