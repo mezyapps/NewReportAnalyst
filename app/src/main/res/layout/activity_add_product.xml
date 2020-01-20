@@ -30,6 +30,9 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+
+
+
     </RelativeLayout>
 
     <ScrollView
@@ -59,11 +62,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-
                     android:background="@drawable/shape_edit_text"
                     android:hint="Product Name"
                     android:inputType="text"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:imeOptions="actionNext"/>
 
             </LinearLayout>
 
@@ -101,7 +104,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal" />
+                            android:inputType="numberDecimal"
+                            android:imeOptions="actionNext"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -131,7 +135,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal" />
+                            android:inputType="numberDecimal"
+                            android:imeOptions="actionNext"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -172,7 +177,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:inputType="numberDecimal"
-                            android:maxLength="5" />
+                            android:maxLength="5"
+                            android:imeOptions="actionNext"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -202,7 +208,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal" />
+                            android:inputType="numberDecimal"
+                            android:imeOptions="actionNext" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -226,7 +233,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sub Total"
-                        android:textColor="@color/red"
+                        android:textColor="@color/app_color"
                         android:textSize="19sp"
                         android:textStyle="bold" />
 
@@ -237,9 +244,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:drawableStart="@drawable/ic_money"
-                        android:drawableTint="@color/red"
+                        android:drawableTint="@color/app_color"
                         android:text="0"
-                        android:textColor="@color/red"
+                        android:textColor="@color/app_color"
                         android:textSize="19sp"
                         android:textStyle="bold" />
                 </RelativeLayout>
@@ -280,7 +287,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="number" />
+                            android:inputType="number"
+                            android:imeOptions="actionNext"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -310,7 +318,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal" />
+                            android:inputType="numberDecimal"
+                            android:imeOptions="actionNext"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -436,7 +445,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Final Total"
-                        android:textColor="@color/red"
+                        android:textColor="@color/app_color"
                         android:textSize="19sp"
                         android:textStyle="bold" />
 
@@ -447,9 +456,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:drawableStart="@drawable/ic_money"
-                        android:drawableTint="@color/red"
+                        android:drawableTint="@color/app_color"
                         android:text="0"
-                        android:textColor="@color/red"
+                        android:textColor="@color/app_color"
                         android:textSize="19sp"
                         android:textStyle="bold" />
                 </RelativeLayout>

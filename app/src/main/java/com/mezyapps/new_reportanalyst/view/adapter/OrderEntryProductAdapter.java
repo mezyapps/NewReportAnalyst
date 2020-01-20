@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class OrderEntryProductAdapter extends RecyclerView.Adapter<OrderEntryProductAdapter.MyViewHolder> {
     private Context mContext;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList;
+    int cnt=1;
 
     public OrderEntryProductAdapter(Context mContext, ArrayList<OrderEntryProduct> orderEntryProductArrayList) {
         this.mContext = mContext;
@@ -34,10 +35,11 @@ public class OrderEntryProductAdapter extends RecyclerView.Adapter<OrderEntryPro
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final OrderEntryProduct orderEntryProduct=orderEntryProductArrayList.get(position);
 
-        holder.textProductName.setText(orderEntryProduct.getProduct_name());
+        holder.textProductName.setText("("+cnt+") "+orderEntryProduct.getProduct_name());
         holder.textDist.setText(orderEntryProduct.getDist_amt());
         holder.textGst.setText(orderEntryProduct.getGst_amt());
         holder.textSubTotal.setText(orderEntryProduct.getFinal_total());
+        cnt++;
     }
 
     @Override

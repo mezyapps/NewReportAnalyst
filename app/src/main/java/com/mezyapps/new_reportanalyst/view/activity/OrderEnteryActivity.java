@@ -26,6 +26,7 @@ import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -110,8 +111,10 @@ public class OrderEnteryActivity extends AppCompatActivity {
     }
 
     private void setAdapterData() {
+        orderEntryProductArrayList.clear();
         orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
         orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList);
+        Collections.reverse(orderEntryProductArrayList);
         recycler_view_product.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 

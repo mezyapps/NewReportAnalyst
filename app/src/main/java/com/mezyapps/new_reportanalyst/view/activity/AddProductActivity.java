@@ -151,8 +151,11 @@ public class AddProductActivity extends AppCompatActivity {
                 String prod_name = productTableModel.getPMSTNAME();
                 prod_id = productTableModel.getPRODID();
                 String prod_rate = productTableModel.getSALERATE();
+                if (!prod_rate.equalsIgnoreCase("0.00"))
+                {
+                    edtRate.setText(prod_rate);
+                }
                 String prod_pkg = productTableModel.getPACKING();
-                edtRate.setText(prod_rate);
                 edtPacking.setText(prod_pkg);
             }
         });
@@ -173,7 +176,8 @@ public class AddProductActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String strQty = edtQty.getText().toString().trim();
-                if (!strQty.equalsIgnoreCase("")) {
+                String strRate = edtRate.getText().toString().trim();
+                if (!strQty.equalsIgnoreCase("")&&!strRate.equalsIgnoreCase("")) {
                     double qty = Double.parseDouble(edtQty.getText().toString().trim());
                     double rate = Double.parseDouble(edtRate.getText().toString().trim());
                     double total = qty * rate;
