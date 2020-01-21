@@ -497,6 +497,7 @@ public class AddProductActivity extends AppCompatActivity {
 
                     Statement stmt = connection.createStatement();
                     ResultSet resultSet = stmt.executeQuery(query);
+                    productTableModelArrayList.clear();
                     while (resultSet.next()) {
                         String prod_id = resultSet.getString("PRODID");
                         String prod_code = resultSet.getString("PMSTCODE");

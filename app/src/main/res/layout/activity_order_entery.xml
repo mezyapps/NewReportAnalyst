@@ -117,10 +117,11 @@
                     android:textColor="@color/app_color"
                     android:textStyle="bold" />
 
-                <EditText
+                <AutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:id="@+id/actv_customer_name"
                     android:background="@drawable/shape_edit_text"
                     android:inputType="text"
                     android:padding="10dp" />
