@@ -113,8 +113,8 @@ public class OrderEnteryActivity extends AppCompatActivity {
     private void setAdapterData() {
         orderEntryProductArrayList.clear();
         orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
-        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList);
         Collections.reverse(orderEntryProductArrayList);
+        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList);
         recycler_view_product.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 
@@ -124,11 +124,10 @@ public class OrderEnteryActivity extends AppCompatActivity {
                 total_amt = total_amt + Double.parseDouble(orderEntryProductArrayList.get(i).getFinal_total());
                 total_qty = total_qty + Double.parseDouble(orderEntryProductArrayList.get(i).getQty());
             }
-            textTotalQty.setText(String.valueOf(total_qty));
-            textTotalAmt.setText(String.valueOf(total_amt));
+            textTotalQty.setText(String.format("%.2f", total_qty));
+            textTotalAmt.setText(String.format("%.2f", total_amt));
         }
     }
-
 
     @Override
     public void onBackPressed() {

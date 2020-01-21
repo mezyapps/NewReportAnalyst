@@ -1,20 +1,28 @@
 package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +36,7 @@ import com.mezyapps.new_reportanalyst.model.PurchaseDTModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
+import com.mezyapps.new_reportanalyst.view.adapter.OrderEntryProductAdapter;
 import com.mezyapps.new_reportanalyst.view.adapter.ProductAutoCompleteAdapter;
 import com.mezyapps.new_reportanalyst.view.adapter.PurchaseDTAdapter;
 
@@ -35,6 +44,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AddProductActivity extends AppCompatActivity {
     private ImageView iv_back;
@@ -45,13 +55,15 @@ public class AddProductActivity extends AppCompatActivity {
     private ShowProgressDialog showProgressDialog;
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
     private ArrayList<ProductTableModel> productTableModelArrayList = new ArrayList<>();
+    private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private ProductAutoCompleteAdapter productAutoCompleteAdapter;
     private EditText edtQty, edtBoxPacking, edtPacking, edtRate, editDist, edtDistAmt, edtGstAmt;
     private String dicountedAmt = "", prod_id;
     private Spinner spinnerGST;
-    private TextView textSubTotal, textFinalTotal;
+    private TextView textSubTotal, textFinalTotal, textProdCnt;
     private String prod_name, box, pkg, qty, rate, sub_total, dist_per, dist_amt, gst_per, gst_amt, final_total;
     private AppDatabase appDatabase;
+    private RelativeLayout rr_product_list;
 
     /*Validation*/
     boolean dist_amtv = false;
@@ -82,15 +94,19 @@ public class AddProductActivity extends AppCompatActivity {
         spinnerGST = findViewById(R.id.spinnerGST);
         textFinalTotal = findViewById(R.id.textFinalTotal);
         edtGstAmt = findViewById(R.id.edtGstAmt);
+        rr_product_list = findViewById(R.id.rr_product_list);
+        textProdCnt = findViewById(R.id.textProdCnt);
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
+
 
         autoCompleteTVProduct.setThreshold(0);
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void events() {
+        productList();
         ProductDetails productDetails = new ProductDetails();
         productDetails.execute("");
         iv_back.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +151,7 @@ public class AddProductActivity extends AppCompatActivity {
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
+                        productList();
 
                     } else {
                         Toast.makeText(AddProductActivity.this, prod_name + " Not Added", Toast.LENGTH_SHORT).show();
@@ -151,8 +168,7 @@ public class AddProductActivity extends AppCompatActivity {
                 String prod_name = productTableModel.getPMSTNAME();
                 prod_id = productTableModel.getPRODID();
                 String prod_rate = productTableModel.getSALERATE();
-                if (!prod_rate.equalsIgnoreCase("0.00"))
-                {
+                if (!prod_rate.equalsIgnoreCase("0.00")) {
                     edtRate.setText(prod_rate);
                 }
                 String prod_pkg = productTableModel.getPACKING();
@@ -177,7 +193,7 @@ public class AddProductActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String strQty = edtQty.getText().toString().trim();
                 String strRate = edtRate.getText().toString().trim();
-                if (!strQty.equalsIgnoreCase("")&&!strRate.equalsIgnoreCase("")) {
+                if (!strQty.equalsIgnoreCase("") && !strRate.equalsIgnoreCase("")) {
                     double qty = Double.parseDouble(edtQty.getText().toString().trim());
                     double rate = Double.parseDouble(edtRate.getText().toString().trim());
                     double total = qty * rate;
@@ -364,6 +380,57 @@ public class AddProductActivity extends AppCompatActivity {
             }
         });
 
+        rr_product_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogShowProductList();
+            }
+        });
+
+
+    }
+
+    private void productList() {
+        orderEntryProductArrayList.clear();
+        orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
+        int size = orderEntryProductArrayList.size();
+        if (size > 0) {
+            textProdCnt.setText(String.valueOf(size));
+        } else {
+            rr_product_list.setVisibility(View.GONE);
+        }
+    }
+
+    private void dialogShowProductList() {
+        final Dialog dialog_product = new Dialog(AddProductActivity.this);
+        dialog_product.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_product.setContentView(R.layout.dialog_product_list);
+
+        RecyclerView recycler_view_product_list = dialog_product.findViewById(R.id.recycler_view_product_list);
+        ImageView iv_close_dialog=dialog_product.findViewById(R.id.iv_close_dialog);
+
+        dialog_product.setCancelable(false);
+        dialog_product.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+        dialog_product.show();
+
+        Window window = dialog_product.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(AddProductActivity.this);
+        recycler_view_product_list.setLayoutManager(linearLayoutManager);
+
+        Collections.reverse(orderEntryProductArrayList);
+        OrderEntryProductAdapter orderEntryProductAdapter = new OrderEntryProductAdapter(AddProductActivity.this, orderEntryProductArrayList);
+        recycler_view_product_list.setAdapter(orderEntryProductAdapter);
+        orderEntryProductAdapter.notifyDataSetChanged();
+
+        iv_close_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_product.dismiss();
+            }
+        });
 
     }
 
