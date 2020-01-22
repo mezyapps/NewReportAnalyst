@@ -78,7 +78,10 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private void find_View_IdS() {
-        appDatabase = Room.databaseBuilder(AddProductActivity.this, AppDatabase.class, "ReportAnalyst").allowMainThreadQueries().build();
+        appDatabase = Room.databaseBuilder(AddProductActivity.this, AppDatabase.class, "ReportAnalyst")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
         showProgressDialog = new ShowProgressDialog(AddProductActivity.this);
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
@@ -96,6 +99,7 @@ public class AddProductActivity extends AppCompatActivity {
         edtGstAmt = findViewById(R.id.edtGstAmt);
         rr_product_list = findViewById(R.id.rr_product_list);
         textProdCnt = findViewById(R.id.textProdCnt);
+
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
@@ -152,7 +156,7 @@ public class AddProductActivity extends AppCompatActivity {
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
                         productList();
-
+                        rr_product_list.setVisibility(View.VISIBLE);
                     } else {
                         Toast.makeText(AddProductActivity.this, prod_name + " Not Added", Toast.LENGTH_SHORT).show();
                     }
@@ -451,9 +455,14 @@ public class AddProductActivity extends AppCompatActivity {
             autoCompleteTVProduct.setError("Select Product Name");
             autoCompleteTVProduct.requestFocus();
             return false;
-        } else if (qty.equalsIgnoreCase("")) {
+        }else if (qty.equalsIgnoreCase("")) {
             edtQty.setError("Enter qty");
             edtQty.requestFocus();
+            return false;
+        }else if(sub_total.equalsIgnoreCase("0"))
+        {
+            Toast.makeText(this, "Please Check Subtotal", Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         return true;

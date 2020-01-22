@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
                         loadFragment(new ChancePasswordFragment());
                     } else if (id == R.id.nav_share_app) {
                         shareApplication();
+                    }else if (id == R.id.nav_order_register) {
+                        startActivity(new Intent(MainActivity.this,OrderRegisterActivity.class));
                     } else if (id == R.id.nav_logout) {
                         logoutApplication();
                     }

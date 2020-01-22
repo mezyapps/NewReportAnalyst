@@ -7,6 +7,8 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProduct;
+import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductDT;
+import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
 import com.mezyapps.new_reportanalyst.view.activity.OrderEnteryActivity;
 
 import java.util.List;
@@ -27,5 +29,6 @@ public interface ProductOrderDAO {
 
     @Query("select * from orderentryproducttable")
     public List<OrderEntryProduct> getAppProduct();
+
 
 }

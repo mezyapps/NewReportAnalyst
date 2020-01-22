@@ -5,6 +5,7 @@ import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -16,7 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +29,8 @@ import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.db.AppDatabase;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProduct;
+import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductDT;
+import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
 import com.mezyapps.new_reportanalyst.model.GroupPerModel;
 import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
@@ -49,8 +54,8 @@ import java.util.Locale;
 public class OrderEnteryActivity extends AppCompatActivity {
 
     private ImageView iv_back;
-    private TextView textDate, textTotalQty, textTotalAmt;
-    private String currentDate;
+    private TextView textDate, textTotalQty, textTotalAmt, textBalance;
+    private String currentDate, group_id, group_name, balance, total_qty, total_amt, date, order_no;
     private FloatingActionButton fab_add_product;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private AppDatabase appDatabase;
@@ -64,7 +69,9 @@ public class OrderEnteryActivity extends AppCompatActivity {
     private AutoCompleteTextView actv_customer_name;
     private ArrayList<GroupPerModel> groupPerModelArrayList = new ArrayList<>();
     private GroupPerAdapter groupPerAdapter;
-
+    private Button btn_place_order;
+    private EditText edtOrderNo;
+    private long maxval,max;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +81,13 @@ public class OrderEnteryActivity extends AppCompatActivity {
         events();
     }
 
+    @SuppressLint("RestrictedApi")
     private void find_View_IdS() {
         showProgressDialog = new ShowProgressDialog(OrderEnteryActivity.this);
-        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "ReportAnalyst").allowMainThreadQueries().build();
+        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "ReportAnalyst")
+                .allowMainThreadQueries()
+                .fallbackToDestructiveMigration()
+                .build();
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
         textDate = findViewById(R.id.textDate);
@@ -85,6 +96,10 @@ public class OrderEnteryActivity extends AppCompatActivity {
         textTotalAmt = findViewById(R.id.textTotalAmt);
         recycler_view_product = findViewById(R.id.recycler_view_product);
         actv_customer_name = findViewById(R.id.actv_customer_name);
+        btn_place_order = findViewById(R.id.btn_place_order);
+        textBalance = findViewById(R.id.textBalance);
+        edtOrderNo = findViewById(R.id.edtOrderNo);
+
         currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         textDate.setText(currentDate);
 
@@ -95,10 +110,13 @@ public class OrderEnteryActivity extends AppCompatActivity {
         recycler_view_product.setLayoutManager(linearLayoutManager);
 
         actv_customer_name.setThreshold(0);
+        fab_add_product.setVisibility(View.GONE);
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void events() {
+        findMax();
         setAdapterData();
         GroupPer groupPer = new GroupPer();
         groupPer.execute("");
@@ -111,10 +129,13 @@ public class OrderEnteryActivity extends AppCompatActivity {
 
 
         actv_customer_name.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 GroupPerModel groupPerModel = (GroupPerModel) adapterView.getItemAtPosition(position);
                 String groupname = groupPerModel.getGROUPNAME();
+                group_id = groupPerModel.getGROUPID();
+                fab_add_product.setVisibility(View.VISIBLE);
             }
         });
 
@@ -157,6 +178,108 @@ public class OrderEnteryActivity extends AppCompatActivity {
                 startActivity(new Intent(OrderEnteryActivity.this, AddProductActivity.class));
             }
         });
+        btn_place_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validation()) {
+
+                    OrderEntryProductHD orderEntryProductHD = new OrderEntryProductHD();
+                    orderEntryProductHD.setParty_id(group_id);
+                    orderEntryProductHD.setMaxID(maxval);
+                    orderEntryProductHD.setParty_name(group_name);
+                    orderEntryProductHD.setOrder_no(order_no);
+                    orderEntryProductHD.setDate(date);
+                    orderEntryProductHD.setBalance(balance);
+                    orderEntryProductHD.setTotal_amt(total_amt);
+                    orderEntryProductHD.setTotal_qty(total_qty);
+
+
+                    if (orderEntryProductArrayList.size()>0) {
+                        long idVal = appDatabase.getProductHDDAO().insertProductHD(orderEntryProductHD);
+                        boolean insert=false;
+                        if (idVal != 0) {
+                            for (int i=0;i<orderEntryProductArrayList.size();i++)
+                            {
+                                OrderEntryProductDT orderEntryProductDT=new OrderEntryProductDT();
+                                orderEntryProductDT.setProduct_id(orderEntryProductArrayList.get(i).getProduct_id());
+                                orderEntryProductDT.setProduct_name(orderEntryProductArrayList.get(i).getProduct_name());
+                                orderEntryProductDT.setBox_pkg(orderEntryProductArrayList.get(i).getBox_pkg());
+                                orderEntryProductDT.setPkg(orderEntryProductArrayList.get(i).getPkg());
+                                orderEntryProductDT.setQty(orderEntryProductArrayList.get(i).getQty());
+                                orderEntryProductDT.setRate(orderEntryProductArrayList.get(i).getRate());
+                                orderEntryProductDT.setSub_total(orderEntryProductArrayList.get(i).getSub_total());
+                                orderEntryProductDT.setDist_per(orderEntryProductArrayList.get(i).getDist_per());
+                                orderEntryProductDT.setGst_per(orderEntryProductArrayList.get(i).getGst_per());
+                                orderEntryProductDT.setDist_amt(orderEntryProductArrayList.get(i).getDist_amt());
+                                orderEntryProductDT.setGst_amt(orderEntryProductArrayList.get(i).getGst_amt());
+                                orderEntryProductDT.setFinal_total(orderEntryProductArrayList.get(i).getFinal_total());
+                                orderEntryProductDT.setMaxId(maxval);
+
+                                 long inval=appDatabase.getProductDTDAO().insertProductDT(orderEntryProductDT);
+                                if (idVal != 0) {
+                                    insert=true;
+                                }
+                            }
+                        }
+                        if (insert)
+                        {
+                            textBalance.setText("");
+                            actv_customer_name.setText("");
+                            textTotalAmt.setText("");
+                            textTotalQty.setText("");
+                            orderEntryProductArrayList.clear();
+                            appDatabase.getProductDAO().deleteAllProduct();
+                            orderEntryProductAdapter.notifyDataSetChanged();
+                            findMax();
+                            Toast.makeText(OrderEnteryActivity.this, "Order Place Sucessfully", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Toast.makeText(OrderEnteryActivity.this, "Order Not Place", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else {
+                        Toast.makeText(OrderEnteryActivity.this, "Please Add product", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+
+    private void findMax() {
+
+        max=appDatabase.getProductHDDAO().getMaxValue();
+        maxval=max+1;
+
+        edtOrderNo.setText(String.valueOf(maxval));
+    }
+
+    private boolean validation() {
+        group_name = actv_customer_name.getText().toString().trim();
+        balance = textBalance.getText().toString().trim();
+        total_qty=textTotalQty.getText().toString().trim();
+        total_amt=textTotalAmt.getText().toString().trim();
+        date=textDate.getText().toString().trim();
+        order_no=edtOrderNo.getText().toString().trim();
+
+
+        if(group_name.equalsIgnoreCase(""))
+        {
+            actv_customer_name.setError("Please Enter Customer Name");
+            actv_customer_name.requestFocus();
+            return false;
+        } else if(total_amt.equalsIgnoreCase(""))
+        {
+            Toast.makeText(OrderEnteryActivity.this, "Please Add Product", Toast.LENGTH_SHORT).show();
+            return false;
+        }else if(total_qty.equalsIgnoreCase(""))
+        {
+            Toast.makeText(OrderEnteryActivity.this, "Please Add Product", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+
+        return true;
     }
 
     private void setAdapterData() {

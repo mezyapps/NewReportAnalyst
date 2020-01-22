@@ -16,6 +16,12 @@
         android:icon="@drawable/ic_vector_share"/>
 
     <item
+        android:title="@string/order_register"
+        android:id="@+id/nav_order_register"
+        android:icon="@drawable/ic_vector_order_entry"/>
+
+
+    <item
         android:title="@string/logout"
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_vector_logout"/>
