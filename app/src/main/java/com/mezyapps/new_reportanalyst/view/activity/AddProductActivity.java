@@ -34,6 +34,7 @@ import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProduct;
 import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 import com.mezyapps.new_reportanalyst.model.PurchaseDTModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.SelectProductDataInterface;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.adapter.OrderEntryProductAdapter;
@@ -46,7 +47,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AddProductActivity extends AppCompatActivity {
+public class AddProductActivity extends AppCompatActivity implements  SelectProductDataInterface {
     private ImageView iv_back;
     private Button btn_save;
     private String databaseName;
@@ -99,6 +100,7 @@ public class AddProductActivity extends AppCompatActivity {
         edtGstAmt = findViewById(R.id.edtGstAmt);
         rr_product_list = findViewById(R.id.rr_product_list);
         textProdCnt = findViewById(R.id.textProdCnt);
+
 
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
@@ -425,7 +427,7 @@ public class AddProductActivity extends AppCompatActivity {
         recycler_view_product_list.setLayoutManager(linearLayoutManager);
 
         Collections.reverse(orderEntryProductArrayList);
-        OrderEntryProductAdapter orderEntryProductAdapter = new OrderEntryProductAdapter(AddProductActivity.this, orderEntryProductArrayList);
+        OrderEntryProductAdapter orderEntryProductAdapter = new OrderEntryProductAdapter(AddProductActivity.this, orderEntryProductArrayList,true,this);
         recycler_view_product_list.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 
@@ -466,6 +468,11 @@ public class AddProductActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void selectProductData(OrderEntryProduct orderEntryProduct) {
+        Toast.makeText(this, orderEntryProduct.getProduct_name(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("StaticFieldLeak")

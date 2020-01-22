@@ -34,6 +34,7 @@ import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
 import com.mezyapps.new_reportanalyst.model.GroupPerModel;
 import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.SelectProductDataInterface;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.adapter.GroupPerAdapter;
@@ -51,7 +52,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class OrderEnteryActivity extends AppCompatActivity {
+public class OrderEnteryActivity extends AppCompatActivity  implements SelectProductDataInterface {
 
     private ImageView iv_back;
     private TextView textDate, textTotalQty, textTotalAmt, textBalance;
@@ -286,7 +287,7 @@ public class OrderEnteryActivity extends AppCompatActivity {
         orderEntryProductArrayList.clear();
         orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
         Collections.reverse(orderEntryProductArrayList);
-        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList);
+        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList,false,this);
         recycler_view_product.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 
@@ -334,6 +335,11 @@ public class OrderEnteryActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         setAdapterData();
+    }
+
+    @Override
+    public void selectProductData(OrderEntryProduct orderEntryProduct) {
+
     }
 
     @SuppressLint("StaticFieldLeak")

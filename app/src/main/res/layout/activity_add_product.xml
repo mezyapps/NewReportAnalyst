@@ -325,7 +325,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:inputType="number"
-                            android:imeOptions="actionNext"/>
+                            android:imeOptions="actionNone"
+                            android:nextFocusDown="@+id/spinnerGST"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -355,8 +356,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal"
-                            android:imeOptions="actionNext"/>
+                            android:inputType="numberDecimal"/>
                     </LinearLayout>
 
                 </LinearLayout>
