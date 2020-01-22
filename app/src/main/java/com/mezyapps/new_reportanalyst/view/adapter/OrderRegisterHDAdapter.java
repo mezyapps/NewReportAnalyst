@@ -1,6 +1,8 @@
 package com.mezyapps.new_reportanalyst.view.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
 import com.mezyapps.new_reportanalyst.model.SalesReportModel;
+import com.mezyapps.new_reportanalyst.view.activity.OrderRegisterDTActivity;
+import com.mezyapps.new_reportanalyst.view.activity.SaleDetailsActivity;
 
 import java.util.ArrayList;
 
@@ -46,6 +50,16 @@ public class OrderRegisterHDAdapter extends RecyclerView.Adapter<OrderRegisterHD
         holder.textBillNo.setText(bill_no);
 
         holder.textBillDate.setText(orderEntryProductHD.getDate());
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(mContext, OrderRegisterDTActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("ORDER_NO",orderEntryProductHD.getMaxID());
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

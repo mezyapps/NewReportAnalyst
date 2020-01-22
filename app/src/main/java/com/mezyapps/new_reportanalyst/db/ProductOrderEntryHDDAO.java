@@ -21,4 +21,7 @@ public interface ProductOrderEntryHDDAO {
 
     @Query("select * from OrderEntryProductHD")
     public List<OrderEntryProductHD> getAllValue();
+
+    @Query("select * from OrderEntryProductHD where maxID ==:order_no")
+    public List<OrderEntryProductHD> getOnlyIDValue(long order_no);
 }

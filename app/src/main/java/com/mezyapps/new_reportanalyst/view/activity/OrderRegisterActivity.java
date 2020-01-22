@@ -47,7 +47,6 @@ public class OrderRegisterActivity extends AppCompatActivity {
 
         orderEntryProductHDArrayList.clear();
         orderEntryProductHDArrayList.addAll(appDatabase.getProductHDDAO().getAllValue());
-        Collections.reverse(orderEntryProductHDArrayList);
         orderRegisterHDAdapter=new OrderRegisterHDAdapter(OrderRegisterActivity.this,orderEntryProductHDArrayList);
         recycler_view_order_register.setAdapter(orderRegisterHDAdapter);
         orderRegisterHDAdapter.notifyDataSetChanged();

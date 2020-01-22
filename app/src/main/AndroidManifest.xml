@@ -20,9 +20,11 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:targetApi="n">
-
-        <activity android:name=".view.activity.OrderRegisterActivity"
+        <activity android:name=".view.activity.OrderRegisterDTActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".view.activity.OrderRegisterActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.activity.AddProductActivity"
             android:screenOrientation="portrait" />
