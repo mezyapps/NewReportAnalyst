@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,6 +71,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     private Dialog dialog_product;
     private ArrayList<String> spinnerSelect=new ArrayList<>();
     private ArrayAdapter<String> spinnerArrayAdapter;
+    private ScrollView scrollView_add_product;
     /*Validation*/
     boolean dist_amtv = false;
     private LinearLayout ll_update_delete;
@@ -109,6 +111,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         ll_update_delete = findViewById(R.id.ll_update_delete);
         btn_delete = findViewById(R.id.btn_delete);
         btn_update = findViewById(R.id.btn_update);
+        scrollView_add_product = findViewById(R.id.scrollView_add_product);
 
 
 
@@ -180,6 +183,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         spinnerGST.setSelection(0,true);
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
+                        scrollView_add_product.pageScroll(View.FOCUS_UP);
                     } else {
                         Toast.makeText(AddProductActivity.this, prod_name + " Not Added", Toast.LENGTH_SHORT).show();
                     }
@@ -436,6 +440,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                 productList();
                 btn_save.setVisibility(View.VISIBLE);
                 ll_update_delete.setVisibility(View.GONE);
+                scrollView_add_product.pageScroll(View.FOCUS_UP);
             }
         });
         btn_update.setOnClickListener(new View.OnClickListener() {
@@ -465,6 +470,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         productList();
                         btn_save.setVisibility(View.VISIBLE);
                         ll_update_delete.setVisibility(View.GONE);
+                        scrollView_add_product.pageScroll(View.FOCUS_UP);
                     } else {
                         Toast.makeText(AddProductActivity.this, prod_name + " Not Added", Toast.LENGTH_SHORT).show();
                     }

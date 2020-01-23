@@ -300,6 +300,10 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
             textTotalQty.setText(String.format("%.2f", total_qty));
             textTotalAmt.setText(String.format("%.2f", total_amt));
         }
+        else {
+            textTotalQty.setText("");
+            textTotalAmt.setText("");
+        }
     }
 
     @Override

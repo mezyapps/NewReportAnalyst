@@ -41,6 +41,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Under Development"
+            android:textStyle="bold"
+            android:textColor="@color/app_color"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
 
 
     </RelativeLayout>
