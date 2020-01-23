@@ -72,8 +72,8 @@ public class PurchaseDetailsActivity extends AppCompatActivity {
         String bill_no=PurchaseReportModel.getVchno();
         String date=PurchaseReportModel.getVchdt();
         String party_name=PurchaseReportModel.getGroupname();
-        String total_qty="Bill Qty :"+PurchaseReportModel.getTotal_qty();
-        String total_amt="Bill Amt :"+PurchaseReportModel.getTotal_amt();
+        String total_qty="Bill Qty : 00";
+        String total_amt="Bill Amt : 00";
 
         textBillNO.setText(bill_no);
         textDate.setText(date);
@@ -97,7 +97,7 @@ public class PurchaseDetailsActivity extends AppCompatActivity {
 
         String msg = "";
         boolean isSuccess = false;
-        String TOTAL_AMT = "00", TOTAL_QTY = "00";
+        double TOTAL_AMT, TOTAL_QTY;
 
         @Override
         protected void onPreExecute() {
@@ -111,6 +111,8 @@ public class PurchaseDetailsActivity extends AppCompatActivity {
                 purchaseDTAdapter = new PurchaseDTAdapter(PurchaseDetailsActivity.this, purchaseDTModelArrayList);
                 recyclerView_product_list.setAdapter(purchaseDTAdapter);
                 purchaseDTAdapter.notifyDataSetChanged();
+                text_total_qty.setText("Bill Qty : "+TOTAL_QTY);
+                textBillAMT.setText("Bill Amt : "+TOTAL_AMT);
             }
             else
             {
@@ -149,6 +151,8 @@ public class PurchaseDetailsActivity extends AppCompatActivity {
                         String igst= resultSet.getString("IGST_AMT");
                         String final_Amt = resultSet.getString("FINAL_AMT");
 
+                        TOTAL_AMT = TOTAL_AMT + Double.parseDouble(final_Amt);
+                        TOTAL_QTY = TOTAL_QTY + Double.parseDouble(prod_qty);
 
                         PurchaseDTModel purchaseDTModel = new PurchaseDTModel();
                         purchaseDTModel.setProd_name(prod_name);

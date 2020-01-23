@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -145,6 +147,31 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
             public boolean onTouch(View paramView, MotionEvent paramMotionEvent) {
                 actv_customer_name.showDropDown();
                 return false;
+            }
+        });
+        actv_customer_name.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String cust_name=actv_customer_name.getText().toString().trim();
+                if (cust_name.equalsIgnoreCase(""))
+                {
+                    fab_add_product.setVisibility(View.GONE);
+                }
+                else
+                {
+                    fab_add_product.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 

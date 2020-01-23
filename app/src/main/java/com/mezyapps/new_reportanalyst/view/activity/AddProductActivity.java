@@ -203,7 +203,13 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                     edtRate.setText(prod_rate);
                 }
                 String prod_pkg = productTableModel.getPACKING();
-                edtPacking.setText(prod_pkg);
+                if (!prod_pkg.equalsIgnoreCase("")) {
+                    edtPacking.setText(prod_pkg);
+                }
+                else
+                {
+                    edtPacking.setText("1");
+                }
             }
         });
 
@@ -530,7 +536,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         box = edtBoxPacking.getText().toString().trim();
         pkg = edtPacking.getText().toString().trim();
         qty = edtQty.getText().toString().trim();
-        rate = edtQty.getText().toString().trim();
+        rate = edtRate.getText().toString().trim();
         sub_total = textSubTotal.getText().toString().trim();
         dist_per = editDist.getText().toString().trim();
         dist_amt = edtDistAmt.getText().toString().trim();

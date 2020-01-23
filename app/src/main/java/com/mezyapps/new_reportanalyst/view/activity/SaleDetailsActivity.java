@@ -32,10 +32,10 @@ public class SaleDetailsActivity extends AppCompatActivity {
 
     private ImageView iv_back;
     private SalesReportModel salesReportModel;
-    private TextView textBillNO,textDate,textPartyName,text_total_qty,textBillAMT;
-    private String entry_id,databaseName;
+    private TextView textBillNO, textDate, textPartyName, text_total_qty, textBillAMT;
+    private String entry_id, databaseName;
     private RecyclerView recyclerView_product_list;
-    private ArrayList<SalesDetailsModel> salesDetailsModelArrayList=new ArrayList<>();
+    private ArrayList<SalesDetailsModel> salesDetailsModelArrayList = new ArrayList<>();
     private SalesDetailsAdapter salesDetailsAdapter;
     private ConnectionCommon connectionCommon;
     private ShowProgressDialog showProgressDialog;
@@ -53,35 +53,34 @@ public class SaleDetailsActivity extends AppCompatActivity {
     private void find_View_IDs() {
         connectionCommon = new ConnectionCommon();
         showProgressDialog = new ShowProgressDialog(SaleDetailsActivity.this);
-        iv_back=findViewById(R.id.iv_back);
-        textBillNO=findViewById(R.id.textBillNO);
-        textDate=findViewById(R.id.textDate);
-        textPartyName=findViewById(R.id.textPartyName);
-        text_total_qty=findViewById(R.id.text_total_qty);
-        textBillAMT=findViewById(R.id.textBillAMT);
-        recyclerView_product_list=findViewById(R.id.recyclerView_product_list);
+        iv_back = findViewById(R.id.iv_back);
+        textBillNO = findViewById(R.id.textBillNO);
+        textDate = findViewById(R.id.textDate);
+        textPartyName = findViewById(R.id.textPartyName);
+        text_total_qty = findViewById(R.id.text_total_qty);
+        textBillAMT = findViewById(R.id.textBillAMT);
+        recyclerView_product_list = findViewById(R.id.recyclerView_product_list);
 
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(SaleDetailsActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SaleDetailsActivity.this);
         recyclerView_product_list.setLayoutManager(linearLayoutManager);
 
         Bundle bundle = getIntent().getExtras();
         salesReportModel = bundle.getParcelable("SALES_REPORT");
 
-        entry_id=salesReportModel.getEntryid();
-        String bill_no=salesReportModel.getVchno();
-        String date=salesReportModel.getVchdt();
-        String party_name=salesReportModel.getGroupname();
-        String total_qty="Bill Qty :"+salesReportModel.getTotal_qty();
-        String total_amt="Bill Amt :"+salesReportModel.getTotal_amt();
+        entry_id = salesReportModel.getEntryid();
+        String bill_no = salesReportModel.getVchno();
+        String date = salesReportModel.getVchdt();
+        String party_name = salesReportModel.getGroupname();
+        text_total_qty.setText("Bill Qty :"+"00");
+        textBillAMT.setText("Bill Amt :"+"00");
 
-        userProfileModelArrayList= SharedLoginUtils.getUserProfile(SaleDetailsActivity.this);
+        userProfileModelArrayList = SharedLoginUtils.getUserProfile(SaleDetailsActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
 
         textBillNO.setText(bill_no);
         textDate.setText(date);
         textPartyName.setText(party_name);
-        text_total_qty.setText(total_qty);
-        textBillAMT.setText(total_amt);
+
     }
 
     private void events() {
@@ -100,7 +99,7 @@ public class SaleDetailsActivity extends AppCompatActivity {
 
         String msg = "";
         boolean isSuccess = false;
-        String TOTAL_AMT = "00", TOTAL_QTY = "00";
+        double TOTAL_AMT, TOTAL_QTY;
 
         @Override
         protected void onPreExecute() {
@@ -114,9 +113,9 @@ public class SaleDetailsActivity extends AppCompatActivity {
                 salesDetailsAdapter = new SalesDetailsAdapter(SaleDetailsActivity.this, salesDetailsModelArrayList);
                 recyclerView_product_list.setAdapter(salesDetailsAdapter);
                 salesDetailsAdapter.notifyDataSetChanged();
-            }
-            else
-            {
+                text_total_qty.setText("Bill Qty : "+TOTAL_QTY);
+                textBillAMT.setText("Bill Amt : "+TOTAL_AMT);
+            } else {
                 salesDetailsAdapter.notifyDataSetChanged();
             }
         }
@@ -129,7 +128,7 @@ public class SaleDetailsActivity extends AppCompatActivity {
                     msg = "Check Your Internet Access!";
                 } else {
                     String query =
-                            "SELECT  * FROM TBL_SALE_DT WHERE ENTRYID="+entry_id;
+                            "SELECT  * FROM TBL_SALE_DT WHERE ENTRYID=" + entry_id;
 
                     Statement stmt = connection.createStatement();
                     ResultSet resultSet = stmt.executeQuery(query);
@@ -140,17 +139,20 @@ public class SaleDetailsActivity extends AppCompatActivity {
                         String cost_rate = resultSet.getString("COSTRATE");
                         String prod_gross_amt = resultSet.getString("PRODGROSSAMT");
                         String dist_per1 = resultSet.getString("TD_PER");
-                        String dist_per2= resultSet.getString("SP_PER");
+                        String dist_per2 = resultSet.getString("SP_PER");
                         String dist1 = resultSet.getString("TD_AMT");
-                        String dist2= resultSet.getString("SP_AMT");
+                        String dist2 = resultSet.getString("SP_AMT");
                         String cgst_per = resultSet.getString("CGST_PER");
-                        String sgst_per= resultSet.getString("SGST_PER");
-                        String igst_per= resultSet.getString("IGST_AMT");
+                        String sgst_per = resultSet.getString("SGST_PER");
+                        String igst_per = resultSet.getString("IGST_AMT");
                         String cgst = resultSet.getString("CGST_AMT");
-                        String sgst= resultSet.getString("SGST_AMT");
-                        String igst= resultSet.getString("IGST_AMT");
+                        String sgst = resultSet.getString("SGST_AMT");
+                        String igst = resultSet.getString("IGST_AMT");
                         String final_Amt = resultSet.getString("FINAL_AMT");
 
+
+                        TOTAL_AMT = TOTAL_AMT + Double.parseDouble(final_Amt);
+                        TOTAL_QTY = TOTAL_QTY + Double.parseDouble(prod_qty);
 
                         SalesDetailsModel salesDetailsModel = new SalesDetailsModel();
                         salesDetailsModel.setProd_name(prod_name);
