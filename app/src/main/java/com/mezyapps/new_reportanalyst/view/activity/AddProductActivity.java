@@ -3,6 +3,7 @@ package com.mezyapps.new_reportanalyst.view.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Query;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
@@ -17,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,7 +51,7 @@ import java.util.Collections;
 
 public class AddProductActivity extends AppCompatActivity implements  SelectProductDataInterface {
     private ImageView iv_back;
-    private Button btn_save;
+    private Button btn_save,btn_delete,btn_update;
     private String databaseName;
     private AutoCompleteTextView autoCompleteTVProduct;
     private ConnectionCommon connectionCommon;
@@ -65,9 +67,13 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     private String prod_name, box, pkg, qty, rate, sub_total, dist_per, dist_amt, gst_per, gst_amt, final_total;
     private AppDatabase appDatabase;
     private RelativeLayout rr_product_list;
-
+    private Dialog dialog_product;
+    private ArrayList<String> spinnerSelect=new ArrayList<>();
+    private ArrayAdapter<String> spinnerArrayAdapter;
     /*Validation*/
     boolean dist_amtv = false;
+    private LinearLayout ll_update_delete;
+    private Long prod_long_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,9 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         edtGstAmt = findViewById(R.id.edtGstAmt);
         rr_product_list = findViewById(R.id.rr_product_list);
         textProdCnt = findViewById(R.id.textProdCnt);
+        ll_update_delete = findViewById(R.id.ll_update_delete);
+        btn_delete = findViewById(R.id.btn_delete);
+        btn_update = findViewById(R.id.btn_update);
 
 
 
@@ -108,6 +117,17 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
 
 
         autoCompleteTVProduct.setThreshold(0);
+
+        spinnerSelect.add("Select GST");
+        spinnerSelect.add("3");
+        spinnerSelect.add("5");
+        spinnerSelect.add("12");
+        spinnerSelect.add("18");
+        spinnerSelect.add("28");
+
+        spinnerArrayAdapter= new ArrayAdapter<String>(this,   android.R.layout.simple_spinner_item, spinnerSelect);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+        spinnerGST.setAdapter(spinnerArrayAdapter);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -157,6 +177,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
+                        spinnerGST.setSelection(0,true);
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
                     } else {
@@ -211,6 +232,8 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
                     edtGstAmt.setText("");
+                    editDist.setText("");
+                    spinnerGST.setSelection(0, true);
                 }
 
             }
@@ -351,6 +374,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
                     edtGstAmt.setText("");
+
                 }
 
             }
@@ -392,7 +416,62 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                 dialogShowProductList();
             }
         });
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appDatabase.getProductDAO().deleteSingleProduct(prod_long_id);
+                Toast.makeText(AddProductActivity.this," Delete Product Successfully", Toast.LENGTH_SHORT).show();
+                autoCompleteTVProduct.setText("");
+                edtBoxPacking.setText("");
+                edtPacking.setText("");
+                edtQty.setText("");
+                edtRate.setText("");
+                textSubTotal.setText("0");
+                editDist.setText("");
+                edtDistAmt.setText("");
+                edtGstAmt.setText("");
+                textFinalTotal.setText("0");
+                autoCompleteTVProduct.requestFocus();
+                spinnerGST.setSelection(0,true);
+                productList();
+                btn_save.setVisibility(View.VISIBLE);
+                ll_update_delete.setVisibility(View.GONE);
+            }
+        });
+        btn_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validation()) {
 
+                    if (gst_per.equalsIgnoreCase("Select GST")) {
+                        gst_per="";
+                    }
+
+                    long idVal = appDatabase.getProductDAO().getProductDataUpdate(prod_long_id,prod_name,box,pkg,qty,rate,sub_total,dist_per,gst_per,dist_amt,gst_amt,final_total);
+                    if (idVal != 0) {
+                        Toast.makeText(AddProductActivity.this, prod_name + " Update Product Successfully", Toast.LENGTH_SHORT).show();
+                        autoCompleteTVProduct.setText("");
+                        edtBoxPacking.setText("");
+                        edtPacking.setText("");
+                        edtQty.setText("");
+                        edtRate.setText("");
+                        textSubTotal.setText("0");
+                        editDist.setText("");
+                        edtDistAmt.setText("");
+                        edtGstAmt.setText("");
+                        textFinalTotal.setText("0");
+                        autoCompleteTVProduct.requestFocus();
+                        spinnerGST.setSelection(0,true);
+                        productList();
+                        btn_save.setVisibility(View.VISIBLE);
+                        ll_update_delete.setVisibility(View.GONE);
+                    } else {
+                        Toast.makeText(AddProductActivity.this, prod_name + " Not Added", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        });
 
     }
 
@@ -408,7 +487,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     }
 
     private void dialogShowProductList() {
-        final Dialog dialog_product = new Dialog(AddProductActivity.this);
+        dialog_product = new Dialog(AddProductActivity.this);
         dialog_product.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_product.setContentView(R.layout.dialog_product_list);
 
@@ -472,7 +551,29 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
 
     @Override
     public void selectProductData(OrderEntryProduct orderEntryProduct) {
-        Toast.makeText(this, orderEntryProduct.getProduct_name(), Toast.LENGTH_SHORT).show();
+        dialog_product.dismiss();
+        autoCompleteTVProduct.setText(orderEntryProduct.getProduct_name());
+        prod_id=String.valueOf(orderEntryProduct.getProduct_id());
+        prod_long_id=orderEntryProduct.getId();
+        edtBoxPacking.setText(orderEntryProduct.getBox_pkg());
+        edtPacking.setText(orderEntryProduct.getPkg());
+        edtQty.setText(orderEntryProduct.getQty());
+        edtRate.setText(orderEntryProduct.getRate());
+        textSubTotal.setText(orderEntryProduct.getSub_total());
+        editDist.setText(orderEntryProduct.getDist_per());
+        edtDistAmt.setText(orderEntryProduct.getDist_amt());
+        String spinnerVal=orderEntryProduct.getGst_per();
+        if(spinnerVal.equalsIgnoreCase(""))
+        {
+            spinnerGST.setSelection(0, true);
+        }
+        else {
+            spinnerGST.setSelection(spinnerSelect.indexOf(spinnerVal), true);
+        }
+        edtGstAmt.setText(orderEntryProduct.getGst_amt());
+        btn_save.setVisibility(View.GONE);
+        ll_update_delete.setVisibility(View.VISIBLE);
+
     }
 
     @SuppressLint("StaticFieldLeak")
