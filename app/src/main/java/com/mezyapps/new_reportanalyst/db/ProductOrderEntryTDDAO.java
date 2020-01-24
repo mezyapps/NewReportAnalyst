@@ -19,4 +19,7 @@ public  interface ProductOrderEntryTDDAO {
 
     @Query("select * from orderentryproductdt where maxID ==:order_no")
     public List<OrderEntryProductDT> getOnlyIDValue(long order_no);
+
+    @Query("DELETE FROM  orderentryproductdt where maxID==:order_no")
+    public void  deleteSingleProduct(long order_no);
 }

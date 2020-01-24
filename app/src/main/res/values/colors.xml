@@ -156,5 +156,7 @@
     <color name="navy">#000080</color>
     <color name="background">#EEEEEE</color>
     <color name="ice_cream">#C7E5F0</color>
+    <color name="yes">#00CF63</color>
+    <color name="no">#FE3032</color>
 
 </resources>

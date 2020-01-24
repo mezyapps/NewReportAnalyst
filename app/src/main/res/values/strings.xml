@@ -37,6 +37,8 @@
     <string name="total">Total =</string>
     <string name="product_name">Product Name</string>
     <string name="order_register">Order Register</string>
+    <string name="delete_msg">Are You Sure You Want To Delete ??</string>
+    <string name="exit_msg">Are You Sure You Want To Exit ??</string>
 
 
     <string-array name="array_gst">

@@ -429,24 +429,51 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                appDatabase.getProductDAO().deleteSingleProduct(prod_long_id);
-                Toast.makeText(AddProductActivity.this," Delete Product Successfully", Toast.LENGTH_SHORT).show();
-                autoCompleteTVProduct.setText("");
-                edtBoxPacking.setText("");
-                edtPacking.setText("");
-                edtQty.setText("");
-                edtRate.setText("");
-                textSubTotal.setText("0");
-                editDist.setText("");
-                edtDistAmt.setText("");
-                edtGstAmt.setText("");
-                textFinalTotal.setText("0");
-                autoCompleteTVProduct.requestFocus();
-                spinnerGST.setSelection(0,true);
-                productList();
-                btn_save.setVisibility(View.VISIBLE);
-                ll_update_delete.setVisibility(View.GONE);
-                scrollView_add_product.pageScroll(View.FOCUS_UP);
+                final Dialog dialogAlert = new Dialog(AddProductActivity.this);
+                dialogAlert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialogAlert.setContentView(R.layout.dialog_alert_message);
+
+                dialogAlert.setCancelable(false);
+                dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                TextView textMsg = dialogAlert.findViewById(R.id.textMsg);
+                Button btnYes = dialogAlert.findViewById(R.id.btnYes);
+                Button btnNo = dialogAlert.findViewById(R.id.btnNo);
+                textMsg.setText(getResources().getString(R.string.delete_msg));
+
+                dialogAlert.show();
+                btnYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlert.dismiss();
+                        appDatabase.getProductDAO().deleteSingleProduct(prod_long_id);
+                        Toast.makeText(AddProductActivity.this," Delete Product Successfully", Toast.LENGTH_SHORT).show();
+                        autoCompleteTVProduct.setText("");
+                        edtBoxPacking.setText("");
+                        edtPacking.setText("");
+                        edtQty.setText("");
+                        edtRate.setText("");
+                        textSubTotal.setText("0");
+                        editDist.setText("");
+                        edtDistAmt.setText("");
+                        edtGstAmt.setText("");
+                        textFinalTotal.setText("0");
+                        autoCompleteTVProduct.requestFocus();
+                        spinnerGST.setSelection(0,true);
+                        productList();
+                        btn_save.setVisibility(View.VISIBLE);
+                        ll_update_delete.setVisibility(View.GONE);
+                        scrollView_add_product.pageScroll(View.FOCUS_UP);
+                    }
+                });
+
+                btnNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlert.dismiss();
+                    }
+                });
+
             }
         });
         btn_update.setOnClickListener(new View.OnClickListener() {

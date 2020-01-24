@@ -44,7 +44,19 @@ public class OrderRegisterActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(OrderRegisterActivity.this);
         recycler_view_order_register.setLayoutManager(linearLayoutManager);
 
+    }
 
+    private void events() {
+        callOrderEntry();
+        iv_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    private void callOrderEntry() {
         orderEntryProductHDArrayList.clear();
         orderEntryProductHDArrayList.addAll(appDatabase.getProductHDDAO().getAllValue());
         orderRegisterHDAdapter=new OrderRegisterHDAdapter(OrderRegisterActivity.this,orderEntryProductHDArrayList);
@@ -52,12 +64,10 @@ public class OrderRegisterActivity extends AppCompatActivity {
         orderRegisterHDAdapter.notifyDataSetChanged();
     }
 
-    private void events() {
-        iv_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        callOrderEntry();
     }
 }

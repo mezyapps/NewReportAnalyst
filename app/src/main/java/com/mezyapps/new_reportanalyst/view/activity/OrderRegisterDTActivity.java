@@ -5,10 +5,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.app.Dialog;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.db.AppDatabase;
@@ -23,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class OrderRegisterDTActivity extends AppCompatActivity {
-    private ImageView iv_back;
+    private ImageView iv_back, iv_delete_order;
     private AppDatabase appDatabase;
     private ArrayList<OrderEntryProductHD> orderEntryProductHDArrayList = new ArrayList<>();
     private ArrayList<OrderEntryProductDT> orderEntryProductDTArrayList = new ArrayList<>();
@@ -50,8 +55,9 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
         textBillNo = findViewById(R.id.textBillNo);
         textBillDate = findViewById(R.id.textBillDate);
         recycler_view_order_registerDT = findViewById(R.id.recycler_view_order_registerDT);
+        iv_delete_order = findViewById(R.id.iv_delete_order);
 
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(OrderRegisterDTActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrderRegisterDTActivity.this);
         recycler_view_order_registerDT.setLayoutManager(linearLayoutManager);
 
 
@@ -76,7 +82,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
 
         orderEntryProductDTArrayList.addAll(appDatabase.getProductDTDAO().getOnlyIDValue(orderno));
         Collections.reverse(orderEntryProductHDArrayList);
-        OrderRegisterDTAdapter orderRegisterDTAdapter=new OrderRegisterDTAdapter(OrderRegisterDTActivity.this,orderEntryProductDTArrayList);
+        OrderRegisterDTAdapter orderRegisterDTAdapter = new OrderRegisterDTAdapter(OrderRegisterDTActivity.this, orderEntryProductDTArrayList);
         recycler_view_order_registerDT.setAdapter(orderRegisterDTAdapter);
         orderRegisterDTAdapter.notifyDataSetChanged();
     }
@@ -86,6 +92,43 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        iv_delete_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialogAlert = new Dialog(OrderRegisterDTActivity.this);
+                dialogAlert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialogAlert.setContentView(R.layout.dialog_alert_message);
+
+                dialogAlert.setCancelable(false);
+                dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+                TextView textMsg = dialogAlert.findViewById(R.id.textMsg);
+                Button btnYes = dialogAlert.findViewById(R.id.btnYes);
+                Button btnNo = dialogAlert.findViewById(R.id.btnNo);
+                textMsg.setText(getResources().getString(R.string.delete_msg));
+
+                dialogAlert.show();
+                btnYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlert.dismiss();
+                        appDatabase.getProductHDDAO().deleteSingleProduct(orderno);
+                        appDatabase.getProductDTDAO().deleteSingleProduct(orderno);
+                        Toast.makeText(OrderRegisterDTActivity.this, "Delete Order Successfully", Toast.LENGTH_SHORT).show();
+                        onBackPressed();
+                    }
+                });
+
+                btnNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialogAlert.dismiss();
+                    }
+                });
+
             }
         });
     }

@@ -9,7 +9,9 @@ import androidx.room.migration.Migration;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -54,7 +57,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class OrderEnteryActivity extends AppCompatActivity  implements SelectProductDataInterface {
+public class OrderEnteryActivity extends AppCompatActivity implements SelectProductDataInterface {
 
     private ImageView iv_back;
     private TextView textDate, textTotalQty, textTotalAmt, textBalance;
@@ -64,7 +67,6 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
     private AppDatabase appDatabase;
     private OrderEntryProductAdapter orderEntryProductAdapter;
     private RecyclerView recycler_view_product;
-    private boolean doubleBackToExitPressedOnce = false;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
     private String databaseName;
@@ -74,7 +76,8 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
     private GroupPerAdapter groupPerAdapter;
     private Button btn_place_order;
     private EditText edtOrderNo;
-    private long maxval,max;
+    private long maxval, max;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,13 +161,10 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
             @SuppressLint("RestrictedApi")
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String cust_name=actv_customer_name.getText().toString().trim();
-                if (cust_name.equalsIgnoreCase(""))
-                {
+                String cust_name = actv_customer_name.getText().toString().trim();
+                if (cust_name.equalsIgnoreCase("")) {
                     fab_add_product.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     fab_add_product.setVisibility(View.VISIBLE);
                 }
             }
@@ -222,13 +222,12 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
                     orderEntryProductHD.setTotal_qty(total_qty);
 
 
-                    if (orderEntryProductArrayList.size()>0) {
+                    if (orderEntryProductArrayList.size() > 0) {
                         long idVal = appDatabase.getProductHDDAO().insertProductHD(orderEntryProductHD);
-                        boolean insert=false;
+                        boolean insert = false;
                         if (idVal != 0) {
-                            for (int i=0;i<orderEntryProductArrayList.size();i++)
-                            {
-                                OrderEntryProductDT orderEntryProductDT=new OrderEntryProductDT();
+                            for (int i = 0; i < orderEntryProductArrayList.size(); i++) {
+                                OrderEntryProductDT orderEntryProductDT = new OrderEntryProductDT();
                                 orderEntryProductDT.setProduct_id(orderEntryProductArrayList.get(i).getProduct_id());
                                 orderEntryProductDT.setProduct_name(orderEntryProductArrayList.get(i).getProduct_name());
                                 orderEntryProductDT.setBox_pkg(orderEntryProductArrayList.get(i).getBox_pkg());
@@ -243,14 +242,13 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
                                 orderEntryProductDT.setFinal_total(orderEntryProductArrayList.get(i).getFinal_total());
                                 orderEntryProductDT.setMaxId(maxval);
 
-                                 long inval=appDatabase.getProductDTDAO().insertProductDT(orderEntryProductDT);
+                                long inval = appDatabase.getProductDTDAO().insertProductDT(orderEntryProductDT);
                                 if (idVal != 0) {
-                                    insert=true;
+                                    insert = true;
                                 }
                             }
                         }
-                        if (insert)
-                        {
+                        if (insert) {
                             textBalance.setText("");
                             actv_customer_name.setText("");
                             textTotalAmt.setText("");
@@ -260,13 +258,10 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
                             orderEntryProductAdapter.notifyDataSetChanged();
                             findMax();
                             Toast.makeText(OrderEnteryActivity.this, "Order Place Sucessfully", Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
+                        } else {
                             Toast.makeText(OrderEnteryActivity.this, "Order Not Place", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    else {
+                    } else {
                         Toast.makeText(OrderEnteryActivity.this, "Please Add product", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -276,8 +271,8 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
 
     private void findMax() {
 
-        max=appDatabase.getProductHDDAO().getMaxValue();
-        maxval=max+1;
+        max = appDatabase.getProductHDDAO().getMaxValue();
+        maxval = max + 1;
 
         edtOrderNo.setText(String.valueOf(maxval));
     }
@@ -285,23 +280,20 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
     private boolean validation() {
         group_name = actv_customer_name.getText().toString().trim();
         balance = textBalance.getText().toString().trim();
-        total_qty=textTotalQty.getText().toString().trim();
-        total_amt=textTotalAmt.getText().toString().trim();
-        date=textDate.getText().toString().trim();
-        order_no=edtOrderNo.getText().toString().trim();
+        total_qty = textTotalQty.getText().toString().trim();
+        total_amt = textTotalAmt.getText().toString().trim();
+        date = textDate.getText().toString().trim();
+        order_no = edtOrderNo.getText().toString().trim();
 
 
-        if(group_name.equalsIgnoreCase(""))
-        {
+        if (group_name.equalsIgnoreCase("")) {
             actv_customer_name.setError("Please Enter Customer Name");
             actv_customer_name.requestFocus();
             return false;
-        } else if(total_amt.equalsIgnoreCase(""))
-        {
+        } else if (total_amt.equalsIgnoreCase("")) {
             Toast.makeText(OrderEnteryActivity.this, "Please Add Product", Toast.LENGTH_SHORT).show();
             return false;
-        }else if(total_qty.equalsIgnoreCase(""))
-        {
+        } else if (total_qty.equalsIgnoreCase("")) {
             Toast.makeText(OrderEnteryActivity.this, "Please Add Product", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -314,7 +306,7 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
         orderEntryProductArrayList.clear();
         orderEntryProductArrayList.addAll(appDatabase.getProductDAO().getAppProduct());
         Collections.reverse(orderEntryProductArrayList);
-        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList,false,this);
+        orderEntryProductAdapter = new OrderEntryProductAdapter(OrderEnteryActivity.this, orderEntryProductArrayList, false, this);
         recycler_view_product.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 
@@ -326,8 +318,7 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
             }
             textTotalQty.setText(String.format("%.2f", total_qty));
             textTotalAmt.setText(String.format("%.2f", total_amt));
-        }
-        else {
+        } else {
             textTotalQty.setText("");
             textTotalAmt.setText("");
         }
@@ -343,23 +334,36 @@ public class OrderEnteryActivity extends AppCompatActivity  implements SelectPro
         }
     }
 
-    // ============ End Double tab back press logic =================
     private void doubleBackPressLogic() {
-        if (!doubleBackToExitPressedOnce) {
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Your Order Product List Will Delete", Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
+            final Dialog dialogAlert = new Dialog(OrderEnteryActivity.this);
+            dialogAlert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialogAlert.setContentView(R.layout.dialog_alert_message);
 
+            dialogAlert.setCancelable(false);
+            dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+            TextView textMsg = dialogAlert.findViewById(R.id.textMsg);
+            Button btnYes = dialogAlert.findViewById(R.id.btnYes);
+            Button btnNo = dialogAlert.findViewById(R.id.btnNo);
+            textMsg.setText(getResources().getString(R.string.exit_msg));
+
+            dialogAlert.show();
+            btnYes.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
+                public void onClick(View v) {
+                    dialogAlert.dismiss();
+                    appDatabase.getProductDAO().deleteAllProduct();
+                    startActivity(new Intent(OrderEnteryActivity.this, MainActivity.class));
+                    finish();
                 }
-            }, 1000);
-        } else {
-            appDatabase.getProductDAO().deleteAllProduct();
-            startActivity(new Intent(OrderEnteryActivity.this, MainActivity.class));
-            finish();
-        }
+            });
+
+            btnNo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogAlert.dismiss();
+                }
+            });
     }
 
     @Override

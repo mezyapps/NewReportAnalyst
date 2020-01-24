@@ -30,6 +30,18 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+
+        <ImageView
+            android:id="@+id/iv_delete_order"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_vector_delete" />
+
+
     </RelativeLayout>
 
     <LinearLayout
