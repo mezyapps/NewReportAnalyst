@@ -17,21 +17,26 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
+import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.activity.LoginActivity;
+import com.mezyapps.new_reportanalyst.view.activity.OrderEnteryActivity;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
 public class ChancePasswordFragment extends Fragment {
 
     private Context mContext;
     private Button btn_update;
-    private TextInputEditText edit_username, edit_password,edit_confirm_password;
+    private TextInputEditText  edit_password,edit_confirm_password;
     private ShowProgressDialog showProgressDialog;
-
+    private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
     private ConnectionCommon connectionCommon;
+    private String user_id;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,13 +51,15 @@ public class ChancePasswordFragment extends Fragment {
     }
 
     private void find_View_IdS(View view) {
-        edit_username =view.findViewById(R.id.edit_username);
         edit_password =view.findViewById(R.id.edit_password);
         btn_update =view.findViewById(R.id.btn_update);
         edit_confirm_password =view.findViewById(R.id.edit_confirm_password);
 
         connectionCommon = new ConnectionCommon(mContext);
         showProgressDialog = new ShowProgressDialog(mContext);
+
+        userProfileModelArrayList = SharedLoginUtils.getUserProfile(mContext);
+        user_id = userProfileModelArrayList.get(0).getUser_id();
     }
 
     private void events() {
@@ -68,7 +75,6 @@ public class ChancePasswordFragment extends Fragment {
     {
         String msg= "";
         Boolean isSuccess = false;
-        String username=edit_username.getText().toString().trim();
         String password=edit_confirm_password.getText().toString().trim();
         String confirm_password=edit_confirm_password.getText().toString().trim();
 
@@ -91,16 +97,19 @@ public class ChancePasswordFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            if(username.trim().equals("")|| password.trim().equals("") || confirm_password.trim().equals("")){
-                msg = "Please enter User Name and Password";
-            } else {
+            if(password.trim().equals("") || confirm_password.trim().equals("")){
+                msg = "Please enter Password";
+            }else if(!password.equals(confirm_password))
+            {
+                msg = "Password Not Match";
+            }else {
                 if (password.equals(confirm_password)){
                     try {
                         Connection con = connectionCommon.connectionDatabase();
                         if (con == null) {
                             msg = "Error in connection with SQL server";
                         } else {
-                            String query = "UPDATE UACCESS SET  USERPASSWORD='" + password + "' WHERE  USERNAME='" + username + "' ";
+                            String query = "UPDATE UACCESS SET  USER_PASS='" + password + "' WHERE  USER_ID='" + user_id + "' ";
                             Statement stmt = con.createStatement();
                             int rs=stmt.executeUpdate(query);
                             if(rs == 1)

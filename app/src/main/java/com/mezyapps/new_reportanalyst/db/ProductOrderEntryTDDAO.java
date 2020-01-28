@@ -22,4 +22,7 @@ public  interface ProductOrderEntryTDDAO {
 
     @Query("DELETE FROM  orderentryproductdt where maxID==:order_no")
     public void  deleteSingleProduct(long order_no);
+
+    @Query("DELETE FROM  orderentryproductdt")
+    public void  deleteAllProduct();
 }
