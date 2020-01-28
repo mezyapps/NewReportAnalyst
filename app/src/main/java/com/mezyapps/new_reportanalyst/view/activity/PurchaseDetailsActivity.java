@@ -116,7 +116,7 @@ public class PurchaseDetailsActivity extends AppCompatActivity {
             }
             else
             {
-                purchaseDTAdapter.notifyDataSetChanged();
+
             }
         }
 

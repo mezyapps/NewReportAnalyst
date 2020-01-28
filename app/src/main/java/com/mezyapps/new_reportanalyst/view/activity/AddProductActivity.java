@@ -50,9 +50,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class AddProductActivity extends AppCompatActivity implements  SelectProductDataInterface {
+public class AddProductActivity extends AppCompatActivity implements SelectProductDataInterface {
     private ImageView iv_back;
-    private Button btn_save,btn_delete,btn_update;
+    private Button btn_save, btn_delete, btn_update;
     private String databaseName;
     private AutoCompleteTextView autoCompleteTVProduct;
     private ConnectionCommon connectionCommon;
@@ -62,14 +62,14 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private ProductAutoCompleteAdapter productAutoCompleteAdapter;
     private EditText edtQty, edtBoxPacking, edtPacking, edtRate, editDist, edtDistAmt, edtGstAmt;
-    private String dicountedAmt = "", prod_id;
+    private String dicountedAmt = "", prod_id="";
     private Spinner spinnerGST;
     private TextView textSubTotal, textFinalTotal, textProdCnt;
-    private String prod_name, box, pkg, qty, rate, sub_total, dist_per, dist_amt, gst_per, gst_amt, final_total;
+    private String prod_name, select_prod, box, pkg, qty, rate, sub_total, dist_per, dist_amt, gst_per, gst_amt, final_total;
     private AppDatabase appDatabase;
     private RelativeLayout rr_product_list;
     private Dialog dialog_product;
-    private ArrayList<String> spinnerSelect=new ArrayList<>();
+    private ArrayList<String> spinnerSelect = new ArrayList<>();
     private ArrayAdapter<String> spinnerArrayAdapter;
     private ScrollView scrollView_add_product;
     /*Validation*/
@@ -87,10 +87,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     }
 
     private void find_View_IdS() {
-        appDatabase = Room.databaseBuilder(AddProductActivity.this, AppDatabase.class, "ReportAnalyst")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
+        appDatabase=AppDatabase.getInStatce(AddProductActivity.this);
         showProgressDialog = new ShowProgressDialog(AddProductActivity.this);
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
@@ -114,7 +111,6 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         scrollView_add_product = findViewById(R.id.scrollView_add_product);
 
 
-
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
 
@@ -128,7 +124,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         spinnerSelect.add("18");
         spinnerSelect.add("28");
 
-        spinnerArrayAdapter= new ArrayAdapter<String>(this,   android.R.layout.simple_spinner_item, spinnerSelect);
+        spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerSelect);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
         spinnerGST.setAdapter(spinnerArrayAdapter);
     }
@@ -180,7 +176,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0,true);
+                        spinnerGST.setSelection(0, true);
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
                         scrollView_add_product.pageScroll(View.FOCUS_UP);
@@ -196,7 +192,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 ProductTableModel productTableModel = (ProductTableModel) adapterView.getItemAtPosition(position);
-                String prod_name = productTableModel.getPMSTNAME();
+                select_prod = productTableModel.getPMSTNAME();
                 prod_id = productTableModel.getPRODID();
                 String prod_rate = productTableModel.getSALERATE();
                 if (!prod_rate.equalsIgnoreCase("0.00")) {
@@ -205,9 +201,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                 String prod_pkg = productTableModel.getPACKING();
                 if (!prod_pkg.equalsIgnoreCase("")) {
                     edtPacking.setText(prod_pkg);
-                }
-                else
-                {
+                } else {
                     edtPacking.setText("1");
                 }
             }
@@ -447,7 +441,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                     public void onClick(View v) {
                         dialogAlert.dismiss();
                         appDatabase.getProductDAO().deleteSingleProduct(prod_long_id);
-                        Toast.makeText(AddProductActivity.this," Delete Product Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddProductActivity.this, " Delete Product Successfully", Toast.LENGTH_SHORT).show();
                         autoCompleteTVProduct.setText("");
                         edtBoxPacking.setText("");
                         edtPacking.setText("");
@@ -459,7 +453,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0,true);
+                        spinnerGST.setSelection(0, true);
                         productList();
                         btn_save.setVisibility(View.VISIBLE);
                         ll_update_delete.setVisibility(View.GONE);
@@ -482,10 +476,10 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                 if (validation()) {
 
                     if (gst_per.equalsIgnoreCase("Select GST")) {
-                        gst_per="";
+                        gst_per = "";
                     }
 
-                    long idVal = appDatabase.getProductDAO().getProductDataUpdate(prod_long_id,prod_name,box,pkg,qty,rate,sub_total,dist_per,gst_per,dist_amt,gst_amt,final_total);
+                    long idVal = appDatabase.getProductDAO().getProductDataUpdate(prod_long_id, prod_name, box, pkg, qty, rate, sub_total, dist_per, gst_per, dist_amt, gst_amt, final_total);
                     if (idVal != 0) {
                         Toast.makeText(AddProductActivity.this, prod_name + " Update Product Successfully", Toast.LENGTH_SHORT).show();
                         autoCompleteTVProduct.setText("");
@@ -499,7 +493,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0,true);
+                        spinnerGST.setSelection(0, true);
                         productList();
                         btn_save.setVisibility(View.VISIBLE);
                         ll_update_delete.setVisibility(View.GONE);
@@ -531,7 +525,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         dialog_product.setContentView(R.layout.dialog_product_list);
 
         RecyclerView recycler_view_product_list = dialog_product.findViewById(R.id.recycler_view_product_list);
-        ImageView iv_close_dialog=dialog_product.findViewById(R.id.iv_close_dialog);
+        ImageView iv_close_dialog = dialog_product.findViewById(R.id.iv_close_dialog);
 
         dialog_product.setCancelable(false);
         dialog_product.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -545,7 +539,7 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         recycler_view_product_list.setLayoutManager(linearLayoutManager);
 
         Collections.reverse(orderEntryProductArrayList);
-        OrderEntryProductAdapter orderEntryProductAdapter = new OrderEntryProductAdapter(AddProductActivity.this, orderEntryProductArrayList,true,this);
+        OrderEntryProductAdapter orderEntryProductAdapter = new OrderEntryProductAdapter(AddProductActivity.this, orderEntryProductArrayList, true, this);
         recycler_view_product_list.setAdapter(orderEntryProductAdapter);
         orderEntryProductAdapter.notifyDataSetChanged();
 
@@ -571,16 +565,19 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         gst_amt = edtGstAmt.getText().toString().trim();
         final_total = textFinalTotal.getText().toString().trim();
 
-        if (prod_name.equalsIgnoreCase("")) {
+        if (prod_id.equalsIgnoreCase("")) {
             autoCompleteTVProduct.setError("Select Product Name");
             autoCompleteTVProduct.requestFocus();
             return false;
-        }else if (qty.equalsIgnoreCase("")) {
+        }else if (!prod_name.equals(select_prod)) {
+            autoCompleteTVProduct.setError("Select Valid Product Name");
+            autoCompleteTVProduct.requestFocus();
+            return false;
+        } else if (qty.equalsIgnoreCase("")) {
             edtQty.setError("Enter qty");
             edtQty.requestFocus();
             return false;
-        }else if(sub_total.equalsIgnoreCase("0"))
-        {
+        } else if (sub_total.equalsIgnoreCase("0")) {
             Toast.makeText(this, "Please Check Subtotal", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -592,8 +589,8 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
     public void selectProductData(OrderEntryProduct orderEntryProduct) {
         dialog_product.dismiss();
         autoCompleteTVProduct.setText(orderEntryProduct.getProduct_name());
-        prod_id=String.valueOf(orderEntryProduct.getProduct_id());
-        prod_long_id=orderEntryProduct.getId();
+        prod_id = String.valueOf(orderEntryProduct.getProduct_id());
+        prod_long_id = orderEntryProduct.getId();
         edtBoxPacking.setText(orderEntryProduct.getBox_pkg());
         edtPacking.setText(orderEntryProduct.getPkg());
         edtQty.setText(orderEntryProduct.getQty());
@@ -601,12 +598,10 @@ public class AddProductActivity extends AppCompatActivity implements  SelectProd
         textSubTotal.setText(orderEntryProduct.getSub_total());
         editDist.setText(orderEntryProduct.getDist_per());
         edtDistAmt.setText(orderEntryProduct.getDist_amt());
-        String spinnerVal=orderEntryProduct.getGst_per();
-        if(spinnerVal.equalsIgnoreCase(""))
-        {
+        String spinnerVal = orderEntryProduct.getGst_per();
+        if (spinnerVal.equalsIgnoreCase("")) {
             spinnerGST.setSelection(0, true);
-        }
-        else {
+        } else {
             spinnerGST.setSelection(spinnerSelect.indexOf(spinnerVal), true);
         }
         edtGstAmt.setText(orderEntryProduct.getGst_amt());

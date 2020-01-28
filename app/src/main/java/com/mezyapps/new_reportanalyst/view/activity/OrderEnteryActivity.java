@@ -59,17 +59,16 @@ import java.util.Locale;
 
 public class OrderEnteryActivity extends AppCompatActivity implements SelectProductDataInterface {
 
-    private ImageView iv_back;
+    private ImageView iv_back,iv_import_table;
     private TextView textDate, textTotalQty, textTotalAmt, textBalance;
-    private String currentDate, group_id, group_name, balance, total_qty, total_amt, date, order_no;
+    private String currentDate, group_id = "", group_name, balance, total_qty, total_amt, date, order_no;
     private FloatingActionButton fab_add_product;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
-    private AppDatabase appDatabase;
     private OrderEntryProductAdapter orderEntryProductAdapter;
     private RecyclerView recycler_view_product;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
-    private String databaseName;
+    private String databaseName, select_group_name = "";
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
     private AutoCompleteTextView actv_customer_name;
     private ArrayList<GroupPerModel> groupPerModelArrayList = new ArrayList<>();
@@ -77,6 +76,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
     private Button btn_place_order;
     private EditText edtOrderNo;
     private long maxval, max;
+    private AppDatabase appDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +89,8 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
 
     @SuppressLint("RestrictedApi")
     private void find_View_IdS() {
+        appDatabase=AppDatabase.getInStatce(OrderEnteryActivity.this);
         showProgressDialog = new ShowProgressDialog(OrderEnteryActivity.this);
-        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "ReportAnalyst")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
         textDate = findViewById(R.id.textDate);
@@ -105,6 +102,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         btn_place_order = findViewById(R.id.btn_place_order);
         textBalance = findViewById(R.id.textBalance);
         edtOrderNo = findViewById(R.id.edtOrderNo);
+        iv_import_table = findViewById(R.id.iv_import_table);
 
         currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         textDate.setText(currentDate);
@@ -118,14 +116,14 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         actv_customer_name.setThreshold(0);
         fab_add_product.setVisibility(View.GONE);
 
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void events() {
         findMax();
         setAdapterData();
-        GroupPer groupPer = new GroupPer();
-        groupPer.execute("");
+        callSetGroupPer();
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,15 +131,23 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
             }
         });
 
-
         actv_customer_name.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 GroupPerModel groupPerModel = (GroupPerModel) adapterView.getItemAtPosition(position);
-                String groupname = groupPerModel.getGROUPNAME();
+                select_group_name = groupPerModel.getGROUPNAME();
                 group_id = groupPerModel.getGROUPID();
                 fab_add_product.setVisibility(View.VISIBLE);
+            }
+        });
+
+        iv_import_table.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    appDatabase.getGroupPerDAO().deleteAllGroupPer();
+                    GroupPer groupPer = new GroupPer();
+                    groupPer.execute("");
             }
         });
 
@@ -203,7 +209,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         fab_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OrderEnteryActivity.this, AddProductActivity.class));
+                startActivity(new Intent(OrderEnteryActivity.this,AddProductActivity.class));
             }
         });
         btn_place_order.setOnClickListener(new View.OnClickListener() {
@@ -269,6 +275,13 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         });
     }
 
+    private void callSetGroupPer() {
+        groupPerModelArrayList.clear();
+        groupPerModelArrayList.addAll(appDatabase.getGroupPerDAO().getAllGroupPerTable());
+        groupPerAdapter = new GroupPerAdapter(OrderEnteryActivity.this, groupPerModelArrayList);
+        actv_customer_name.setAdapter(groupPerAdapter);
+    }
+
     private void findMax() {
 
         max = appDatabase.getProductHDDAO().getMaxValue();
@@ -286,8 +299,12 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         order_no = edtOrderNo.getText().toString().trim();
 
 
-        if (group_name.equalsIgnoreCase("")) {
-            actv_customer_name.setError("Please Enter Customer Name");
+        if (group_id.equalsIgnoreCase("")) {
+            actv_customer_name.setError("Please Select Customer Name");
+            actv_customer_name.requestFocus();
+            return false;
+        } else if (!select_group_name.equals(group_name)) {
+            actv_customer_name.setError("Please Select Valid Customer Name");
             actv_customer_name.requestFocus();
             return false;
         } else if (total_amt.equalsIgnoreCase("")) {
@@ -335,35 +352,35 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
     }
 
     private void doubleBackPressLogic() {
-            final Dialog dialogAlert = new Dialog(OrderEnteryActivity.this);
-            dialogAlert.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialogAlert.setContentView(R.layout.dialog_alert_message);
+        final Dialog dialogAlert = new Dialog(OrderEnteryActivity.this);
+        dialogAlert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogAlert.setContentView(R.layout.dialog_alert_message);
 
-            dialogAlert.setCancelable(false);
-            dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialogAlert.setCancelable(false);
+        dialogAlert.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-            TextView textMsg = dialogAlert.findViewById(R.id.textMsg);
-            Button btnYes = dialogAlert.findViewById(R.id.btnYes);
-            Button btnNo = dialogAlert.findViewById(R.id.btnNo);
-            textMsg.setText(getResources().getString(R.string.exit_msg));
+        TextView textMsg = dialogAlert.findViewById(R.id.textMsg);
+        Button btnYes = dialogAlert.findViewById(R.id.btnYes);
+        Button btnNo = dialogAlert.findViewById(R.id.btnNo);
+        textMsg.setText(getResources().getString(R.string.exit_msg));
 
-            dialogAlert.show();
-            btnYes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogAlert.dismiss();
-                    appDatabase.getProductDAO().deleteAllProduct();
-                    startActivity(new Intent(OrderEnteryActivity.this, MainActivity.class));
-                    finish();
-                }
-            });
+        dialogAlert.show();
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogAlert.dismiss();
+                appDatabase.getProductDAO().deleteAllProduct();
+                startActivity(new Intent(OrderEnteryActivity.this, MainActivity.class));
+                finish();
+            }
+        });
 
-            btnNo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogAlert.dismiss();
-                }
-            });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogAlert.dismiss();
+            }
+        });
     }
 
     @Override
@@ -382,6 +399,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
 
         String msg = "";
         boolean isSuccess = false;
+        long idVal;
 
         @Override
         protected void onPreExecute() {
@@ -392,8 +410,8 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         protected void onPostExecute(String message) {
             showProgressDialog.dismissDialog();
             if (message.equalsIgnoreCase("success")) {
-                groupPerAdapter = new GroupPerAdapter(OrderEnteryActivity.this, groupPerModelArrayList);
-                actv_customer_name.setAdapter(groupPerAdapter);
+                Toast.makeText(OrderEnteryActivity.this, "Import Group Per Table", Toast.LENGTH_SHORT).show();
+                callSetGroupPer();
             } else {
                 Toast.makeText(OrderEnteryActivity.this, message, Toast.LENGTH_SHORT).show();
             }
@@ -415,7 +433,6 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
 
                     Statement stmt = connection.createStatement();
                     ResultSet resultSet = stmt.executeQuery(query);
-                    groupPerModelArrayList.clear();
                     while (resultSet.next()) {
                         String group_id = resultSet.getString("GROUPID");
                         String group_code = resultSet.getString("GROUPCODE");
@@ -447,9 +464,9 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                         groupPerModel.setE_MAIL(e_mail);
                         groupPerModel.setSALESMAN(salesman);
 
-                        groupPerModelArrayList.add(groupPerModel);
+                        idVal= appDatabase.getGroupPerDAO().addProduct(groupPerModel);
                     }
-                    if (groupPerModelArrayList.size() != 0) {
+                    if (idVal != 0) {
                         msg = "success";
                         isSuccess = true;
                     } else {

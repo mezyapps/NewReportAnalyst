@@ -116,7 +116,7 @@ public class SaleDetailsActivity extends AppCompatActivity {
                 text_total_qty.setText("Bill Qty : "+TOTAL_QTY);
                 textBillAMT.setText("Bill Amt : "+TOTAL_AMT);
             } else {
-                salesDetailsAdapter.notifyDataSetChanged();
+
             }
         }
 

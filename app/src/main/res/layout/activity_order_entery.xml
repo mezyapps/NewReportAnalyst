@@ -32,6 +32,15 @@
             android:textStyle="bold" />
 
 
+        <ImageView
+            android:id="@+id/iv_import_table"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_import_table" />
+
+
     </RelativeLayout>
 
 

@@ -1,8 +1,52 @@
 package com.mezyapps.new_reportanalyst.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName ="GroupPer")
 public class GroupPerModel {
 
-   private  String GROUPID,GROUPCODE,GROUPNAME,ADD1,ADD2,ADD3,ADD4,GRP_INFO,AREANAME,STATE_NAME,GSTNO,MOBILENO,E_MAIL,SALESMAN;
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+
+    @ColumnInfo(name = "group_id")
+    private String GROUPID;
+    @ColumnInfo(name = "group_code")
+    private String GROUPCODE;
+    @ColumnInfo(name = "group_name")
+    private String GROUPNAME;
+    @ColumnInfo(name = "add1")
+    private String ADD1;
+    @ColumnInfo(name = "add2")
+    private String ADD2;
+    @ColumnInfo(name = "add3")
+    private String ADD3;
+    @ColumnInfo(name = "add4")
+    private String ADD4;
+    @ColumnInfo(name = "grp_info")
+    private String GRP_INFO;
+    @ColumnInfo(name = "area_name")
+    private String AREANAME;
+    @ColumnInfo(name = "state_name")
+    private String STATE_NAME;
+    @ColumnInfo(name = "gst_no")
+    private String GSTNO;
+    @ColumnInfo(name = "mobile_no")
+    private String MOBILENO;
+    @ColumnInfo(name = "email")
+    private String E_MAIL;
+    @ColumnInfo(name = "salesman")
+    private String SALESMAN;
 
 
     public String getGROUPID() {

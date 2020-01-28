@@ -56,9 +56,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
         iv_no_data_found = findViewById(R.id.iv_no_data_found);
         iv_upload_db = findViewById(R.id.iv_upload_db);
         recycler_view_order_register = findViewById(R.id.recycler_view_order_register);
-        appDatabase = Room.databaseBuilder(OrderRegisterActivity.this, AppDatabase.class, "ReportAnalyst")
-                .allowMainThreadQueries()
-                .build();
+        appDatabase=AppDatabase.getInStatce(OrderRegisterActivity.this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrderRegisterActivity.this);
         recycler_view_order_register.setLayoutManager(linearLayoutManager);
 

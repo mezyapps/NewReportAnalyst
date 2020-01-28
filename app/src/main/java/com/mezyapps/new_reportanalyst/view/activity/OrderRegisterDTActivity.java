@@ -81,9 +81,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
         databaseName = userProfileModelArrayList.get(0).getDb_name();
 
 
-        appDatabase = Room.databaseBuilder(OrderRegisterDTActivity.this, AppDatabase.class, "ReportAnalyst")
-                .allowMainThreadQueries()
-                .build();
+        appDatabase=AppDatabase.getInStatce(OrderRegisterDTActivity.this);
 
         Bundle bundle = getIntent().getExtras();
         orderno = bundle.getLong("ORDER_NO");
