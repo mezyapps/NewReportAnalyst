@@ -1,18 +1,50 @@
 package com.mezyapps.new_reportanalyst.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName ="ProductTable")
 public class ProductTableModel {
 
+    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+
+    @ColumnInfo(name = "prod_id")
     private String PRODID;
+
+    @ColumnInfo(name = "pmst_code")
     private String PMSTCODE;
+
+    @ColumnInfo(name = "pmst_name")
     private String PMSTNAME;
+
+    @ColumnInfo(name = "categoryname")
     private String CATEGORYNAME;
+
+    @ColumnInfo(name = "prodpkgincase")
     private String PRODPKGINCASE;
+
+    @ColumnInfo(name = "packing")
     private String PACKING;
+
+    @ColumnInfo(name = "unitname")
     private String UNITNAME;
+
+    @ColumnInfo(name = "costprice")
     private String COSTPRICE;
+
+    @ColumnInfo(name = "salerate")
     private String SALERATE;
+
+    @ColumnInfo(name = "mrp")
     private String MRP;
+
+    @ColumnInfo(name = "hsncode")
     private String HSNCODE;
+
+    @ColumnInfo(name = "gst")
     private String GST;
 
     public String getPRODID() {
@@ -21,6 +53,10 @@ public class ProductTableModel {
 
     public void setPRODID(String PRODID) {
         this.PRODID = PRODID;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getPMSTCODE() {
@@ -105,6 +141,10 @@ public class ProductTableModel {
 
     public String getGST() {
         return GST;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public void setGST(String GST) {

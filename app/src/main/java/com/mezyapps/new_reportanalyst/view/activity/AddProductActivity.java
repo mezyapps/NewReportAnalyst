@@ -132,8 +132,12 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     @SuppressLint("ClickableViewAccessibility")
     private void events() {
         productList();
-        ProductDetails productDetails = new ProductDetails();
-        productDetails.execute("");
+
+        productTableModelArrayList.clear();
+        productTableModelArrayList.addAll(appDatabase.getPMSTDAO().getAllProduct());
+        productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddProductActivity.this, productTableModelArrayList);
+        autoCompleteTVProduct.setAdapter(productAutoCompleteAdapter);
+
         iv_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -608,92 +612,5 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         btn_save.setVisibility(View.GONE);
         ll_update_delete.setVisibility(View.VISIBLE);
 
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public class ProductDetails extends AsyncTask<String, String, String> {
-
-        String msg = "";
-        boolean isSuccess = false;
-
-        @Override
-        protected void onPreExecute() {
-            showProgressDialog.showDialog();
-        }
-
-        @Override
-        protected void onPostExecute(String message) {
-            showProgressDialog.dismissDialog();
-            if (message.equalsIgnoreCase("success")) {
-                productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddProductActivity.this, productTableModelArrayList);
-                autoCompleteTVProduct.setAdapter(productAutoCompleteAdapter);
-            } else {
-                Toast.makeText(AddProductActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
-                Connection connection = connectionCommon.checkUserConnection(databaseName);
-                if (connection == null) {
-                    msg = "Check Your Internet Access!";
-                } else {
-                    String query =
-                            " SELECT PM.PRODID, PM.PMSTCODE, PM.PMSTNAME, CT.CATEGORYNAME, PM.PRODPKGINCASE, " +
-                                    " PM.PACKING, UN.UNITNAME, PM.COSTPRICE, PM.SALERATE1 AS SALERATE, PM.MRP, HSN.HSNCODE, HSN.IGST_PER AS GST " +
-                                    " FROM PMST AS PM INNER JOIN CATEGORYMASTER AS CT ON PM.CATEGORYID=CT.CATEGORYID " +
-                                    " INNER JOIN UNITMASTER AS UN ON PM.PURCPACKING=UN.UNITID " +
-                                    " INNER JOIN HSNCODE_MASTER AS HSN ON PM.HSNCODEID=HSN.HSNCODEID ";
-
-                    Statement stmt = connection.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(query);
-                    productTableModelArrayList.clear();
-                    while (resultSet.next()) {
-                        String prod_id = resultSet.getString("PRODID");
-                        String prod_code = resultSet.getString("PMSTCODE");
-                        String prod_name = resultSet.getString("PMSTNAME");
-                        String categoryname = resultSet.getString("CATEGORYNAME");
-                        String prodpkgincase = resultSet.getString("PRODPKGINCASE");
-                        String packing = resultSet.getString("PACKING");
-                        String unitname = resultSet.getString("UNITNAME");
-                        String costprice = resultSet.getString("COSTPRICE");
-                        String salerate = resultSet.getString("SALERATE");
-                        String mrp = resultSet.getString("MRP");
-                        String hsncode = resultSet.getString("HSNCODE");
-                        String gst = resultSet.getString("GST");
-
-
-                        ProductTableModel productTableModel = new ProductTableModel();
-                        productTableModel.setPRODID(prod_id);
-                        productTableModel.setPMSTCODE(prod_code);
-                        productTableModel.setPMSTNAME(prod_name);
-                        productTableModel.setCATEGORYNAME(categoryname);
-                        productTableModel.setPRODPKGINCASE(prodpkgincase);
-                        productTableModel.setPACKING(packing);
-                        productTableModel.setUNITNAME(unitname);
-                        productTableModel.setCOSTPRICE(costprice);
-                        productTableModel.setSALERATE(salerate);
-                        productTableModel.setMRP(mrp);
-                        productTableModel.setHSNCODE(hsncode);
-                        productTableModel.setGST(gst);
-
-                        productTableModelArrayList.add(productTableModel);
-                    }
-                    if (productTableModelArrayList.size() != 0) {
-                        msg = "success";
-                        isSuccess = true;
-                    } else {
-                        msg = "fail";
-                        isSuccess = false;
-                    }
-                    connection.close();
-                }
-            } catch (Exception ex) {
-                isSuccess = false;
-                msg = ex.getMessage();
-            }
-            return msg;
-        }
     }
 }

@@ -15,8 +15,11 @@ import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProduct;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductDT;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
 import com.mezyapps.new_reportanalyst.model.GroupPerModel;
+import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 
-@Database(entities = {OrderEntryProduct.class, OrderEntryProductHD.class, OrderEntryProductDT.class, GroupPerModel.class}, version = 3)
+@Database(entities = {OrderEntryProduct.class, OrderEntryProductHD.class,
+        OrderEntryProductDT.class, GroupPerModel.class, ProductTableModel.class}, version = 4)
+
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ProductOrderDAO getProductDAO();
@@ -26,6 +29,9 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductOrderEntryTDDAO getProductDTDAO();
 
     public abstract GroupPerDao getGroupPerDAO();
+
+    public abstract  PMSTDao getPMSTDAO();
+
 
     public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override

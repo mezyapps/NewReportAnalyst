@@ -49,6 +49,7 @@ import com.mezyapps.new_reportanalyst.view.fragment.HomeFragment;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ import java.util.Locale;
 
 public class OrderEnteryActivity extends AppCompatActivity implements SelectProductDataInterface {
 
-    private ImageView iv_back,iv_import_table;
+    private ImageView iv_back, iv_import_table;
     private TextView textDate, textTotalQty, textTotalAmt, textBalance;
     private String currentDate, group_id = "", group_name, balance, total_qty, total_amt, date, order_no;
     private FloatingActionButton fab_add_product;
@@ -89,7 +90,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
 
     @SuppressLint("RestrictedApi")
     private void find_View_IdS() {
-        appDatabase=AppDatabase.getInStatce(OrderEnteryActivity.this);
+        appDatabase = AppDatabase.getInStatce(OrderEnteryActivity.this);
         showProgressDialog = new ShowProgressDialog(OrderEnteryActivity.this);
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
@@ -145,9 +146,10 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         iv_import_table.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    appDatabase.getGroupPerDAO().deleteAllGroupPer();
-                    GroupPer groupPer = new GroupPer();
-                    groupPer.execute("");
+                appDatabase.getGroupPerDAO().deleteAllGroupPer();
+                appDatabase.getPMSTDAO().deleteAllProdcut();
+                GroupPer groupPer = new GroupPer();
+                groupPer.execute("");
             }
         });
 
@@ -209,7 +211,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         fab_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OrderEnteryActivity.this,AddProductActivity.class));
+                startActivity(new Intent(OrderEnteryActivity.this, AddProductActivity.class));
             }
         });
         btn_place_order.setOnClickListener(new View.OnClickListener() {
@@ -399,7 +401,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
 
         String msg = "";
         boolean isSuccess = false;
-        long idVal;
+
 
         @Override
         protected void onPreExecute() {
@@ -409,8 +411,8 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         @Override
         protected void onPostExecute(String message) {
             showProgressDialog.dismissDialog();
-            if (message.equalsIgnoreCase("success")) {
-                Toast.makeText(OrderEnteryActivity.this, "Import Group Per Table", Toast.LENGTH_SHORT).show();
+            if (isSuccess) {
+                Toast.makeText(OrderEnteryActivity.this, message, Toast.LENGTH_SHORT).show();
                 callSetGroupPer();
             } else {
                 Toast.makeText(OrderEnteryActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -424,54 +426,24 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                 if (connection == null) {
                     msg = "Check Your Internet Access!";
                 } else {
-                    String query = " SELECT GP.GROUPID, GP.GROUPCODE, GP.GROUPNAME, GP.ADD1, GP.ADD2, GP.ADD3, GP.ADD4, GP.GRP_INFO, " +
-                            " AR.AREANAME, ST.STATE_NAME, GP.LBTNO AS GSTNO, GP.MOBILENO, GP.E_MAIL, SMN.GROUPCODE AS SALESMAN " +
-                            " FROM GROUPS_PER AS GP INNER JOIN AREAMASTER AS AR ON GP.AREAID=AR.AREAID " +
-                            " INNER JOIN STATE_MASTER AS ST ON GP.STATEID=ST.STATEID " +
-                            " INNER JOIN GROUPS_PER AS SMN ON GP.SALESMAN_ID=SMN.GROUPID " +
-                            " WHERE (GP.GRP_INFO ='SUND_DR' OR GP.GRP_INFO ='SUND_CR' OR GP.GRP_INFO ='CASH_AC') ";
-
-                    Statement stmt = connection.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(query);
-                    while (resultSet.next()) {
-                        String group_id = resultSet.getString("GROUPID");
-                        String group_code = resultSet.getString("GROUPCODE");
-                        String group_name = resultSet.getString("GROUPNAME");
-                        String add1 = resultSet.getString("ADD1");
-                        String add2 = resultSet.getString("ADD2");
-                        String add3 = resultSet.getString("ADD3");
-                        String add4 = resultSet.getString("ADD4");
-                        String grp_info = resultSet.getString("GRP_INFO");
-                        String areaname = resultSet.getString("AREANAME");
-                        String gstno = resultSet.getString("GSTNO");
-                        String mobileno = resultSet.getString("MOBILENO");
-                        String e_mail = resultSet.getString("E_MAIL");
-                        String salesman = resultSet.getString("SALESMAN");
-
-
-                        GroupPerModel groupPerModel = new GroupPerModel();
-                        groupPerModel.setGROUPID(group_id);
-                        groupPerModel.setGROUPCODE(group_code);
-                        groupPerModel.setGROUPNAME(group_name);
-                        groupPerModel.setADD1(add1);
-                        groupPerModel.setADD2(add2);
-                        groupPerModel.setADD3(add3);
-                        groupPerModel.setADD4(add4);
-                        groupPerModel.setGRP_INFO(grp_info);
-                        groupPerModel.setAREANAME(areaname);
-                        groupPerModel.setGSTNO(gstno);
-                        groupPerModel.setMOBILENO(mobileno);
-                        groupPerModel.setE_MAIL(e_mail);
-                        groupPerModel.setSALESMAN(salesman);
-
-                        idVal= appDatabase.getGroupPerDAO().addProduct(groupPerModel);
+                    boolean insertGroupPer = callInsertGroupPerTable(connection);
+                    if(insertGroupPer)
+                    {
+                        boolean insertProduct = callInsertProduct(connection);
+                        if(insertGroupPer)
+                        {
+                            msg="Import Table Successfully";
+                            isSuccess=true;
+                        }
+                        else
+                        {
+                            msg=" Not Import Table";
+                            isSuccess=false;
+                        }
                     }
-                    if (idVal != 0) {
-                        msg = "success";
-                        isSuccess = true;
-                    } else {
-                        msg = "fail";
-                        isSuccess = false;
+                    else {
+                        msg=" Not Import Table";
+                        isSuccess=false;
                     }
                     connection.close();
                 }
@@ -480,6 +452,111 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                 msg = ex.getMessage();
             }
             return msg;
+        }
+    }
+
+    private boolean callInsertProduct(Connection connection) throws SQLException {
+        long idVal = 0;
+
+        String query =
+                " SELECT PM.PRODID, PM.PMSTCODE, PM.PMSTNAME, CT.CATEGORYNAME, PM.PRODPKGINCASE, " +
+                        " PM.PACKING, UN.UNITNAME, PM.COSTPRICE, PM.SALERATE1 AS SALERATE, PM.MRP, HSN.HSNCODE, HSN.IGST_PER AS GST " +
+                        " FROM PMST AS PM INNER JOIN CATEGORYMASTER AS CT ON PM.CATEGORYID=CT.CATEGORYID " +
+                        " INNER JOIN UNITMASTER AS UN ON PM.PURCPACKING=UN.UNITID " +
+                        " INNER JOIN HSNCODE_MASTER AS HSN ON PM.HSNCODEID=HSN.HSNCODEID ";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            String prod_id = resultSet.getString("PRODID");
+            String prod_code = resultSet.getString("PMSTCODE");
+            String prod_name = resultSet.getString("PMSTNAME");
+            String categoryname = resultSet.getString("CATEGORYNAME");
+            String prodpkgincase = resultSet.getString("PRODPKGINCASE");
+            String packing = resultSet.getString("PACKING");
+            String unitname = resultSet.getString("UNITNAME");
+            String costprice = resultSet.getString("COSTPRICE");
+            String salerate = resultSet.getString("SALERATE");
+            String mrp = resultSet.getString("MRP");
+            String hsncode = resultSet.getString("HSNCODE");
+            String gst = resultSet.getString("GST");
+
+
+            ProductTableModel productTableModel = new ProductTableModel();
+            productTableModel.setPRODID(prod_id);
+            productTableModel.setPMSTCODE(prod_code);
+            productTableModel.setPMSTNAME(prod_name);
+            productTableModel.setCATEGORYNAME(categoryname);
+            productTableModel.setPRODPKGINCASE(prodpkgincase);
+            productTableModel.setPACKING(packing);
+            productTableModel.setUNITNAME(unitname);
+            productTableModel.setCOSTPRICE(costprice);
+            productTableModel.setSALERATE(salerate);
+            productTableModel.setMRP(mrp);
+            productTableModel.setHSNCODE(hsncode);
+            productTableModel.setGST(gst);
+
+            idVal = appDatabase.getPMSTDAO().addProduct(productTableModel);
+
+        }
+
+        if (idVal != 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    private boolean callInsertGroupPerTable(Connection connection) throws SQLException {
+        long idVal = 0;
+
+        String query = " SELECT GP.GROUPID, GP.GROUPCODE, GP.GROUPNAME, GP.ADD1, GP.ADD2, GP.ADD3, GP.ADD4, GP.GRP_INFO, " +
+                " AR.AREANAME, ST.STATE_NAME, GP.LBTNO AS GSTNO, GP.MOBILENO, GP.E_MAIL, SMN.GROUPCODE AS SALESMAN " +
+                " FROM GROUPS_PER AS GP INNER JOIN AREAMASTER AS AR ON GP.AREAID=AR.AREAID " +
+                " INNER JOIN STATE_MASTER AS ST ON GP.STATEID=ST.STATEID " +
+                " INNER JOIN GROUPS_PER AS SMN ON GP.SALESMAN_ID=SMN.GROUPID " +
+                " WHERE (GP.GRP_INFO ='SUND_DR' OR GP.GRP_INFO ='SUND_CR' OR GP.GRP_INFO ='CASH_AC') ";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            String group_id = resultSet.getString("GROUPID");
+            String group_code = resultSet.getString("GROUPCODE");
+            String group_name = resultSet.getString("GROUPNAME");
+            String add1 = resultSet.getString("ADD1");
+            String add2 = resultSet.getString("ADD2");
+            String add3 = resultSet.getString("ADD3");
+            String add4 = resultSet.getString("ADD4");
+            String grp_info = resultSet.getString("GRP_INFO");
+            String areaname = resultSet.getString("AREANAME");
+            String gstno = resultSet.getString("GSTNO");
+            String mobileno = resultSet.getString("MOBILENO");
+            String e_mail = resultSet.getString("E_MAIL");
+            String salesman = resultSet.getString("SALESMAN");
+
+
+            GroupPerModel groupPerModel = new GroupPerModel();
+            groupPerModel.setGROUPID(group_id);
+            groupPerModel.setGROUPCODE(group_code);
+            groupPerModel.setGROUPNAME(group_name);
+            groupPerModel.setADD1(add1);
+            groupPerModel.setADD2(add2);
+            groupPerModel.setADD3(add3);
+            groupPerModel.setADD4(add4);
+            groupPerModel.setGRP_INFO(grp_info);
+            groupPerModel.setAREANAME(areaname);
+            groupPerModel.setGSTNO(gstno);
+            groupPerModel.setMOBILENO(mobileno);
+            groupPerModel.setE_MAIL(e_mail);
+            groupPerModel.setSALESMAN(salesman);
+
+            idVal = appDatabase.getGroupPerDAO().addProduct(groupPerModel);
+        }
+        if (idVal != 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
