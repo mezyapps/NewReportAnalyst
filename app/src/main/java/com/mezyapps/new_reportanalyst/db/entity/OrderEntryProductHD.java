@@ -35,6 +35,14 @@ public class OrderEntryProductHD {
     @ColumnInfo(name = "total_amt")
     private String total_amt;
 
+    @ColumnInfo(name = "date_y_m_d")
+    private String date_y_m_d;
+
+    @ColumnInfo(name = "salesman_id")
+    private String salesman_id;
+
+    @ColumnInfo(name = "saleman_name")
+    private String salesman_name;
 
     public long getId() {
         return id;
@@ -106,5 +114,30 @@ public class OrderEntryProductHD {
 
     public void setTotal_amt(String total_amt) {
         this.total_amt = total_amt;
+    }
+
+
+    public String getDate_y_m_d() {
+        return date_y_m_d;
+    }
+
+    public void setDate_y_m_d(String date_y_m_d) {
+        this.date_y_m_d = date_y_m_d;
+    }
+
+    public String getSalesman_id() {
+        return salesman_id;
+    }
+
+    public void setSalesman_id(String salesman_id) {
+        this.salesman_id = salesman_id;
+    }
+
+    public String getSalesman_name() {
+        return salesman_name;
+    }
+
+    public void setSalesman_name(String salesman_name) {
+        this.salesman_name = salesman_name;
     }
 }

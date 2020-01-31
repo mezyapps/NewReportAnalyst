@@ -10,8 +10,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.mezyapps.new_reportanalyst.R;
+import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.view.activity.OrderEnteryActivity;
 import com.mezyapps.new_reportanalyst.view.activity.OutstandingPayableActivity;
 import com.mezyapps.new_reportanalyst.view.activity.OutstandingReceivableActivity;
@@ -19,10 +22,14 @@ import com.mezyapps.new_reportanalyst.view.activity.PurchaseReportActivity;
 import com.mezyapps.new_reportanalyst.view.activity.SalesReportActivity;
 import com.mezyapps.new_reportanalyst.view.activity.StockReportActivity;
 
+import java.util.ArrayList;
+
 public class HomeFragment extends Fragment {
 
     private Context mContext;
     private CardView cardView_Sales_Report, cardViewPurchase_Report, cardView_outstanding_receivable, cardView_outstanding_payable, cardView_stock_report, cardView_order_entry;
+    private TextView textSalesManName;
+    private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +51,18 @@ public class HomeFragment extends Fragment {
         cardView_outstanding_payable = view.findViewById(R.id.cardView_outstanding_payable);
         cardView_stock_report = view.findViewById(R.id.cardView_stock_report);
         cardView_order_entry = view.findViewById(R.id.cardView_order_entry);
+        textSalesManName = view.findViewById(R.id.textSalesManName);
+
+        userProfileModelArrayList = SharedLoginUtils.getUserProfile(mContext);
+        String salesman_name =userProfileModelArrayList.get(0).getSALESMAN_NAME();
+        if(salesman_name.equalsIgnoreCase(""))
+        {
+            textSalesManName.setText(getResources().getString(R.string.app_name));
+        }
+        else{
+            textSalesManName.setText("Hi "+salesman_name);
+        }
+
     }
 
     private void events() {

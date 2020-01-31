@@ -37,7 +37,7 @@ public class OrderRegisterDTAdapter extends RecyclerView.Adapter<OrderRegisterDT
         final OrderEntryProductDT orderEntryProduct=orderEntryProductDTArrayList.get(position);
 
         holder.textProductName.setText("("+cnt+") "+orderEntryProduct.getProduct_name());
-        holder.textDist.setText(orderEntryProduct.getDist_amt());
+        holder.textDist.setText(orderEntryProduct.getDist_amt1());
         holder.textGst.setText(orderEntryProduct.getGst_amt());
         holder.textSubTotal.setText(orderEntryProduct.getFinal_total());
         cnt++;

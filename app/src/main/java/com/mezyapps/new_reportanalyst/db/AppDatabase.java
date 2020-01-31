@@ -18,7 +18,7 @@ import com.mezyapps.new_reportanalyst.model.GroupPerModel;
 import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 
 @Database(entities = {OrderEntryProduct.class, OrderEntryProductHD.class,
-        OrderEntryProductDT.class, GroupPerModel.class, ProductTableModel.class}, version = 4)
+        OrderEntryProductDT.class, GroupPerModel.class, ProductTableModel.class}, version = 5)
 
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -33,21 +33,21 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract  PMSTDao getPMSTDAO();
 
 
-    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
-        @Override
-        public void migrate(SupportSQLiteDatabase database) {
+        public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+            @Override
+            public void migrate(SupportSQLiteDatabase database) {
 
+            }
+        };
+
+        public static AppDatabase getInStatce(Context mContext) {
+
+             AppDatabase appDatabase = Room.databaseBuilder(mContext, AppDatabase.class, "ReportAnalyst")
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
+             return appDatabase;
         }
-    };
-
-    public static AppDatabase getInStatce(Context mContext) {
-
-         AppDatabase appDatabase = Room.databaseBuilder(mContext, AppDatabase.class, "ReportAnalyst")
-                .allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build();
-         return appDatabase;
-    }
 
 }
 

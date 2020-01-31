@@ -39,8 +39,9 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<ProductTableModel> 
         TextView textProd_price = view.findViewById(R.id.textProd_price);
         LinearLayout ll_product_list = view.findViewById(R.id.ll_product_list);
 
+        textProd_price.setVisibility(View.GONE);
+     //   textProd_price.setText(productTableModel.getSALERATE1());
         textProd_Name.setText(productTableModel.getPMSTNAME());
-        textProd_price.setText(productTableModel.getSALERATE());
         view.setTag(productTableModel);
 
         if (position % 2 == 1) {

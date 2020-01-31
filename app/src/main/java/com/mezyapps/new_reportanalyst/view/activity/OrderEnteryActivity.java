@@ -61,8 +61,8 @@ import java.util.Locale;
 public class OrderEnteryActivity extends AppCompatActivity implements SelectProductDataInterface {
 
     private ImageView iv_back, iv_import_table;
-    private TextView textDate, textTotalQty, textTotalAmt, textBalance;
-    private String currentDate, group_id = "", group_name, balance, total_qty, total_amt, date, order_no;
+    private TextView textDate, textTotalQty, textTotalAmt, textBalance,textArea;
+    private String currentDate,currentDate_Y_M_D, group_id = "", group_name, balance, total_qty, total_amt, date, order_no;
     private FloatingActionButton fab_add_product;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private OrderEntryProductAdapter orderEntryProductAdapter;
@@ -78,6 +78,8 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
     private EditText edtOrderNo;
     private long maxval, max;
     private AppDatabase appDatabase;
+    private String saleman_id,saleman_name,disc1,disc2,sales_name;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,14 +104,18 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         actv_customer_name = findViewById(R.id.actv_customer_name);
         btn_place_order = findViewById(R.id.btn_place_order);
         textBalance = findViewById(R.id.textBalance);
+        textArea = findViewById(R.id.textArea);
         edtOrderNo = findViewById(R.id.edtOrderNo);
         iv_import_table = findViewById(R.id.iv_import_table);
 
         currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        currentDate_Y_M_D = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(new Date());
         textDate.setText(currentDate);
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(OrderEnteryActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
+        saleman_id = userProfileModelArrayList.get(0).getSALESMAN_ID();
+        saleman_name = userProfileModelArrayList.get(0).getSALESMAN_NAME();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrderEnteryActivity.this);
         recycler_view_product.setLayoutManager(linearLayoutManager);
@@ -139,7 +145,12 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                 GroupPerModel groupPerModel = (GroupPerModel) adapterView.getItemAtPosition(position);
                 select_group_name = groupPerModel.getGROUPNAME();
                 group_id = groupPerModel.getGROUPID();
+                textBalance.setText(groupPerModel.getBALANCE().trim());
+                textArea.setText(groupPerModel.getAREANAME().trim());
                 fab_add_product.setVisibility(View.VISIBLE);
+                disc1=groupPerModel.getDISC1();
+                disc2=groupPerModel.getDISC2();
+                sales_name=groupPerModel.getSP_NAME();
             }
         });
 
@@ -203,6 +214,10 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
                                 String dateString = format.format(calendar.getTime());
                                 textDate.setText(dateString);
+
+                                SimpleDateFormat format_y_m_d = new SimpleDateFormat("yyyy/MM/dd");
+                                currentDate_Y_M_D = format_y_m_d.format(calendar.getTime());
+
                             }
                         }, mYear, mMonth, mDay);
                 datePickerDialog.show();
@@ -211,14 +226,17 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         fab_add_product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OrderEnteryActivity.this, AddProductActivity.class));
+                startActivity(new Intent(OrderEnteryActivity.this, AddProductActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra("DISC1",disc1)
+                        .putExtra("DISC2",disc2)
+                        .putExtra("SALES",sales_name));
             }
         });
         btn_place_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (validation()) {
-
                     OrderEntryProductHD orderEntryProductHD = new OrderEntryProductHD();
                     orderEntryProductHD.setParty_id(group_id);
                     orderEntryProductHD.setMaxID(maxval);
@@ -228,6 +246,9 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                     orderEntryProductHD.setBalance(balance);
                     orderEntryProductHD.setTotal_amt(total_amt);
                     orderEntryProductHD.setTotal_qty(total_qty);
+                    orderEntryProductHD.setSalesman_id(saleman_id);
+                    orderEntryProductHD.setSalesman_name(saleman_name);
+                    orderEntryProductHD.setDate_y_m_d(currentDate_Y_M_D);
 
 
                     if (orderEntryProductArrayList.size() > 0) {
@@ -243,11 +264,14 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                                 orderEntryProductDT.setQty(orderEntryProductArrayList.get(i).getQty());
                                 orderEntryProductDT.setRate(orderEntryProductArrayList.get(i).getRate());
                                 orderEntryProductDT.setSub_total(orderEntryProductArrayList.get(i).getSub_total());
-                                orderEntryProductDT.setDist_per(orderEntryProductArrayList.get(i).getDist_per());
+                                orderEntryProductDT.setDist_per1(orderEntryProductArrayList.get(i).getDist_per1());
                                 orderEntryProductDT.setGst_per(orderEntryProductArrayList.get(i).getGst_per());
-                                orderEntryProductDT.setDist_amt(orderEntryProductArrayList.get(i).getDist_amt());
+                                orderEntryProductDT.setDist_amt1(orderEntryProductArrayList.get(i).getDist_amt1());
                                 orderEntryProductDT.setGst_amt(orderEntryProductArrayList.get(i).getGst_amt());
                                 orderEntryProductDT.setFinal_total(orderEntryProductArrayList.get(i).getFinal_total());
+                                orderEntryProductDT.setDist_per2(orderEntryProductArrayList.get(i).getDist_per2());
+                                orderEntryProductDT.setDist_amt2(orderEntryProductArrayList.get(i).getDist_amt2());
+
                                 orderEntryProductDT.setMaxId(maxval);
 
                                 long inval = appDatabase.getProductDTDAO().insertProductDT(orderEntryProductDT);
@@ -459,11 +483,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         long idVal = 0;
 
         String query =
-                " SELECT PM.PRODID, PM.PMSTCODE, PM.PMSTNAME, CT.CATEGORYNAME, PM.PRODPKGINCASE, " +
-                        " PM.PACKING, UN.UNITNAME, PM.COSTPRICE, PM.SALERATE1 AS SALERATE, PM.MRP, HSN.HSNCODE, HSN.IGST_PER AS GST " +
-                        " FROM PMST AS PM INNER JOIN CATEGORYMASTER AS CT ON PM.CATEGORYID=CT.CATEGORYID " +
-                        " INNER JOIN UNITMASTER AS UN ON PM.PURCPACKING=UN.UNITID " +
-                        " INNER JOIN HSNCODE_MASTER AS HSN ON PM.HSNCODEID=HSN.HSNCODEID ";
+                " SELECT * FROM MOB_PMST";
 
         Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery(query);
@@ -471,30 +491,48 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
             String prod_id = resultSet.getString("PRODID");
             String prod_code = resultSet.getString("PMSTCODE");
             String prod_name = resultSet.getString("PMSTNAME");
+            String categoryid = resultSet.getString("CATEGORYID");
             String categoryname = resultSet.getString("CATEGORYNAME");
-            String prodpkgincase = resultSet.getString("PRODPKGINCASE");
-            String packing = resultSet.getString("PACKING");
+            String pgmstid = resultSet.getString("PGMSTID");
+            String pgmstname = resultSet.getString("PGMSTNAME");
+            String unitid = resultSet.getString("UNITID");
             String unitname = resultSet.getString("UNITNAME");
-            String costprice = resultSet.getString("COSTPRICE");
-            String salerate = resultSet.getString("SALERATE");
+            String prodpkgincase = resultSet.getString("PRODPKGINCASE");
+            String salerate1 = resultSet.getString("SALERATE1");
+            String salerate2 = resultSet.getString("SALERATE2");
+            String salerate3 = resultSet.getString("SALERATE3");
+            String salerate4 = resultSet.getString("SALERATE4");
             String mrp = resultSet.getString("MRP");
-            String hsncode = resultSet.getString("HSNCODE");
-            String gst = resultSet.getString("GST");
-
+            String packing = resultSet.getString("PACKING");
+            String hsncodeid = resultSet.getString("HSNCODEID");
+            String hsncd = resultSet.getString("HSNCD");
+            String IGST_PER = resultSet.getString("IGST_PER");
+            String cgst_per = resultSet.getString("CGST_PER");
+            String sgst_per = resultSet.getString("SGST_PER");
 
             ProductTableModel productTableModel = new ProductTableModel();
             productTableModel.setPRODID(prod_id);
             productTableModel.setPMSTCODE(prod_code);
             productTableModel.setPMSTNAME(prod_name);
+            productTableModel.setCATEGORYID(categoryid);
             productTableModel.setCATEGORYNAME(categoryname);
-            productTableModel.setPRODPKGINCASE(prodpkgincase);
-            productTableModel.setPACKING(packing);
+            productTableModel.setPGMSTID(pgmstid);
+            productTableModel.setPGMSTNAME(pgmstname);
+            productTableModel.setUNITID(unitid);
             productTableModel.setUNITNAME(unitname);
-            productTableModel.setCOSTPRICE(costprice);
-            productTableModel.setSALERATE(salerate);
+            productTableModel.setPRODPKGINCASE(prodpkgincase);
+            productTableModel.setSALERATE1(salerate1);
+            productTableModel.setSALERATE2(salerate2);
+            productTableModel.setSALERATE3(salerate3);
+            productTableModel.setSALERATE4(salerate4);
             productTableModel.setMRP(mrp);
-            productTableModel.setHSNCODE(hsncode);
-            productTableModel.setGST(gst);
+            productTableModel.setPACKING(packing);
+            productTableModel.setHSNCODEID(hsncodeid);
+            productTableModel.setHSNCD(hsncd);
+            productTableModel.setIGST_PER(IGST_PER);
+            productTableModel.setCGST_PER(cgst_per);
+            productTableModel.setSGST_PER(sgst_per);
+
 
             idVal = appDatabase.getPMSTDAO().addProduct(productTableModel);
 
@@ -511,45 +549,62 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
     private boolean callInsertGroupPerTable(Connection connection) throws SQLException {
         long idVal = 0;
 
-        String query = " SELECT GP.GROUPID, GP.GROUPCODE, GP.GROUPNAME, GP.ADD1, GP.ADD2, GP.ADD3, GP.ADD4, GP.GRP_INFO, " +
-                " AR.AREANAME, ST.STATE_NAME, GP.LBTNO AS GSTNO, GP.MOBILENO, GP.E_MAIL, SMN.GROUPCODE AS SALESMAN " +
-                " FROM GROUPS_PER AS GP INNER JOIN AREAMASTER AS AR ON GP.AREAID=AR.AREAID " +
-                " INNER JOIN STATE_MASTER AS ST ON GP.STATEID=ST.STATEID " +
-                " INNER JOIN GROUPS_PER AS SMN ON GP.SALESMAN_ID=SMN.GROUPID " +
-                " WHERE (GP.GRP_INFO ='SUND_DR' OR GP.GRP_INFO ='SUND_CR' OR GP.GRP_INFO ='CASH_AC') ";
+        String query = " SELECT * FROM MOB_GROUPS_PER";
 
         Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery(query);
         while (resultSet.next()) {
             String group_id = resultSet.getString("GROUPID");
+            String balance = resultSet.getString("BALANCE");
             String group_code = resultSet.getString("GROUPCODE");
             String group_name = resultSet.getString("GROUPNAME");
             String add1 = resultSet.getString("ADD1");
             String add2 = resultSet.getString("ADD2");
             String add3 = resultSet.getString("ADD3");
             String add4 = resultSet.getString("ADD4");
-            String grp_info = resultSet.getString("GRP_INFO");
             String areaname = resultSet.getString("AREANAME");
+            String city_name = resultSet.getString("CITYNAME");
+            String stateid = resultSet.getString("STATEID");
+            String state_code = resultSet.getString("STATE_CODE");
+            String state_name = resultSet.getString("STATE_NAME");
             String gstno = resultSet.getString("GSTNO");
+            String telno_o = resultSet.getString("TELNO_O");
+            String telno_r = resultSet.getString("TELNO_R");
             String mobileno = resultSet.getString("MOBILENO");
-            String e_mail = resultSet.getString("E_MAIL");
-            String salesman = resultSet.getString("SALESMAN");
+            String salesman_id = resultSet.getString("SALESMAN_ID");
+            String salesman_name = resultSet.getString("SALESMAN_NAME");
+            String gst_type_id = resultSet.getString("GST_TYPE_ID");
+            String gst_type = resultSet.getString("GST_TYPE");
+            String disc1 = resultSet.getString("DISC1");
+            String disc2 = resultSet.getString("DISC2");
+            String sp_name = resultSet.getString("SP_NAME");
 
 
             GroupPerModel groupPerModel = new GroupPerModel();
             groupPerModel.setGROUPID(group_id);
+            groupPerModel.setBALANCE(balance);
             groupPerModel.setGROUPCODE(group_code);
             groupPerModel.setGROUPNAME(group_name);
             groupPerModel.setADD1(add1);
             groupPerModel.setADD2(add2);
             groupPerModel.setADD3(add3);
             groupPerModel.setADD4(add4);
-            groupPerModel.setGRP_INFO(grp_info);
             groupPerModel.setAREANAME(areaname);
+            groupPerModel.setCITYNAME(city_name);
+            groupPerModel.setSTATEID(stateid);
+            groupPerModel.setSTATE_CODE(state_code);
+            groupPerModel.setSTATE_NAME(state_name);
             groupPerModel.setGSTNO(gstno);
+            groupPerModel.setTELNO_O(telno_o);
+            groupPerModel.setTELNO_R(telno_r);
             groupPerModel.setMOBILENO(mobileno);
-            groupPerModel.setE_MAIL(e_mail);
-            groupPerModel.setSALESMAN(salesman);
+            groupPerModel.setSALESMAN_ID(salesman_id);
+            groupPerModel.setSALESMAN_NAME(salesman_name);
+            groupPerModel.setGST_TYPE_ID(gst_type_id);
+            groupPerModel.setGST_TYPE(gst_type);
+            groupPerModel.setDISC1(disc1);
+            groupPerModel.setDISC2(disc2);
+            groupPerModel.setSP_NAME(sp_name);
 
             idVal = appDatabase.getGroupPerDAO().addProduct(groupPerModel);
         }

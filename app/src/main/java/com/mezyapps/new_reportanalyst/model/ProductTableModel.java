@@ -11,41 +11,76 @@ public class ProductTableModel {
     @PrimaryKey(autoGenerate = true)
     private long id;
 
-    @ColumnInfo(name = "prod_id")
-    private String PRODID;
+    @ColumnInfo(name = "PRODID")
+    private  String PRODID;
 
-    @ColumnInfo(name = "pmst_code")
-    private String PMSTCODE;
+    @ColumnInfo(name = "PMSTCODE")
+    private  String PMSTCODE;
 
-    @ColumnInfo(name = "pmst_name")
-    private String PMSTNAME;
+    @ColumnInfo(name = "PMSTNAME")
+    private  String PMSTNAME;
 
-    @ColumnInfo(name = "categoryname")
-    private String CATEGORYNAME;
+    @ColumnInfo(name = "CATEGORYID")
+    private  String CATEGORYID;
 
-    @ColumnInfo(name = "prodpkgincase")
-    private String PRODPKGINCASE;
+    @ColumnInfo(name = "CATEGORYNAME")
+    private  String CATEGORYNAME;
 
-    @ColumnInfo(name = "packing")
-    private String PACKING;
+    @ColumnInfo(name = "PGMSTID")
+    private  String PGMSTID;
 
-    @ColumnInfo(name = "unitname")
-    private String UNITNAME;
+    @ColumnInfo(name = "PGMSTNAME")
+    private  String PGMSTNAME;
 
-    @ColumnInfo(name = "costprice")
-    private String COSTPRICE;
+    @ColumnInfo(name = "UNITID")
+    private  String UNITID;
 
-    @ColumnInfo(name = "salerate")
-    private String SALERATE;
+    @ColumnInfo(name = "UNITNAME")
+    private  String UNITNAME;
 
-    @ColumnInfo(name = "mrp")
-    private String MRP;
+    @ColumnInfo(name = "PRODPKGINCASE")
+    private  String PRODPKGINCASE;
 
-    @ColumnInfo(name = "hsncode")
-    private String HSNCODE;
+    @ColumnInfo(name = "SALERATE1")
+    private  String SALERATE1;
 
-    @ColumnInfo(name = "gst")
-    private String GST;
+    @ColumnInfo(name = "SALERATE2")
+    private  String SALERATE2;
+
+    @ColumnInfo(name = "SALERATE3")
+    private  String SALERATE3;
+
+    @ColumnInfo(name = "SALERATE4")
+    private  String SALERATE4;
+
+    @ColumnInfo(name = "MRP")
+    private  String MRP;
+
+    @ColumnInfo(name = "PACKING")
+    private  String PACKING;
+
+    @ColumnInfo(name = "HSNCODEID")
+    private  String HSNCODEID;
+
+    @ColumnInfo(name = "HSNCD")
+    private  String HSNCD;
+
+    @ColumnInfo(name = "IGST_PER")
+    private  String IGST_PER;
+
+    @ColumnInfo(name = "CGST_PER")
+    private  String CGST_PER;
+
+    @ColumnInfo(name = "SGST_PER")
+    private  String SGST_PER;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getPRODID() {
         return PRODID;
@@ -53,10 +88,6 @@ public class ProductTableModel {
 
     public void setPRODID(String PRODID) {
         this.PRODID = PRODID;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getPMSTCODE() {
@@ -75,6 +106,14 @@ public class ProductTableModel {
         this.PMSTNAME = PMSTNAME;
     }
 
+    public String getCATEGORYID() {
+        return CATEGORYID;
+    }
+
+    public void setCATEGORYID(String CATEGORYID) {
+        this.CATEGORYID = CATEGORYID;
+    }
+
     public String getCATEGORYNAME() {
         return CATEGORYNAME;
     }
@@ -83,20 +122,28 @@ public class ProductTableModel {
         this.CATEGORYNAME = CATEGORYNAME;
     }
 
-    public String getPRODPKGINCASE() {
-        return PRODPKGINCASE;
+    public String getPGMSTID() {
+        return PGMSTID;
     }
 
-    public void setPRODPKGINCASE(String PRODPKGINCASE) {
-        this.PRODPKGINCASE = PRODPKGINCASE;
+    public void setPGMSTID(String PGMSTID) {
+        this.PGMSTID = PGMSTID;
     }
 
-    public String getPACKING() {
-        return PACKING;
+    public String getPGMSTNAME() {
+        return PGMSTNAME;
     }
 
-    public void setPACKING(String PACKING) {
-        this.PACKING = PACKING;
+    public void setPGMSTNAME(String PGMSTNAME) {
+        this.PGMSTNAME = PGMSTNAME;
+    }
+
+    public String getUNITID() {
+        return UNITID;
+    }
+
+    public void setUNITID(String UNITID) {
+        this.UNITID = UNITID;
     }
 
     public String getUNITNAME() {
@@ -107,20 +154,44 @@ public class ProductTableModel {
         this.UNITNAME = UNITNAME;
     }
 
-    public String getCOSTPRICE() {
-        return COSTPRICE;
+    public String getPRODPKGINCASE() {
+        return PRODPKGINCASE;
     }
 
-    public void setCOSTPRICE(String COSTPRICE) {
-        this.COSTPRICE = COSTPRICE;
+    public void setPRODPKGINCASE(String PRODPKGINCASE) {
+        this.PRODPKGINCASE = PRODPKGINCASE;
     }
 
-    public String getSALERATE() {
-        return SALERATE;
+    public String getSALERATE1() {
+        return SALERATE1;
     }
 
-    public void setSALERATE(String SALERATE) {
-        this.SALERATE = SALERATE;
+    public void setSALERATE1(String SALERATE1) {
+        this.SALERATE1 = SALERATE1;
+    }
+
+    public String getSALERATE2() {
+        return SALERATE2;
+    }
+
+    public void setSALERATE2(String SALERATE2) {
+        this.SALERATE2 = SALERATE2;
+    }
+
+    public String getSALERATE3() {
+        return SALERATE3;
+    }
+
+    public void setSALERATE3(String SALERATE3) {
+        this.SALERATE3 = SALERATE3;
+    }
+
+    public String getSALERATE4() {
+        return SALERATE4;
+    }
+
+    public void setSALERATE4(String SALERATE4) {
+        this.SALERATE4 = SALERATE4;
     }
 
     public String getMRP() {
@@ -131,23 +202,51 @@ public class ProductTableModel {
         this.MRP = MRP;
     }
 
-    public String getHSNCODE() {
-        return HSNCODE;
+    public String getPACKING() {
+        return PACKING;
     }
 
-    public void setHSNCODE(String HSNCODE) {
-        this.HSNCODE = HSNCODE;
+    public void setPACKING(String PACKING) {
+        this.PACKING = PACKING;
     }
 
-    public String getGST() {
-        return GST;
+    public String getHSNCODEID() {
+        return HSNCODEID;
     }
 
-    public long getId() {
-        return id;
+    public void setHSNCODEID(String HSNCODEID) {
+        this.HSNCODEID = HSNCODEID;
     }
 
-    public void setGST(String GST) {
-        this.GST = GST;
+    public String getHSNCD() {
+        return HSNCD;
+    }
+
+    public void setHSNCD(String HSNCD) {
+        this.HSNCD = HSNCD;
+    }
+
+    public String getIGST_PER() {
+        return IGST_PER;
+    }
+
+    public void setIGST_PER(String IGST_PER) {
+        this.IGST_PER = IGST_PER;
+    }
+
+    public String getCGST_PER() {
+        return CGST_PER;
+    }
+
+    public void setCGST_PER(String CGST_PER) {
+        this.CGST_PER = CGST_PER;
+    }
+
+    public String getSGST_PER() {
+        return SGST_PER;
+    }
+
+    public void setSGST_PER(String SGST_PER) {
+        this.SGST_PER = SGST_PER;
     }
 }

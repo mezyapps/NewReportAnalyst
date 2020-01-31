@@ -230,8 +230,8 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                 String qty = orderEntryProductDTArrayList.get(i).getQty().trim();
                 String rate = orderEntryProductDTArrayList.get(i).getRate().trim();
                 String gross = orderEntryProductDTArrayList.get(i).getSub_total().trim();
-                String dis_per = orderEntryProductDTArrayList.get(i).getDist_per().trim();
-                String dis_amt = orderEntryProductDTArrayList.get(i).getDist_amt().trim();
+                String dis_per = orderEntryProductDTArrayList.get(i).getDist_per1().trim();
+                String dis_amt = orderEntryProductDTArrayList.get(i).getDist_amt1().trim();
                 String gst_per = orderEntryProductDTArrayList.get(i).getGst_per().trim();
                 String gst_amt = orderEntryProductDTArrayList.get(i).getGst_amt().trim();
                 String final_amt = orderEntryProductDTArrayList.get(i).getFinal_total().trim();

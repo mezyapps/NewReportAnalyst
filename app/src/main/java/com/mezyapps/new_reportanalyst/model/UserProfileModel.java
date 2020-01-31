@@ -1,9 +1,9 @@
 package com.mezyapps.new_reportanalyst.model;
 
 public class UserProfileModel {
-    private String user_id,user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID;
+    private String user_id,user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID,SALESMAN_NAME;
 
-    public UserProfileModel(String user_id, String user_name, String user_pass, String db_name, String db_user_name, String db_user_pass, String user_type, String SALESMAN_ID) {
+    public UserProfileModel(String user_id, String user_name, String user_pass, String db_name, String db_user_name, String db_user_pass, String user_type, String SALESMAN_ID,String SALESMAN_NAME) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_pass = user_pass;
@@ -12,6 +12,7 @@ public class UserProfileModel {
         this.db_user_pass = db_user_pass;
         this.user_type = user_type;
         this.SALESMAN_ID = SALESMAN_ID;
+        this.SALESMAN_NAME = SALESMAN_NAME;
     }
 
     public UserProfileModel() {
@@ -79,5 +80,13 @@ public class UserProfileModel {
 
     public void setSALESMAN_ID(String SALESMAN_ID) {
         this.SALESMAN_ID = SALESMAN_ID;
+    }
+
+    public String getSALESMAN_NAME() {
+        return SALESMAN_NAME;
+    }
+
+    public void setSALESMAN_NAME(String SALESMAN_NAME) {
+        this.SALESMAN_NAME = SALESMAN_NAME;
     }
 }

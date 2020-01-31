@@ -103,7 +103,8 @@ public class LoginActivity extends AppCompatActivity {
                             String db_user_pass = String.valueOf(resultSet.getString("DB_USER_PASS"));
                             String user_type = String.valueOf(resultSet.getString("USER_TYPE"));
                             String SALESMAN_ID = String.valueOf(resultSet.getString("SALESMAN_ID"));
-                            UserProfileModel userProfileModel=new UserProfileModel(user_id,user_name,user_pass,db_name,db_user_name,db_user_pass,user_type,SALESMAN_ID);
+                            String SALESMAN_NAME = String.valueOf(resultSet.getString("SALESMAN_NAME"));
+                            UserProfileModel userProfileModel=new UserProfileModel(user_id,user_name,user_pass,db_name,db_user_name,db_user_pass,user_type,SALESMAN_ID,SALESMAN_NAME);
                             userProfileModelArrayList.add(userProfileModel);
                             Connection connection1=connectionCommon.checkUserConnection(db_name);
                             if (connection1!=null) {

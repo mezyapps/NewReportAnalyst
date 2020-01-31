@@ -4,16 +4,15 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName ="OrderEntryProductDT")
+@Entity(tableName = "OrderEntryProductDT")
 public class OrderEntryProductDT {
-
-    @ColumnInfo(name = "id")
-    @PrimaryKey(autoGenerate = true)
-    private long id;
 
     @ColumnInfo(name = "maxID")
     private long maxId;
 
+    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    private long id;
 
     @ColumnInfo(name = "product_id")
     private long product_id;
@@ -36,15 +35,22 @@ public class OrderEntryProductDT {
     @ColumnInfo(name = "sub_total")
     private String sub_total;
 
-    @ColumnInfo(name = "dist_per")
-    private String dist_per;
+    @ColumnInfo(name = "dist_per1")
+    private String dist_per1;
+
+    @ColumnInfo(name = "dist_amt1")
+    private String dist_amt1;
+
+
+    @ColumnInfo(name = "dist_per2")
+    private String dist_per2;
+
+    @ColumnInfo(name = "dist_amt2")
+    private String dist_amt2;
+
 
     @ColumnInfo(name = "gst_per")
     private String gst_per;
-
-
-    @ColumnInfo(name = "dist_amt")
-    private String dist_amt;
 
     @ColumnInfo(name = "gst_amt")
     private String gst_amt;
@@ -117,14 +123,6 @@ public class OrderEntryProductDT {
         this.sub_total = sub_total;
     }
 
-    public String getDist_per() {
-        return dist_per;
-    }
-
-    public void setDist_per(String dist_per) {
-        this.dist_per = dist_per;
-    }
-
     public String getGst_per() {
         return gst_per;
     }
@@ -133,12 +131,36 @@ public class OrderEntryProductDT {
         this.gst_per = gst_per;
     }
 
-    public String getDist_amt() {
-        return dist_amt;
+    public String getDist_per1() {
+        return dist_per1;
     }
 
-    public void setDist_amt(String dist_amt) {
-        this.dist_amt = dist_amt;
+    public void setDist_per1(String dist_per1) {
+        this.dist_per1 = dist_per1;
+    }
+
+    public String getDist_amt1() {
+        return dist_amt1;
+    }
+
+    public void setDist_amt1(String dist_amt1) {
+        this.dist_amt1 = dist_amt1;
+    }
+
+    public String getDist_per2() {
+        return dist_per2;
+    }
+
+    public void setDist_per2(String dist_per2) {
+        this.dist_per2 = dist_per2;
+    }
+
+    public String getDist_amt2() {
+        return dist_amt2;
+    }
+
+    public void setDist_amt2(String dist_amt2) {
+        this.dist_amt2 = dist_amt2;
     }
 
     public String getGst_amt() {

@@ -15,5 +15,6 @@ public class ConstantFields {
     public static final String DB_USER_PASS="db_user_pass";
     public static final String USER_TYPE="user_type";
     public static final String SALESMAN_ID="salesman_id";
+    public static final String SALESMAN_NAME="salesman_name";
 
 }

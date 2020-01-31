@@ -61,21 +61,20 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     private ArrayList<ProductTableModel> productTableModelArrayList = new ArrayList<>();
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private ProductAutoCompleteAdapter productAutoCompleteAdapter;
-    private EditText edtQty, edtBoxPacking, edtPacking, edtRate, editDist, edtDistAmt, edtGstAmt;
-    private String dicountedAmt = "", prod_id="";
-    private Spinner spinnerGST;
-    private TextView textSubTotal, textFinalTotal, textProdCnt;
-    private String prod_name, select_prod, box, pkg, qty, rate, sub_total, dist_per, dist_amt, gst_per, gst_amt, final_total;
+    private EditText edtQty, edtBoxPacking, edtPacking, edtRate, editDist, edtDistAmt, edtGstAmt, editGst, editDist2, edtDistAmt2;
+    private String dicountedAmt = "", prod_id = "";
+    private TextView textSubTotal, textFinalTotal, textProdCnt, textHsn_no;
+    private String prod_name, select_prod, box, pkg, qty, rate, sub_total, dist_per, dist_amt, dist_per2, dist_amt2, gst_per,
+            gst_amt, final_total,hsn_no;
     private AppDatabase appDatabase;
     private RelativeLayout rr_product_list;
     private Dialog dialog_product;
-    private ArrayList<String> spinnerSelect = new ArrayList<>();
-    private ArrayAdapter<String> spinnerArrayAdapter;
     private ScrollView scrollView_add_product;
     /*Validation*/
-    boolean dist_amtv = false;
+    boolean dist_amtv = false, disc_amtv2 = false;
     private LinearLayout ll_update_delete;
     private Long prod_long_id;
+    private String disc1, disc2, sp_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     }
 
     private void find_View_IdS() {
-        appDatabase=AppDatabase.getInStatce(AddProductActivity.this);
+        appDatabase = AppDatabase.getInStatce(AddProductActivity.this);
         showProgressDialog = new ShowProgressDialog(AddProductActivity.this);
         connectionCommon = new ConnectionCommon();
         iv_back = findViewById(R.id.iv_back);
@@ -100,7 +99,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         textSubTotal = findViewById(R.id.textSubTotal);
         editDist = findViewById(R.id.editDist);
         edtDistAmt = findViewById(R.id.edtDistAmt);
-        spinnerGST = findViewById(R.id.spinnerGST);
+        editGst = findViewById(R.id.editGst);
         textFinalTotal = findViewById(R.id.textFinalTotal);
         edtGstAmt = findViewById(R.id.edtGstAmt);
         rr_product_list = findViewById(R.id.rr_product_list);
@@ -108,8 +107,23 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         ll_update_delete = findViewById(R.id.ll_update_delete);
         btn_delete = findViewById(R.id.btn_delete);
         btn_update = findViewById(R.id.btn_update);
+        textHsn_no = findViewById(R.id.textHsn_no);
+        editDist2 = findViewById(R.id.editDist2);
+        edtDistAmt2 = findViewById(R.id.edtDistAmt2);
         scrollView_add_product = findViewById(R.id.scrollView_add_product);
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            disc1 = extras.getString("DISC1");
+            disc2 = extras.getString("DISC2");
+            sp_name = extras.getString("SALES");
+            if (disc1.equalsIgnoreCase(""))
+                disc1 = "0.0";
+            if (disc2.equalsIgnoreCase(""))
+                disc2 = "0.0";
+            editDist.setText(disc1);
+            editDist2.setText(disc2);
+        }
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
@@ -117,16 +131,6 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
 
         autoCompleteTVProduct.setThreshold(0);
 
-        spinnerSelect.add("Select GST");
-        spinnerSelect.add("3");
-        spinnerSelect.add("5");
-        spinnerSelect.add("12");
-        spinnerSelect.add("18");
-        spinnerSelect.add("28");
-
-        spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerSelect);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
-        spinnerGST.setAdapter(spinnerArrayAdapter);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -156,15 +160,14 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     orderEntryProduct.setQty(qty);
                     orderEntryProduct.setRate(rate);
                     orderEntryProduct.setSub_total(sub_total);
-                    orderEntryProduct.setDist_per(dist_per);
-                    orderEntryProduct.setDist_amt(dist_amt);
-                    if (gst_per.equalsIgnoreCase("Select GST")) {
-                        orderEntryProduct.setGst_per("");
-                    } else {
-                        orderEntryProduct.setGst_per(gst_per);
-                    }
+                    orderEntryProduct.setDist_per1(dist_per);
+                    orderEntryProduct.setDist_amt1(dist_amt);
+                    orderEntryProduct.setDist_per2(dist_per2);
+                    orderEntryProduct.setDist_amt2(dist_amt2);
+                    orderEntryProduct.setGst_per(gst_per);
                     orderEntryProduct.setGst_amt(gst_amt);
                     orderEntryProduct.setFinal_total(final_total);
+                    orderEntryProduct.setHsn_no(hsn_no);
 
                     long idVal = appDatabase.getProductDAO().addProduct(orderEntryProduct);
                     if (idVal != 0) {
@@ -175,12 +178,12 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         edtQty.setText("");
                         edtRate.setText("");
                         textSubTotal.setText("0");
-                        editDist.setText("");
                         edtDistAmt.setText("");
                         edtGstAmt.setText("");
+                        edtDistAmt2.setText("");
                         textFinalTotal.setText("0");
+                        textHsn_no.setText("");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0, true);
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
                         scrollView_add_product.pageScroll(View.FOCUS_UP);
@@ -198,16 +201,33 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                 ProductTableModel productTableModel = (ProductTableModel) adapterView.getItemAtPosition(position);
                 select_prod = productTableModel.getPMSTNAME();
                 prod_id = productTableModel.getPRODID();
-                String prod_rate = productTableModel.getSALERATE();
+                String prod_rate = "0";
+                String sp_name1 = sp_name.toString().replaceAll("\\s", "").toLowerCase().trim();
+
+                if (sp_name1.equalsIgnoreCase("SALERATE1")) {
+                    prod_rate = productTableModel.getSALERATE1();
+                } else if (sp_name1.equalsIgnoreCase("SALERATE2")) {
+                    prod_rate = productTableModel.getSALERATE2();
+                } else if (sp_name1.equalsIgnoreCase("SALERATE3")) {
+                    prod_rate = productTableModel.getSALERATE3();
+                } else if (sp_name1.equalsIgnoreCase("SALERATE4")) {
+                    prod_rate = productTableModel.getSALERATE4();
+                }
+
                 if (!prod_rate.equalsIgnoreCase("0.00")) {
                     edtRate.setText(prod_rate);
                 }
+
+
                 String prod_pkg = productTableModel.getPACKING();
                 if (!prod_pkg.equalsIgnoreCase("")) {
                     edtPacking.setText(prod_pkg);
                 } else {
                     edtPacking.setText("1");
                 }
+                String gst_per = productTableModel.getIGST_PER();
+                editGst.setText(gst_per);
+                textHsn_no.setText(productTableModel.getHSNCD());
             }
         });
 
@@ -229,19 +249,13 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                 String strQty = edtQty.getText().toString().trim();
                 String strRate = edtRate.getText().toString().trim();
                 if (!strQty.equalsIgnoreCase("") && !strRate.equalsIgnoreCase("")) {
-                    double qty = Double.parseDouble(edtQty.getText().toString().trim());
-                    double rate = Double.parseDouble(edtRate.getText().toString().trim());
-                    double total = qty * rate;
-                    String totalStr = String.format("%.2f", total);
-                    textSubTotal.setText(totalStr);
-                    textFinalTotal.setText(totalStr);
+                    callCalucatePrice();
                 } else {
                     textSubTotal.setText("0");
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
+                    edtDistAmt2.setText("");
                     edtGstAmt.setText("");
-                    editDist.setText("");
-                    spinnerGST.setSelection(0, true);
                 }
 
             }
@@ -263,16 +277,12 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                 String strRate = edtRate.getText().toString().trim();
                 String strQty = edtQty.getText().toString().trim();
                 if ((!strQty.equalsIgnoreCase("")) && (!strRate.equalsIgnoreCase(""))) {
-                    double qty = Double.parseDouble(edtQty.getText().toString().trim());
-                    double rate = Double.parseDouble(edtRate.getText().toString().trim());
-                    double total = qty * rate;
-                    String totalStr = String.format("%.2f", total);
-                    textSubTotal.setText(totalStr);
-                    textFinalTotal.setText(totalStr);
+                    callCalucatePrice();
                 } else {
                     textSubTotal.setText("0");
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
+                    edtDistAmt2.setText("");
                     edtGstAmt.setText("");
                 }
 
@@ -304,6 +314,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     textSubTotal.setText("0");
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
+                    edtDistAmt2.setText("");
                     edtGstAmt.setText("");
                 }
 
@@ -335,6 +346,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     textSubTotal.setText("0");
                     textFinalTotal.setText("0");
                     edtDistAmt.setText("");
+                    edtDistAmt2.setText("");
                     edtGstAmt.setText("");
                 }
 
@@ -361,13 +373,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         double subtotalD = Double.parseDouble(textSubTotal.getText().toString().trim());
                         double dist = Double.parseDouble(distStr);
                         if (dist < 100) {
-                            double total = subtotalD / 100;
-                            double finaldist = total * dist;
-                            dicountedAmt = String.valueOf(subtotalD - finaldist);
-                            String totalStr = String.format("%.2f", finaldist);
-                            edtDistAmt.setText(totalStr);
-                            String finalTotal = String.format("%.2f", Double.parseDouble(dicountedAmt));
-                            textFinalTotal.setText(finalTotal);
+                            callCalucatePrice();
                         } else {
                             editDist.setError("Discount Not more than 100");
                             editDist.requestFocus();
@@ -375,11 +381,11 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         }
                     } else {
                         edtDistAmt.setText("");
-                        textFinalTotal.setText(subtotal);
                     }
                 } else {
                     textSubTotal.setText("0");
                     textFinalTotal.setText("0");
+                    edtDistAmt2.setText("");
                     edtDistAmt.setText("");
                     edtGstAmt.setText("");
 
@@ -392,28 +398,42 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
 
             }
         });
-
-        spinnerGST.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        editDist2.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-                String selectStr = spinnerGST.getSelectedItem().toString();
-                if (!selectStr.equalsIgnoreCase("Select GST")) {
-                    dicountedAmt = textFinalTotal.getText().toString();
-                    if (!dicountedAmt.equalsIgnoreCase("")) {
-                        double dictAmt = Double.parseDouble(dicountedAmt);
-                        double gst = Double.parseDouble(selectStr);
-                        double total = dictAmt / 100;
-                        double finalgst = total * gst;
-                        String finalTotal = String.format("%.2f", dictAmt + finalgst);
-                        String totalStr = String.format("%.2f", finalgst);
-                        textFinalTotal.setText(finalTotal);
-                        edtGstAmt.setText(totalStr);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String subtotal = textSubTotal.getText().toString().trim();
+                String distStr = editDist2.getText().toString().trim();
+                if ((!subtotal.equalsIgnoreCase("0"))) {
+                    if (!distStr.equalsIgnoreCase("")) {
+                        double subtotalD = Double.parseDouble(textSubTotal.getText().toString().trim());
+                        double dist = Double.parseDouble(distStr);
+                        if (dist < 100) {
+                            callCalucatePrice();
+                        } else {
+                            editDist2.setError("Discount Not more than 100");
+                            editDist2.requestFocus();
+                            disc_amtv2 = false;
+                        }
+                    } else {
+                        edtDistAmt2.setText("");
                     }
+                } else {
+                    textSubTotal.setText("0");
+                    textFinalTotal.setText("0");
+                    edtDistAmt2.setText("");
+                    edtDistAmt.setText("");
+                    edtGstAmt.setText("");
+
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -452,12 +472,12 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         edtQty.setText("");
                         edtRate.setText("");
                         textSubTotal.setText("0");
-                        editDist.setText("");
                         edtDistAmt.setText("");
+                        edtDistAmt2.setText("");
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
+                        textHsn_no.setText("");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0, true);
                         productList();
                         btn_save.setVisibility(View.VISIBLE);
                         ll_update_delete.setVisibility(View.GONE);
@@ -478,12 +498,23 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
             @Override
             public void onClick(View v) {
                 if (validation()) {
+                    OrderEntryProduct orderEntryProduct = new OrderEntryProduct();
+                    orderEntryProduct.setId(prod_long_id);
+                    orderEntryProduct.setProduct_name(prod_name);
+                    orderEntryProduct.setBox_pkg(box);
+                    orderEntryProduct.setPkg(pkg);
+                    orderEntryProduct.setQty(qty);
+                    orderEntryProduct.setRate(rate);
+                    orderEntryProduct.setSub_total(sub_total);
+                    orderEntryProduct.setDist_per1(dist_per);
+                    orderEntryProduct.setDist_amt1(dist_amt);
+                    orderEntryProduct.setDist_per2(dist_per2);
+                    orderEntryProduct.setDist_amt2(dist_amt2);
+                    orderEntryProduct.setGst_per(gst_per);
+                    orderEntryProduct.setGst_amt(gst_amt);
+                    orderEntryProduct.setFinal_total(final_total);
 
-                    if (gst_per.equalsIgnoreCase("Select GST")) {
-                        gst_per = "";
-                    }
-
-                    long idVal = appDatabase.getProductDAO().getProductDataUpdate(prod_long_id, prod_name, box, pkg, qty, rate, sub_total, dist_per, gst_per, dist_amt, gst_amt, final_total);
+                    long idVal = appDatabase.getProductDAO().getProductDataUpdate(orderEntryProduct);
                     if (idVal != 0) {
                         Toast.makeText(AddProductActivity.this, prod_name + " Update Product Successfully", Toast.LENGTH_SHORT).show();
                         autoCompleteTVProduct.setText("");
@@ -492,12 +523,12 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         edtQty.setText("");
                         edtRate.setText("");
                         textSubTotal.setText("0");
-                        editDist.setText("");
                         edtDistAmt.setText("");
+                        edtDistAmt2.setText("");
                         edtGstAmt.setText("");
                         textFinalTotal.setText("0");
                         autoCompleteTVProduct.requestFocus();
-                        spinnerGST.setSelection(0, true);
+                        textHsn_no.setText("");
                         productList();
                         btn_save.setVisibility(View.VISIBLE);
                         ll_update_delete.setVisibility(View.GONE);
@@ -510,6 +541,58 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
             }
         });
 
+    }
+
+    private void callCalucatePrice() {
+
+        double qty = Double.parseDouble(edtQty.getText().toString().trim());
+        double rate = Double.parseDouble(edtRate.getText().toString().trim());
+        double total = qty * rate;
+
+
+
+        /*Discount Calculation AND GST Calculation*/
+        String discStr1 = editDist.getText().toString();
+        String discStr2 = editDist2.getText().toString();
+
+        if (discStr1.equalsIgnoreCase("")) {
+            discStr1 = "0";
+        }
+        if (discStr2.equalsIgnoreCase("")) {
+            discStr2 = "0";
+        }
+
+        double disc1 = Double.parseDouble(discStr1);
+        double disc2 = Double.parseDouble(discStr2);
+        double subTotal = total;
+        double discAmt1 = (subTotal / 100) * disc1;
+        double subTotal1 = subTotal - discAmt1;
+        double discAmt2 = (subTotal1 / 100) * disc2;
+        double subTotal2 = subTotal1 - discAmt2;
+
+        /*GST Calculation*/
+        String gstStr = editGst.getText().toString().trim();
+        if (gstStr.equalsIgnoreCase("0")) {
+            gstStr = "0";
+        }
+        Double gst = Double.parseDouble(gstStr);
+        double gstAMT = (subTotal2 / 100) * gst;
+        double finaltotal = subTotal2 + gstAMT;
+
+        String subTotalStr = String.format("%.2f", total);
+        String finalTotalStr = String.format("%.2f", finaltotal);
+
+        String discAmtStr1 = String.format("%.2f", discAmt1);
+        String discAmtStr2 = String.format("%.2f", discAmt2);
+        String gstAmtStr = String.format("%.2f", gstAMT);
+
+        edtDistAmt.setText(discAmtStr1);
+        edtDistAmt2.setText(discAmtStr2);
+        edtGstAmt.setText(gstAmtStr);
+
+
+        textSubTotal.setText(subTotalStr);
+        textFinalTotal.setText(finalTotalStr);
     }
 
     private void productList() {
@@ -565,15 +648,18 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         sub_total = textSubTotal.getText().toString().trim();
         dist_per = editDist.getText().toString().trim();
         dist_amt = edtDistAmt.getText().toString().trim();
-        gst_per = spinnerGST.getSelectedItem().toString();
+        dist_per2 = editDist2.getText().toString().trim();
+        dist_amt2 = edtDistAmt2.getText().toString().trim();
+        gst_per = editGst.getText().toString();
         gst_amt = edtGstAmt.getText().toString().trim();
         final_total = textFinalTotal.getText().toString().trim();
+        hsn_no=textHsn_no.getText().toString().trim();
 
         if (prod_id.equalsIgnoreCase("")) {
             autoCompleteTVProduct.setError("Select Product Name");
             autoCompleteTVProduct.requestFocus();
             return false;
-        }else if (!prod_name.equals(select_prod)) {
+        } else if (!prod_name.equals(select_prod)) {
             autoCompleteTVProduct.setError("Select Valid Product Name");
             autoCompleteTVProduct.requestFocus();
             return false;
@@ -581,7 +667,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
             edtQty.setError("Enter qty");
             edtQty.requestFocus();
             return false;
-        } else if (sub_total.equalsIgnoreCase("0")) {
+        } else if (sub_total.equalsIgnoreCase("0.0")) {
             Toast.makeText(this, "Please Check Subtotal", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -600,14 +686,13 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         edtQty.setText(orderEntryProduct.getQty());
         edtRate.setText(orderEntryProduct.getRate());
         textSubTotal.setText(orderEntryProduct.getSub_total());
-        editDist.setText(orderEntryProduct.getDist_per());
-        edtDistAmt.setText(orderEntryProduct.getDist_amt());
-        String spinnerVal = orderEntryProduct.getGst_per();
-        if (spinnerVal.equalsIgnoreCase("")) {
-            spinnerGST.setSelection(0, true);
-        } else {
-            spinnerGST.setSelection(spinnerSelect.indexOf(spinnerVal), true);
-        }
+        editDist.setText(orderEntryProduct.getDist_per1());
+        edtDistAmt.setText(orderEntryProduct.getDist_amt1());
+        editDist2.setText(orderEntryProduct.getDist_per2());
+        edtDistAmt2.setText(orderEntryProduct.getDist_amt2());
+        textHsn_no.setText(orderEntryProduct.getHsn_no());
+        String gst_per = orderEntryProduct.getGst_per();
+        editGst.setText(gst_per);
         edtGstAmt.setText(orderEntryProduct.getGst_amt());
         btn_save.setVisibility(View.GONE);
         ll_update_delete.setVisibility(View.VISIBLE);

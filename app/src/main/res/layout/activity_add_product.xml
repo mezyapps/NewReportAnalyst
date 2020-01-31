@@ -35,27 +35,27 @@
             android:id="@+id/rr_product_list"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-           android:layout_alignParentEnd="true">
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/iv_basket"
                 android:layout_marginStart="-8dp"
                 android:layout_marginTop="10dp"
-                android:elevation="1dp"
-                android:background="@drawable/shape_circle_cart">
+                android:layout_toEndOf="@+id/iv_basket"
+                android:background="@drawable/shape_circle_cart"
+                android:elevation="1dp">
 
                 <TextView
+                    android:id="@+id/textProdCnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="0"
+                    android:layout_centerHorizontal="true"
                     android:maxLength="2"
-                    android:id="@+id/textProdCnt"
-                    android:textColor="@color/white"
-                    android:layout_centerHorizontal="true"/>
+                    android:text="0"
+                    android:textColor="@color/white" />
 
 
             </RelativeLayout>
@@ -73,9 +73,9 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/scrollView_add_product"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView_add_product">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -102,12 +102,34 @@
                     android:layout_marginTop="5dp"
                     android:background="@drawable/shape_edit_text"
                     android:hint="Product Name"
+                    android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:padding="10dp"
-                    android:imeOptions="actionNext"/>
+                    android:padding="10dp" />
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HSN NO : "
+                    android:textColor="@color/app_color"
+                    android:textSize="16sp" />
+
+
+                <TextView
+                    android:id="@+id/textHsn_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/app_color"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -142,8 +164,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal"
-                            android:imeOptions="actionNext"/>
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -173,8 +195,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal"
-                            android:imeOptions="actionNext"/>
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -214,9 +236,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
+                            android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:maxLength="5"
-                            android:imeOptions="actionNext"/>
+                            android:maxLength="5" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -246,8 +268,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal"
-                            android:imeOptions="actionNext" />
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -316,7 +338,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Disc %"
+                            android:text="Disc1 %"
                             android:textSize="18sp" />
 
 
@@ -325,9 +347,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
+                            android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:imeOptions="actionNone"
-                            android:nextFocusDown="@+id/spinnerGST"/>
+                            android:nextFocusDown="@+id/spinnerGST" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -357,7 +379,84 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:inputType="numberDecimal"/>
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:inputType="numberDecimal" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Disc2 %"
+                            android:textSize="18sp" />
+
+
+                        <EditText
+                            android:id="@+id/editDist2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:imeOptions="actionNext"
+                            android:inputType="number" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableEnd="@drawable/ic_money"
+                            android:textSize="18sp" />
+
+
+                        <EditText
+                            android:id="@+id/edtDistAmt2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:inputType="numberDecimal" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -392,17 +491,17 @@
                             android:text="GST %"
                             android:textSize="18sp" />
 
-                        <LinearLayout
+
+                        <EditText
+                            android:id="@+id/editGst"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/shape_spinner">
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:imeOptions="actionNext"
+                            android:inputType="number" />
 
-                            <Spinner
-                                android:id="@+id/spinnerGST"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="text" />
-                        </LinearLayout>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -432,13 +531,16 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
+                            android:clickable="false"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:imeOptions="actionNone"
                             android:inputType="numberDecimal" />
                     </LinearLayout>
 
                 </LinearLayout>
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -513,14 +615,14 @@
                 android:textColor="@color/white" />
 
             <LinearLayout
+                android:id="@+id/ll_update_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="20dp"
-                android:weightSum="2"
-                android:id="@+id/ll_update_delete"
+                android:orientation="horizontal"
+                android:padding="10dp"
                 android:visibility="gone"
-                android:padding="10dp">
+                android:weightSum="2">
 
 
                 <Button
@@ -528,10 +630,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_shape"
                     android:text="Delete"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
                     android:textColor="@color/white" />
 
                 <Button
@@ -540,9 +642,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
+                    android:layout_weight="1"
                     android:background="@drawable/btn_shape"
                     android:text="Update"
-                    android:layout_weight="1"
                     android:textColor="@color/white" />
 
 
