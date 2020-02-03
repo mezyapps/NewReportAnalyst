@@ -138,7 +138,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
                     msg = "Error in connection with SQL server";
                 } else {
                     int maxID = findMaxID(con);
-                    boolean insertHD = callInsertHD(con,maxID);
+                    boolean insertHD = callInsertHD(con, maxID);
                     if (insertHD) {
                         msg = "Order Place Successfully";
                         isSuccess = true;
@@ -167,14 +167,6 @@ public class OrderRegisterActivity extends AppCompatActivity {
         ResultSet resultSet = stmt.executeQuery(query);
         while (resultSet.next()) {
             maxID = resultSet.getInt("MAXID");
-        }
-        if(maxID==0)
-        {
-            maxID=1;
-        }
-        else
-        {
-            maxID=maxID+1;
         }
         return maxID;
     }
@@ -241,6 +233,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
         boolean isInsert = false;
         if (orderEntryProductHDArrayList.size() > 0) {
             for (int i = 0; i < orderEntryProductHDArrayList.size(); i++) {
+                maxID = maxID + 1;
                 String group_name = orderEntryProductHDArrayList.get(i).getParty_name().trim();
                 String total_qty = orderEntryProductHDArrayList.get(i).getTotal_qty().trim();
                 String date = orderEntryProductHDArrayList.get(i).getDate().trim();
@@ -255,11 +248,11 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String order_no = orderEntryProductHDArrayList.get(i).getOrder_no();
 
                 String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME) " +
-                        "values(" + maxID + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
+                        "values(" + maxID + ",'" + date + "','" + date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'" + saleman_name + "')";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
-                    boolean insertDT = callInsertDT(con, entryid,maxID);
+                    boolean insertDT = callInsertDT(con, entryid, maxID);
                     if (insertDT) {
                         isInsert = true;
                     } else {
