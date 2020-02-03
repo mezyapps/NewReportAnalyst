@@ -36,7 +36,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
     private OrderRegisterHDAdapter orderRegisterHDAdapter;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
-    private String databaseName;
+    private String databaseName, saleman_id, saleman_name;
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
     private ArrayList<OrderEntryProductDT> orderEntryProductDTArrayList = new ArrayList<>();
 
@@ -56,12 +56,14 @@ public class OrderRegisterActivity extends AppCompatActivity {
         iv_no_data_found = findViewById(R.id.iv_no_data_found);
         iv_upload_db = findViewById(R.id.iv_upload_db);
         recycler_view_order_register = findViewById(R.id.recycler_view_order_register);
-        appDatabase=AppDatabase.getInStatce(OrderRegisterActivity.this);
+        appDatabase = AppDatabase.getInStatce(OrderRegisterActivity.this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(OrderRegisterActivity.this);
         recycler_view_order_register.setLayoutManager(linearLayoutManager);
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(OrderRegisterActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
+        saleman_id = userProfileModelArrayList.get(0).getSALESMAN_ID();
+        saleman_name = userProfileModelArrayList.get(0).getSALESMAN_NAME();
     }
 
     private void events() {
@@ -78,8 +80,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 if (orderEntryProductHDArrayList.size() > 0) {
                     UploadDB uploadDB = new UploadDB();
                     uploadDB.execute("");
-                }
-                else {
+                } else {
                     Toast.makeText(OrderRegisterActivity.this, "No Order Added", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -170,6 +171,8 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String gross = orderEntryProductDTArrayList.get(i).getSub_total().trim();
                 String dis_per = orderEntryProductDTArrayList.get(i).getDist_per1().trim();
                 String dis_amt = orderEntryProductDTArrayList.get(i).getDist_amt1().trim();
+                String dis_per2 = orderEntryProductDTArrayList.get(i).getDist_per2().trim();
+                String dis_amt2 = orderEntryProductDTArrayList.get(i).getDist_amt2().trim();
                 String gst_per = orderEntryProductDTArrayList.get(i).getGst_per().trim();
                 String gst_amt = orderEntryProductDTArrayList.get(i).getGst_amt().trim();
                 String final_amt = orderEntryProductDTArrayList.get(i).getFinal_total().trim();
@@ -189,9 +192,9 @@ public class OrderRegisterActivity extends AppCompatActivity {
                     gst_amt = "0";
                 }
 
-                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,GST_PER,GST_AMT,FINAL_AMT) " +
+                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT) " +
                         "values(" + entryid + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
-                        dis_amt + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
+                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
@@ -217,6 +220,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String group_name = orderEntryProductHDArrayList.get(i).getParty_name().trim();
                 String total_qty = orderEntryProductHDArrayList.get(i).getTotal_qty().trim();
                 String date = orderEntryProductHDArrayList.get(i).getDate().trim();
+                String date_y_m_d = orderEntryProductHDArrayList.get(i).getDate_y_m_d().trim();
                 String total_amt = orderEntryProductHDArrayList.get(i).getTotal_amt().trim();
                 String entryid = String.valueOf(orderEntryProductHDArrayList.get(i).getMaxID());
                 String balance = orderEntryProductHDArrayList.get(i).getBalance().trim();
@@ -226,8 +230,8 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String group_id = orderEntryProductHDArrayList.get(i).getParty_id();
                 String order_no = orderEntryProductHDArrayList.get(i).getOrder_no();
 
-                String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT) " +
-                        "values(" + entryid + ",'" + date + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + ")";
+                String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME) " +
+                        "values(" + entryid + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {

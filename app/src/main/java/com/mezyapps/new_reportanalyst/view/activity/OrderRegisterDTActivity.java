@@ -46,7 +46,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
     private RecyclerView recycler_view_order_registerDT;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
-    private String databaseName;
+    private String databaseName,saleman_id, saleman_name;
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
 
     @Override
@@ -79,7 +79,8 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(OrderRegisterDTActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
-
+        saleman_id = userProfileModelArrayList.get(0).getSALESMAN_ID().trim();
+        saleman_name = userProfileModelArrayList.get(0).getSALESMAN_NAME().trim();
 
         appDatabase=AppDatabase.getInStatce(OrderRegisterDTActivity.this);
 
@@ -232,6 +233,8 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                 String gross = orderEntryProductDTArrayList.get(i).getSub_total().trim();
                 String dis_per = orderEntryProductDTArrayList.get(i).getDist_per1().trim();
                 String dis_amt = orderEntryProductDTArrayList.get(i).getDist_amt1().trim();
+                String dis_per2 = orderEntryProductDTArrayList.get(i).getDist_per1().trim();
+                String dis_amt2 = orderEntryProductDTArrayList.get(i).getDist_amt1().trim();
                 String gst_per = orderEntryProductDTArrayList.get(i).getGst_per().trim();
                 String gst_amt = orderEntryProductDTArrayList.get(i).getGst_amt().trim();
                 String final_amt = orderEntryProductDTArrayList.get(i).getFinal_total().trim();
@@ -251,9 +254,9 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                     gst_amt = "0";
                 }
 
-                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,GST_PER,GST_AMT,FINAL_AMT) " +
+                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT) " +
                         "values(" + entryid + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
-                        dis_amt + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
+                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
@@ -278,6 +281,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
             String group_name = orderEntryProductHDArrayList.get(0).getParty_name().trim();
             String total_qty = orderEntryProductHDArrayList.get(0).getTotal_qty().trim();
             String date = orderEntryProductHDArrayList.get(0).getDate().trim();
+            String date_y_m_d = orderEntryProductHDArrayList.get(0).getDate_y_m_d().trim();
             String total_amt = orderEntryProductHDArrayList.get(0).getTotal_amt().trim();
             String entryid = String.valueOf(orderEntryProductHDArrayList.get(0).getMaxID());
             String balance = orderEntryProductHDArrayList.get(0).getBalance().trim();
@@ -287,8 +291,8 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
             String group_id = orderEntryProductHDArrayList.get(0).getParty_id();
             String order_no = orderEntryProductHDArrayList.get(0).getOrder_no();
 
-            String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT) " +
-                    "values(" + entryid + ",'" + date + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + ")";
+            String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME) " +
+                    "values(" + entryid + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
             Statement stmt = con.createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs == 1) {
