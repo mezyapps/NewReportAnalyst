@@ -31,6 +31,7 @@ import com.mezyapps.new_reportanalyst.view.adapter.OrderRegisterHDAdapter;
 import com.mezyapps.new_reportanalyst.view.fragment.ChancePasswordFragment;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -193,9 +194,10 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                 if (con == null) {
                     msg = "Error in connection with SQL server";
                 } else {
-                    boolean insertHD = callInsertHD(con);
+                    int maxID = findMaxID(con);
+                    boolean insertHD = callInsertHD(con,maxID);
                     if (insertHD) {
-                        boolean insertDT = callInsertDT(con);
+                        boolean insertDT = callInsertDT(con,maxID);
                         if (insertDT) {
                             msg = "Order Place Sucessfully";
                             isSuccess = true;
@@ -219,7 +221,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
 
     }
 
-    private boolean callInsertDT(Connection con) throws SQLException {
+    private boolean callInsertDT(Connection con, int maxID) throws SQLException {
         boolean isInsert = false, insertDT = false;
         if (orderEntryProductHDArrayList.size() > 0) {
             for (int i = 0; i < orderEntryProductDTArrayList.size(); i++) {
@@ -255,7 +257,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                 }
 
                 String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT) " +
-                        "values(" + entryid + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
+                        "values(" + maxID + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
                         dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
@@ -275,7 +277,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
         }
     }
 
-    private boolean callInsertHD(Connection con) throws SQLException {
+    private boolean callInsertHD(Connection con, int maxID) throws SQLException {
         boolean isInsert = false;
         if (orderEntryProductHDArrayList.size() > 0) {
             String group_name = orderEntryProductHDArrayList.get(0).getParty_name().trim();
@@ -292,7 +294,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
             String order_no = orderEntryProductHDArrayList.get(0).getOrder_no();
 
             String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME) " +
-                    "values(" + entryid + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
+                    "values(" + maxID + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
             Statement stmt = con.createStatement();
             int rs = stmt.executeUpdate(query);
             if (rs == 1) {
@@ -303,5 +305,26 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
         } else {
             return isInsert;
         }
+    }
+
+    private int findMaxID(Connection connection) throws SQLException {
+
+        int maxID = 0;
+        String query = "SELECT  MAX(ENTRYID) AS MAXID from MOB_ORD_HEAD";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            maxID = resultSet.getInt("MAXID");
+        }
+        if(maxID==0)
+        {
+            maxID=1;
+        }
+        else
+        {
+            maxID=maxID+1;
+        }
+        return maxID;
     }
 }

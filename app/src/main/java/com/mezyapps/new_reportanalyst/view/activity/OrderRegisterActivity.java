@@ -16,6 +16,7 @@ import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.db.AppDatabase;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductDT;
 import com.mezyapps.new_reportanalyst.db.entity.OrderEntryProductHD;
+import com.mezyapps.new_reportanalyst.model.SalesReportModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
@@ -23,6 +24,7 @@ import com.mezyapps.new_reportanalyst.view.adapter.OrderEntryProductAdapter;
 import com.mezyapps.new_reportanalyst.view.adapter.OrderRegisterHDAdapter;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -135,9 +137,10 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 if (con == null) {
                     msg = "Error in connection with SQL server";
                 } else {
-                    boolean insertHD = callInsertHD(con);
+                    int maxID = findMaxID(con);
+                    boolean insertHD = callInsertHD(con,maxID);
                     if (insertHD) {
-                        msg = "Order Place Sucessfully";
+                        msg = "Order Place Successfully";
                         isSuccess = true;
                     } else {
                         msg = "Order Not Place";
@@ -155,7 +158,28 @@ public class OrderRegisterActivity extends AppCompatActivity {
 
     }
 
-    private boolean callInsertDT(Connection con, String orderno) throws SQLException {
+    private int findMaxID(Connection connection) throws SQLException {
+
+        int maxID = 0;
+        String query = "SELECT  MAX(ENTRYID) AS MAXID from MOB_ORD_HEAD";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            maxID = resultSet.getInt("MAXID");
+        }
+        if(maxID==0)
+        {
+            maxID=1;
+        }
+        else
+        {
+            maxID=maxID+1;
+        }
+        return maxID;
+    }
+
+    private boolean callInsertDT(Connection con, String orderno, int maxID) throws SQLException {
         boolean isInsert = false, insertDT = false;
         orderEntryProductDTArrayList.clear();
         orderEntryProductDTArrayList.addAll(appDatabase.getProductDTDAO().getOnlyIDValue(Long.parseLong(orderno)));
@@ -193,7 +217,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 }
 
                 String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT) " +
-                        "values(" + entryid + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
+                        "values(" + maxID + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
                         dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ")";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
@@ -213,7 +237,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
         }
     }
 
-    private boolean callInsertHD(Connection con) throws SQLException {
+    private boolean callInsertHD(Connection con, int maxID) throws SQLException {
         boolean isInsert = false;
         if (orderEntryProductHDArrayList.size() > 0) {
             for (int i = 0; i < orderEntryProductHDArrayList.size(); i++) {
@@ -231,11 +255,11 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String order_no = orderEntryProductHDArrayList.get(i).getOrder_no();
 
                 String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME) " +
-                        "values(" + entryid + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
+                        "values(" + maxID + ",'" + date + "','"+ date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'"+ saleman_name +"')";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
-                    boolean insertDT = callInsertDT(con, entryid);
+                    boolean insertDT = callInsertDT(con, entryid,maxID);
                     if (insertDT) {
                         isInsert = true;
                     } else {
