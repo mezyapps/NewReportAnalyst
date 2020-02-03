@@ -45,6 +45,7 @@ public class OrderEntryProductAdapter extends RecyclerView.Adapter<OrderEntryPro
 
         holder.textProductName.setText("(" + cnt + ") " + orderEntryProduct.getProduct_name());
         holder.textDist.setText(orderEntryProduct.getDist_amt1());
+        holder.textDist2.setText(orderEntryProduct.getDist_amt2());
         holder.textGst.setText(orderEntryProduct.getGst_amt());
         holder.textSubTotal.setText(orderEntryProduct.getFinal_total());
         cnt++;
@@ -73,7 +74,7 @@ public class OrderEntryProductAdapter extends RecyclerView.Adapter<OrderEntryPro
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView textProductName, textDist, textGst, textSubTotal, textQty_rate, textSubTotalAmt;
+        private TextView textProductName, textDist, textGst, textSubTotal, textQty_rate, textSubTotalAmt,textDist2;
         private ImageView iv_edit_product;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -85,6 +86,7 @@ public class OrderEntryProductAdapter extends RecyclerView.Adapter<OrderEntryPro
             iv_edit_product = itemView.findViewById(R.id.iv_edit_product);
             textQty_rate = itemView.findViewById(R.id.textQty_rate);
             textSubTotalAmt = itemView.findViewById(R.id.textSubTotalAmt);
+            textDist2 = itemView.findViewById(R.id.textDist2);
         }
     }
 }

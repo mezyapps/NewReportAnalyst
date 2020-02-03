@@ -2,6 +2,7 @@ package com.mezyapps.new_reportanalyst.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +19,7 @@ import rx.functions.Action1;
 
 public class SplashActivity extends AppCompatActivity {
 
-    String is_login="";
+    String is_login = "";
     Handler handler;
     ImageView iv_splash_image;
 
@@ -27,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        iv_splash_image=findViewById(R.id.iv_splash_image);
+        iv_splash_image = findViewById(R.id.iv_splash_image);
 
         is_login = SharedLoginUtils.getLoginSharedUtils(getApplicationContext());
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -36,11 +37,13 @@ public class SplashActivity extends AppCompatActivity {
             handlerCall();
         }
     }
+
     private void checkPermissions() {
         RxPermissions.getInstance(SplashActivity.this)
                 .request(
                         android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_PHONE_STATE)
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
@@ -88,7 +91,7 @@ public class SplashActivity extends AppCompatActivity {
                 if (is_login.equalsIgnoreCase("") || is_login.equalsIgnoreCase("false")) {
                     Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(intent);
-                }else  {
+                } else {
                     Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                     startActivity(intent);
                 }

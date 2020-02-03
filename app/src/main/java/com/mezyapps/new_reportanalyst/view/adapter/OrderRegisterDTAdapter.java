@@ -39,6 +39,7 @@ public class OrderRegisterDTAdapter extends RecyclerView.Adapter<OrderRegisterDT
         holder.textProductName.setText("("+cnt+") "+orderEntryProduct.getProduct_name());
         holder.textDist.setText(orderEntryProduct.getDist_amt1());
         holder.textGst.setText(orderEntryProduct.getGst_amt());
+        holder.textDist2.setText(orderEntryProduct.getDist_amt2());
         holder.textSubTotal.setText(orderEntryProduct.getFinal_total());
         cnt++;
 
@@ -55,7 +56,7 @@ public class OrderRegisterDTAdapter extends RecyclerView.Adapter<OrderRegisterDT
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView textProductName,textDist,textGst,textSubTotal ,textQty_rate, textSubTotalAmt;
+        private TextView textProductName,textDist,textGst,textSubTotal ,textQty_rate, textSubTotalAmt,textDist2;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +66,7 @@ public class OrderRegisterDTAdapter extends RecyclerView.Adapter<OrderRegisterDT
             textSubTotal=itemView.findViewById(R.id.textSubTotal);
             textQty_rate = itemView.findViewById(R.id.textQty_rate);
             textSubTotalAmt = itemView.findViewById(R.id.textSubTotalAmt);
+            textDist2 = itemView.findViewById(R.id.textDist2);
         }
     }
 }
