@@ -272,7 +272,8 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                                 orderEntryProductDT.setDist_per2(orderEntryProductArrayList.get(i).getDist_per2());
                                 orderEntryProductDT.setDist_amt2(orderEntryProductArrayList.get(i).getDist_amt2());
                                 orderEntryProductDT.setHsn_code(orderEntryProductArrayList.get(i).getHsn_no());
-                                orderEntryProductDT.setInclu_exclu(orderEntryProductArrayList.get(i).getHsn_no());
+                                orderEntryProductDT.setInclu_exclu(orderEntryProductArrayList.get(i).getInclu_exclu());
+                                orderEntryProductDT.setNet_total(orderEntryProductArrayList.get(i).getNet_total());
 
                                 orderEntryProductDT.setMaxId(maxval);
 

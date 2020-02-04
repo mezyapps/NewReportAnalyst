@@ -243,6 +243,7 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                 String final_amt = orderEntryProductDTArrayList.get(i).getFinal_total().trim();
                 String HSN_CODE = orderEntryProductDTArrayList.get(i).getHsn_code().trim();
                 String inclu_exlu = orderEntryProductDTArrayList.get(i).getInclu_exclu().trim();
+                String net_total = orderEntryProductDTArrayList.get(i).getNet_total().trim();
 
                 if (box.equalsIgnoreCase("")) {
                     box = "0";

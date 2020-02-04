@@ -64,6 +64,9 @@ public class OrderEntryProductDT {
     @ColumnInfo(name = "INCLU_EXCLU")
     private String inclu_exclu;
 
+    @ColumnInfo(name = "NET_TOTAL")
+    private String net_total;
+
 
     public long getId() {
         return id;
@@ -207,5 +210,13 @@ public class OrderEntryProductDT {
 
     public void setInclu_exclu(String inclu_exclu) {
         this.inclu_exclu = inclu_exclu;
+    }
+
+    public String getNet_total() {
+        return net_total;
+    }
+
+    public void setNet_total(String net_total) {
+        this.net_total = net_total;
     }
 }

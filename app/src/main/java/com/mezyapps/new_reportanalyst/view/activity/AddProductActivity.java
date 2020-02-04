@@ -74,7 +74,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     boolean dist_amtv = false, disc_amtv2 = false;
     private LinearLayout ll_update_delete;
     private Long prod_long_id;
-    private String disc1, disc2, sp_name, inclu_exclu;
+    private String disc1, disc2, sp_name, inclu_exclu,netTotal="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,7 +176,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     orderEntryProduct.setGst_amt(gst_amt);
                     orderEntryProduct.setFinal_total(final_total);
                     orderEntryProduct.setHsn_no(hsn_no);
-                    orderEntryProduct.setInclu_exclu(inclu_exclu);
+                    orderEntryProduct.setNet_total(netTotal);
 
                     long idVal = appDatabase.getProductDAO().addProduct(orderEntryProduct);
                     if (idVal != 0) {
@@ -193,6 +193,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         textFinalTotal.setText("0");
                         textHsn_no.setText("");
                         autoCompleteTVProduct.requestFocus();
+                        netTotal="";
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
                         scrollView_add_product.pageScroll(View.FOCUS_UP);
@@ -611,6 +612,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
             finaltotal = inclsive + gstAMT;
         }
 
+        netTotal=String.valueOf(subTotal2);
         String subTotalStr = String.format("%.2f", total);
         String finalTotalStr = String.format("%.2f", finaltotal);
 
