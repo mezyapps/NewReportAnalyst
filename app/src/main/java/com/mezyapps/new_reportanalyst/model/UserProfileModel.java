@@ -1,9 +1,9 @@
 package com.mezyapps.new_reportanalyst.model;
 
 public class UserProfileModel {
-    private String user_id,user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID,SALESMAN_NAME;
+    private String user_id,user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID,SALESMAN_NAME,INCLU_EXCLU;
 
-    public UserProfileModel(String user_id, String user_name, String user_pass, String db_name, String db_user_name, String db_user_pass, String user_type, String SALESMAN_ID,String SALESMAN_NAME) {
+    public UserProfileModel(String user_id, String user_name, String user_pass, String db_name, String db_user_name, String db_user_pass, String user_type, String SALESMAN_ID,String SALESMAN_NAME,String INCLU_EXCLU) {
         this.user_id = user_id;
         this.user_name = user_name;
         this.user_pass = user_pass;
@@ -13,6 +13,7 @@ public class UserProfileModel {
         this.user_type = user_type;
         this.SALESMAN_ID = SALESMAN_ID;
         this.SALESMAN_NAME = SALESMAN_NAME;
+        this.INCLU_EXCLU = INCLU_EXCLU;
     }
 
     public UserProfileModel() {
@@ -88,5 +89,13 @@ public class UserProfileModel {
 
     public void setSALESMAN_NAME(String SALESMAN_NAME) {
         this.SALESMAN_NAME = SALESMAN_NAME;
+    }
+
+    public String getINCLU_EXCLU() {
+        return INCLU_EXCLU;
+    }
+
+    public void setINCLU_EXCLU(String INCLU_EXCLU) {
+        this.INCLU_EXCLU = INCLU_EXCLU;
     }
 }

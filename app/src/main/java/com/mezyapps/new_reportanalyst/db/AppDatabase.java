@@ -18,7 +18,7 @@ import com.mezyapps.new_reportanalyst.model.GroupPerModel;
 import com.mezyapps.new_reportanalyst.model.ProductTableModel;
 
 @Database(entities = {OrderEntryProduct.class, OrderEntryProductHD.class,
-        OrderEntryProductDT.class, GroupPerModel.class, ProductTableModel.class}, version = 5)
+        OrderEntryProductDT.class, GroupPerModel.class, ProductTableModel.class}, version = 6)
 
 public abstract class AppDatabase extends RoomDatabase {
 

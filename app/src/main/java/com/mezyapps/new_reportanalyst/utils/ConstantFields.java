@@ -16,5 +16,6 @@ public class ConstantFields {
     public static final String USER_TYPE="user_type";
     public static final String SALESMAN_ID="salesman_id";
     public static final String SALESMAN_NAME="salesman_name";
+    public static final String INCLU_EXCLU="INCLU_EXCLU";
 
 }

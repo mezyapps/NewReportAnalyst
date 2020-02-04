@@ -59,6 +59,8 @@ public class OrderEntryProduct
     @ColumnInfo(name = "HSN_NO")
     private String hsn_no;
 
+    @ColumnInfo(name = "INCLU_EXCLU")
+    private String inclu_exclu;
 
     public long getId() {
         return id;
@@ -186,5 +188,13 @@ public class OrderEntryProduct
 
     public void setHsn_no(String hsn_no) {
         this.hsn_no = hsn_no;
+    }
+
+    public String getInclu_exclu() {
+        return inclu_exclu;
+    }
+
+    public void setInclu_exclu(String inclu_exclu) {
+        this.inclu_exclu = inclu_exclu;
     }
 }

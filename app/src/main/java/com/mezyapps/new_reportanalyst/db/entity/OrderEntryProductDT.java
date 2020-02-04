@@ -58,6 +58,12 @@ public class OrderEntryProductDT {
     @ColumnInfo(name = "final_total")
     private String final_total;
 
+    @ColumnInfo(name = "HSN_CODE")
+    private String hsn_code;
+
+    @ColumnInfo(name = "INCLU_EXCLU")
+    private String inclu_exclu;
+
 
     public long getId() {
         return id;
@@ -185,5 +191,21 @@ public class OrderEntryProductDT {
 
     public void setMaxId(long maxId) {
         this.maxId = maxId;
+    }
+
+    public String getHsn_code() {
+        return hsn_code;
+    }
+
+    public void setHsn_code(String hsn_code) {
+        this.hsn_code = hsn_code;
+    }
+
+    public String getInclu_exclu() {
+        return inclu_exclu;
+    }
+
+    public void setInclu_exclu(String inclu_exclu) {
+        this.inclu_exclu = inclu_exclu;
     }
 }

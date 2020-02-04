@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        private void logoutApplication() {
+        public void logoutApplication() {
             dialog_logout = new Dialog(MainActivity.this);
             dialog_logout.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog_logout.setContentView(R.layout.dialog_logout);

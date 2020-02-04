@@ -63,9 +63,9 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     private ProductAutoCompleteAdapter productAutoCompleteAdapter;
     private EditText edtQty, edtBoxPacking, edtPacking, edtRate, editDist, edtDistAmt, edtGstAmt, editGst, editDist2, edtDistAmt2;
     private String dicountedAmt = "", prod_id = "";
-    private TextView textSubTotal, textFinalTotal, textProdCnt, textHsn_no;
+    private TextView textSubTotal, textFinalTotal, textProdCnt, textHsn_no, textInclu_Exclu;
     private String prod_name, select_prod, box, pkg, qty, rate, sub_total, dist_per, dist_amt, dist_per2, dist_amt2, gst_per,
-            gst_amt, final_total,hsn_no;
+            gst_amt, final_total, hsn_no;
     private AppDatabase appDatabase;
     private RelativeLayout rr_product_list;
     private Dialog dialog_product;
@@ -74,7 +74,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     boolean dist_amtv = false, disc_amtv2 = false;
     private LinearLayout ll_update_delete;
     private Long prod_long_id;
-    private String disc1, disc2, sp_name;
+    private String disc1, disc2, sp_name, inclu_exclu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +110,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         textHsn_no = findViewById(R.id.textHsn_no);
         editDist2 = findViewById(R.id.editDist2);
         edtDistAmt2 = findViewById(R.id.edtDistAmt2);
+        textInclu_Exclu = findViewById(R.id.textInclu_Exclu);
         scrollView_add_product = findViewById(R.id.scrollView_add_product);
 
         Bundle extras = getIntent().getExtras();
@@ -127,6 +128,13 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(AddProductActivity.this);
         databaseName = userProfileModelArrayList.get(0).getDb_name();
+        inclu_exclu = userProfileModelArrayList.get(0).getINCLU_EXCLU();
+
+        if (inclu_exclu.equalsIgnoreCase("I")) {
+            textInclu_Exclu.setText("Inclusive");
+        } else {
+            textInclu_Exclu.setText("Exclusive");
+        }
 
 
         autoCompleteTVProduct.setThreshold(0);
@@ -168,6 +176,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     orderEntryProduct.setGst_amt(gst_amt);
                     orderEntryProduct.setFinal_total(final_total);
                     orderEntryProduct.setHsn_no(hsn_no);
+                    orderEntryProduct.setInclu_exclu(inclu_exclu);
 
                     long idVal = appDatabase.getProductDAO().addProduct(orderEntryProduct);
                     if (idVal != 0) {
@@ -565,8 +574,10 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         double disc1 = Double.parseDouble(discStr1);
         double disc2 = Double.parseDouble(discStr2);
         double subTotal = total;
+
         double discAmt1 = (subTotal / 100) * disc1;
         double subTotal1 = subTotal - discAmt1;
+
         double discAmt2 = (subTotal1 / 100) * disc2;
         double subTotal2 = subTotal1 - discAmt2;
 
@@ -575,9 +586,30 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         if (gstStr.equalsIgnoreCase("0")) {
             gstStr = "0";
         }
-        Double gst = Double.parseDouble(gstStr);
-        double gstAMT = (subTotal2 / 100) * gst;
-        double finaltotal = subTotal2 + gstAMT;
+
+        /*GST INCLUSIVE AND EXCLUSIVE*/
+
+        double gst=Double.parseDouble(gstStr);
+
+        double finaltotal = 0, gstAMT = 0;
+        if (inclu_exclu.equalsIgnoreCase("E")) {
+            gstAMT = (subTotal2 / 100) * gst;
+            finaltotal = subTotal2 + gstAMT;
+        } else {
+            double gper = 0;
+            if (gstStr.equalsIgnoreCase("5.00")) {
+                gper=1.05;
+            } else if (gstStr.equalsIgnoreCase("12.00")) {
+                gper = 1.12;
+            } else if (gstStr.equalsIgnoreCase("18.00")) {
+                gper =  1.18;
+            } else if (gstStr.equalsIgnoreCase("28.00")) {
+                gper = 1.28;
+            }
+            double inclsive = subTotal2 / gper;
+            gstAMT = (inclsive / 100) * gst;
+            finaltotal = inclsive + gstAMT;
+        }
 
         String subTotalStr = String.format("%.2f", total);
         String finalTotalStr = String.format("%.2f", finaltotal);
@@ -589,7 +621,6 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         edtDistAmt.setText(discAmtStr1);
         edtDistAmt2.setText(discAmtStr2);
         edtGstAmt.setText(gstAmtStr);
-
 
         textSubTotal.setText(subTotalStr);
         textFinalTotal.setText(finalTotalStr);
@@ -653,7 +684,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         gst_per = editGst.getText().toString();
         gst_amt = edtGstAmt.getText().toString().trim();
         final_total = textFinalTotal.getText().toString().trim();
-        hsn_no=textHsn_no.getText().toString().trim();
+        hsn_no = textHsn_no.getText().toString().trim();
 
         if (prod_id.equalsIgnoreCase("")) {
             autoCompleteTVProduct.setError("Select Product Name");
