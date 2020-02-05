@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -66,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void events() {
 
-        getMobileNumber();
+        //getMobileNumber();
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,25 +80,33 @@ public class LoginActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void getMobileNumber() {
         String mobile_no1, mobile_no2;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            SubscriptionManager sManager = (SubscriptionManager) getApplicationContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
-            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
 
-                return;
-            }
-            String infoSim1 = sManager.getActiveSubscriptionInfoForSimSlotIndex(0).getNumber();
-            String infoSim2 = sManager.getActiveSubscriptionInfoForSimSlotIndex(1).getNumber();
-            if (infoSim1 != null || infoSim2 != null) {
-                mobile_no1 = String.valueOf(infoSim1);
-                mobile_no2 = String.valueOf(infoSim2);
-                callMobileNo(mobile_no1, mobile_no2);
-            }
+        SubscriptionManager sManager = (SubscriptionManager) getApplicationContext().getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
+        if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+
+        SubscriptionManager mSubscriptionManager = SubscriptionManager.from(this);
+        int simcnt = mSubscriptionManager.getActiveSubscriptionInfoCount();
+        List<SubscriptionInfo> lstSim = mSubscriptionManager.getActiveSubscriptionInfoList();
+        ArrayList<String> arrayListSim = new ArrayList<>();
+        arrayListSim.clear();
+        for (int i = 0; i < lstSim.size(); i++) {
+            arrayListSim.add(mSubscriptionManager.getActiveSubscriptionInfoForSimSlotIndex(i).getNumber());
+        }
+        String infoSim1 = "", infoSim2 = "";
+        if (arrayListSim.size() == 1) {
+            infoSim1 = arrayListSim.get(0);
         } else {
-            TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-            if (telephonyManager.getSimSerialNumber() != null) {
-                mobile_no1 = telephonyManager.getLine1Number();
-                callMobileNo(mobile_no1, "");
-            }
+            infoSim1 = arrayListSim.get(0);
+            infoSim2 = arrayListSim.get(1);
+        }
+
+        if (infoSim1 != null || infoSim2 != null) {
+            mobile_no1 = String.valueOf(infoSim1);
+            mobile_no2 = String.valueOf(infoSim2);
+            callMobileNo(mobile_no1, mobile_no2);
         }
     }
 
@@ -209,7 +218,7 @@ public class LoginActivity extends AppCompatActivity {
                             String SALESMAN_ID = String.valueOf(resultSet.getString("SALESMAN_ID"));
                             String SALESMAN_NAME = String.valueOf(resultSet.getString("SALESMAN_NAME"));
                             String INCLU_EXCLU = String.valueOf(resultSet.getString("INCLU_EXCLU"));
-                            UserProfileModel userProfileModel = new UserProfileModel(user_id, user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID, SALESMAN_NAME,INCLU_EXCLU);
+                            UserProfileModel userProfileModel = new UserProfileModel(user_id, user_name, user_pass, db_name, db_user_name, db_user_pass, user_type, SALESMAN_ID, SALESMAN_NAME, INCLU_EXCLU);
                             userProfileModelArrayList.add(userProfileModel);
                             Connection connection1 = connectionCommon.checkUserConnection(db_name);
                             if (connection1 != null) {

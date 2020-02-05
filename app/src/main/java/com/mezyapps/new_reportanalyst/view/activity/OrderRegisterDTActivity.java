@@ -260,9 +260,11 @@ public class OrderRegisterDTActivity extends AppCompatActivity {
                     gst_amt = "0";
                 }
 
-                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT,HSN_CODE,INCLU_EXCLU) " +
+
+                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT,HSN_CODE,INCLU_EXCLU,NET_AMT) " +
                         "values(" + maxID + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
-                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ",'" + HSN_CODE + "','" + inclu_exlu + "')";
+                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ",'" + HSN_CODE + "','" + inclu_exlu + "',"+ net_total + ")";
+
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {

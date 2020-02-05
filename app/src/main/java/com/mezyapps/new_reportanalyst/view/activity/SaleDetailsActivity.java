@@ -128,7 +128,7 @@ public class SaleDetailsActivity extends AppCompatActivity {
                     msg = "Check Your Internet Access!";
                 } else {
                     String query =
-                            "SELECT  * FROM TBL_SALE_DT WHERE ENTRYID=" + entry_id;
+                            "SELECT  * FROM MOB_SALE_DT WHERE ENTRYID=" + entry_id;
 
                     Statement stmt = connection.createStatement();
                     ResultSet resultSet = stmt.executeQuery(query);

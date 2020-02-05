@@ -74,7 +74,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
     boolean dist_amtv = false, disc_amtv2 = false;
     private LinearLayout ll_update_delete;
     private Long prod_long_id;
-    private String disc1, disc2, sp_name, inclu_exclu,netTotal="";
+    private String disc1, disc2, sp_name, inclu_exclu, netTotal = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +176,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                     orderEntryProduct.setGst_amt(gst_amt);
                     orderEntryProduct.setFinal_total(final_total);
                     orderEntryProduct.setHsn_no(hsn_no);
+                    orderEntryProduct.setInclu_exclu(inclu_exclu);
                     orderEntryProduct.setNet_total(netTotal);
 
                     long idVal = appDatabase.getProductDAO().addProduct(orderEntryProduct);
@@ -193,7 +194,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
                         textFinalTotal.setText("0");
                         textHsn_no.setText("");
                         autoCompleteTVProduct.requestFocus();
-                        netTotal="";
+                        netTotal = "";
                         productList();
                         rr_product_list.setVisibility(View.VISIBLE);
                         scrollView_add_product.pageScroll(View.FOCUS_UP);
@@ -559,8 +560,6 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
         double rate = Double.parseDouble(edtRate.getText().toString().trim());
         double total = qty * rate;
 
-
-
         /*Discount Calculation AND GST Calculation*/
         String discStr1 = editDist.getText().toString();
         String discStr2 = editDist2.getText().toString();
@@ -574,13 +573,7 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
 
         double disc1 = Double.parseDouble(discStr1);
         double disc2 = Double.parseDouble(discStr2);
-        double subTotal = total;
 
-        double discAmt1 = (subTotal / 100) * disc1;
-        double subTotal1 = subTotal - discAmt1;
-
-        double discAmt2 = (subTotal1 / 100) * disc2;
-        double subTotal2 = subTotal1 - discAmt2;
 
         /*GST Calculation*/
         String gstStr = editGst.getText().toString().trim();
@@ -590,31 +583,78 @@ public class AddProductActivity extends AppCompatActivity implements SelectProdu
 
         /*GST INCLUSIVE AND EXCLUSIVE*/
 
-        double gst=Double.parseDouble(gstStr);
-
+        double gst = Double.parseDouble(gstStr);
         double finaltotal = 0, gstAMT = 0;
-        if (inclu_exclu.equalsIgnoreCase("E")) {
-            gstAMT = (subTotal2 / 100) * gst;
-            finaltotal = subTotal2 + gstAMT;
-        } else {
+        double discAmt1 = 0, discAmt2 = 0, subTotal1 = 0, subTotal2=0;
+        double subTotal = total;
+
+        if (inclu_exclu.equalsIgnoreCase("I")) {
             double gper = 0;
             if (gstStr.equalsIgnoreCase("5.00")) {
-                gper=1.05;
+                gper = 1.05;
             } else if (gstStr.equalsIgnoreCase("12.00")) {
                 gper = 1.12;
             } else if (gstStr.equalsIgnoreCase("18.00")) {
-                gper =  1.18;
+                gper = 1.18;
             } else if (gstStr.equalsIgnoreCase("28.00")) {
                 gper = 1.28;
             }
-            double inclsive = subTotal2 / gper;
-            gstAMT = (inclsive / 100) * gst;
-            finaltotal = inclsive + gstAMT;
+            double inclsive = subTotal / gper;
+            subTotal=inclsive;
         }
 
-        netTotal=String.valueOf(subTotal2);
+        discAmt1 = (subTotal / 100) * disc1;
+        subTotal -= discAmt1;
+
+        discAmt2 = (subTotal / 100) * disc2;
+        subTotal -= discAmt2;
+
+        gstAMT = (subTotal / 100) * gst;
+        subTotal += gstAMT;
+
+
+        /*if (inclu_exclu.equalsIgnoreCase("E")) {
+
+            double subTotal = total;
+
+            discAmt1 = (subTotal / 100) * disc1;
+            subTotal1 = subTotal - discAmt1;
+
+            discAmt2 = (subTotal1 / 100) * disc2;
+            subTotal2 = subTotal1 - discAmt2;
+
+            gstAMT = (subTotal2 / 100) * gst;
+            finaltotal = subTotal2 + gstAMT;
+
+        } else {
+            double gper = 0;
+            if (gstStr.equalsIgnoreCase("5.00")) {
+                gper = 1.05;
+            } else if (gstStr.equalsIgnoreCase("12.00")) {
+                gper = 1.12;
+            } else if (gstStr.equalsIgnoreCase("18.00")) {
+                gper = 1.18;
+            } else if (gstStr.equalsIgnoreCase("28.00")) {
+                gper = 1.28;
+            }
+            double subTotal = total;
+            double inclsive = subTotal / gper;
+
+            discAmt1 = (inclsive / 100) * disc1;
+            subTotal1 = inclsive - discAmt1;
+
+            discAmt2 = (subTotal1 / 100) * disc2;
+            subTotal2 = subTotal1 - discAmt2;
+
+            gstAMT = (subTotal2 / 100) * gst;
+            finaltotal = subTotal2 + gstAMT;
+        }*/
+
+
+        netTotal = String.valueOf(subTotal1);
+
         String subTotalStr = String.format("%.2f", total);
-        String finalTotalStr = String.format("%.2f", finaltotal);
+        String finalTotalStr = String.format("%.2f", subTotal);
 
         String discAmtStr1 = String.format("%.2f", discAmt1);
         String discAmtStr2 = String.format("%.2f", discAmt2);

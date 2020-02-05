@@ -183,7 +183,6 @@ public class SalesReportActivity extends AppCompatActivity {
             }
             else
             {
-                salesReportAdapter.notifyDataSetChanged();
                 textTotalAmt.setText("00");
             }
         }
@@ -197,9 +196,9 @@ public class SalesReportActivity extends AppCompatActivity {
                 } else {
                     String query =
                             "SELECT  *," +
-                                    "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
-                                    "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
-                                    " FROM TBL_SALE_HD "+
+                                    "(select sum(TOTALBILLAMT) from MOB_SALE_HD) as[TOTAL_AMT]," +
+                                    "(select sum(TOTALQTY) from MOB_SALE_HD) as[TOTAL_QTY]" +
+                                    " FROM MOB_SALE_HD "+
                                     " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
                     Statement stmt = connection.createStatement();
@@ -272,7 +271,6 @@ public class SalesReportActivity extends AppCompatActivity {
             }
             else
             {
-                salesReportAdapter.notifyDataSetChanged();
                 textTotalAmt.setText("00");
             }
         }
@@ -286,9 +284,9 @@ public class SalesReportActivity extends AppCompatActivity {
                 } else {
                     String query =
                             "SELECT  *," +
-                                    "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
-                                    "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
-                                    " FROM TBL_SALE_HD "+
+                                    "(select sum(TOTALBILLAMT) from MOB_SALE_HD) as[TOTAL_AMT]," +
+                                    "(select sum(TOTALQTY) from MOB_SALE_HD) as[TOTAL_QTY]" +
+                                    " FROM MOB_SALE_HD "+
                                     " WHERE VCHDT_Y_M_D='" + date + "'" +
                                     " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 
@@ -365,7 +363,6 @@ public class SalesReportActivity extends AppCompatActivity {
             }
             else
             {
-                salesReportAdapter.notifyDataSetChanged();
                 textTotalAmt.setText("00");
             }
         }
@@ -379,9 +376,9 @@ public class SalesReportActivity extends AppCompatActivity {
                 } else {
                     String query =
                             "SELECT  *," +
-                                    "(select sum(TOTALBILLAMT) from TBL_SALE_HD) as[TOTAL_AMT]," +
-                                    "(select sum(TOTALQTY) from TBL_SALE_HD) as[TOTAL_QTY]" +
-                                    " FROM TBL_SALE_HD "+
+                                    "(select sum(TOTALBILLAMT) from MOB_SALE_HD) as[TOTAL_AMT]," +
+                                    "(select sum(TOTALQTY) from MOB_SALE_HD) as[TOTAL_QTY]" +
+                                    " FROM MOB_SALE_HD "+
                                     " WHERE VCHDT_Y_M_D BETWEEN '" + date1 + "' AND '" + date2 + "'" +
                                     " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
 

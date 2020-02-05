@@ -38,7 +38,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
     private OrderRegisterHDAdapter orderRegisterHDAdapter;
     private ShowProgressDialog showProgressDialog;
     private ConnectionCommon connectionCommon;
-    private String databaseName, saleman_id, saleman_name,inclu_exclu;
+    private String databaseName, saleman_id, saleman_name, inclu_exclu;
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
     private ArrayList<OrderEntryProductDT> orderEntryProductDTArrayList = new ArrayList<>();
 
@@ -212,9 +212,9 @@ public class OrderRegisterActivity extends AppCompatActivity {
                     gst_amt = "0";
                 }
 
-                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT,HSN_CODE,INCLU_EXCLU) " +
+                String query = "INSERT INTO MOB_ORD_DET (ENTRYID,PROD_ID,PROD_NAME,BOX,PKG,QTY,RATE,GROSS,DIS_PER,DIS_AMT,DIS_PER2,DIS_AMT2,GST_PER,GST_AMT,FINAL_AMT,HSN_CODE,INCLU_EXCLU,NET_AMT) " +
                         "values(" + maxID + "," + prod_id + ",'" + prod_name + "'," + box + "," + pkg + "," + qty + "," + rate + "," + gross + "," + dis_per + "," +
-                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ",'" + HSN_CODE + "','" + inclu_exlu + "')";
+                        dis_amt + "," + dis_per2 + "," + dis_amt2 + "," + gst_per + "," + gst_amt + "," + final_amt + ",'" + HSN_CODE + "','" + inclu_exlu + "'," + net_total + ")";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
@@ -252,7 +252,7 @@ public class OrderRegisterActivity extends AppCompatActivity {
                 String order_no = orderEntryProductHDArrayList.get(i).getOrder_no();
 
                 String query = "INSERT INTO MOB_ORD_HEAD (ENTRYID,DATE,DATE_Y_M_D,ORDER_NO,GROUPID,GROUPNAME,BALANCE,TOTAL_QTY,TOTAL_AMT,SALESMAN_ID,SALESMAN_NAME,INCLU_EXCLU) " +
-                        "values(" + maxID + ",'" + date + "','" + date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'" + saleman_name + "','"+inclu_exclu+"')";
+                        "values(" + maxID + ",'" + date + "','" + date_y_m_d + "'," + order_no + "," + group_id + ",'" + group_name + "'," + balance + "," + total_qty + "," + total_amt + "," + saleman_id + ",'" + saleman_name + "','" + inclu_exclu + "')";
                 Statement stmt = con.createStatement();
                 int rs = stmt.executeUpdate(query);
                 if (rs == 1) {
