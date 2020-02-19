@@ -24,7 +24,9 @@ import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.model.SalesDetailsModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.NetworkUtils;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
+import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.activity.LoginActivity;
 import com.mezyapps.new_reportanalyst.view.activity.MainActivity;
 import com.mezyapps.new_reportanalyst.view.activity.OrderEnteryActivity;
@@ -39,6 +41,7 @@ import com.mezyapps.new_reportanalyst.view.adapter.SalesDetailsAdapter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -46,10 +49,11 @@ public class HomeFragment extends Fragment {
 
     private Context mContext;
     private CardView cardView_Sales_Report, cardViewPurchase_Report, cardView_outstanding_receivable, cardView_outstanding_payable, cardView_stock_report, cardView_order_entry;
-    private TextView textSalesManName;
+    private TextView textSalesManName, textSalesTotal, textPurchaseTotal, textReceivableTotal, textPayableTotal;
     private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
-    private String username;
+    private String username, databaseName;
     private ConnectionCommon connectionCommon;
+    private ShowProgressDialog showProgressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +70,7 @@ public class HomeFragment extends Fragment {
 
     private void find_View_IdS(View view) {
         connectionCommon = new ConnectionCommon();
+        showProgressDialog = new ShowProgressDialog(mContext);
         cardView_Sales_Report = view.findViewById(R.id.cardView_Sales_Report);
         cardViewPurchase_Report = view.findViewById(R.id.cardViewPurchase_Report);
         cardView_outstanding_receivable = view.findViewById(R.id.cardView_outstanding_receivable);
@@ -73,9 +78,14 @@ public class HomeFragment extends Fragment {
         cardView_stock_report = view.findViewById(R.id.cardView_stock_report);
         cardView_order_entry = view.findViewById(R.id.cardView_order_entry);
         textSalesManName = view.findViewById(R.id.textSalesManName);
+        textSalesTotal = view.findViewById(R.id.textSalesTotal);
+        textPurchaseTotal = view.findViewById(R.id.textPurchaseTotal);
+        textReceivableTotal = view.findViewById(R.id.textReceivableTotal);
+        textPayableTotal = view.findViewById(R.id.textPayableTotal);
 
         userProfileModelArrayList = SharedLoginUtils.getUserProfile(mContext);
-        String salesman_name = userProfileModelArrayList.get(0).getSALESMAN_NAME();
+        String salesman_name = userProfileModelArrayList.get(0).getDisplay_name();
+        databaseName = userProfileModelArrayList.get(0).getDb_name();
         username = userProfileModelArrayList.get(0).getUser_name();
         if (salesman_name.equalsIgnoreCase("")) {
             textSalesManName.setText(getResources().getString(R.string.app_name));
@@ -86,8 +96,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void events() {
-        CheckUserSession userSession = new CheckUserSession();
-        userSession.execute("");
+
+        if (NetworkUtils.isNetworkAvailable(mContext)) {
+            CheckUserSession userSession = new CheckUserSession();
+            userSession.execute("");
+
+            FinalTotal finalTotal = new FinalTotal();
+            finalTotal.execute("");
+        } else {
+            NetworkUtils.isNetworkNotAvailable(mContext);
+        }
+
+
 
         cardView_Sales_Report.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,13 +124,13 @@ public class HomeFragment extends Fragment {
         cardView_outstanding_receivable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(mContext, OutstandingReceivableActivity.class));
+                startActivity(new Intent(mContext, OutstandingPayableActivity.class));
             }
         });
         cardView_outstanding_payable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(mContext, OutstandingPayableActivity.class));
+                startActivity(new Intent(mContext, OutstandingReceivableActivity.class));
             }
         });
         cardView_stock_report.setOnClickListener(new View.OnClickListener() {
@@ -198,8 +218,103 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
             }
         }, 2000);
-
-
     }
 
+    @SuppressLint("StaticFieldLeak")
+    public class FinalTotal extends AsyncTask<String, String, String> {
+
+        String msg = "";
+        boolean isSuccess = false;
+        String TOTAL_AMT = "";
+
+        @Override
+        protected void onPreExecute() {
+            showProgressDialog.showDialog();
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+            showProgressDialog.dismissDialog();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                Connection connection = connectionCommon.checkUserConnection(databaseName);
+                if (connection == null) {
+                    msg = "Check Your Internet Access!";
+                } else {
+                    callSalesTotal(connection);
+                    callPurchaseTotal(connection);
+                    callReceivableTotal(connection);
+                    callPayableTotal(connection);
+
+                    isSuccess = true;
+                    msg = "success";
+
+                    connection.close();
+                }
+            } catch (Exception ex) {
+                isSuccess = false;
+                msg = ex.getMessage();
+            }
+            return msg;
+        }
+    }
+
+    private void callSalesTotal(Connection connection) throws SQLException {
+        String TOTAL_AMT = "";
+        String query = "select sum(TOTALBILLAMT) as[TOTAL_AMT] from MOB_SALE_HD";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            TOTAL_AMT = resultSet.getString("TOTAL_AMT");
+        }
+        if (TOTAL_AMT != null) {
+            textSalesTotal.setText(String.format("%s %s", getResources().getString(R.string.rs), TOTAL_AMT));
+        }
+    }
+
+
+    private void callPurchaseTotal(Connection connection) throws SQLException {
+        String TOTAL_AMT = "";
+        String query = "select sum(TOTALBILLAMT) as[TOTAL_AMT] from MOB_PURCH_HD";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            TOTAL_AMT = resultSet.getString("TOTAL_AMT");
+        }
+        if (TOTAL_AMT != null) {
+            textPurchaseTotal.setText(String.format("%s %s", getResources().getString(R.string.rs), TOTAL_AMT));
+        }
+    }
+
+    private void callReceivableTotal(Connection connection) throws SQLException {
+        String TOTAL_AMT = "";
+        String query = "select sum(BALAMT) as[TOTAL_AMT] from MOB_VCHDET_VIEW WHERE GRP_INFO='SUND_DR'";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            TOTAL_AMT = resultSet.getString("TOTAL_AMT");
+        }
+        if (TOTAL_AMT != null) {
+            textReceivableTotal.setText(String.format("%s %s", getResources().getString(R.string.rs), TOTAL_AMT));
+        }
+    }
+
+    private void callPayableTotal(Connection connection) throws SQLException {
+        String TOTAL_AMT = "";
+        String query = "select -sum(BALAMT) as[TOTAL_AMT] from MOB_VCHDET_VIEW WHERE GRP_INFO='SUND_CR'";
+
+        Statement stmt = connection.createStatement();
+        ResultSet resultSet = stmt.executeQuery(query);
+        while (resultSet.next()) {
+            TOTAL_AMT = resultSet.getString("TOTAL_AMT");
+        }
+        if (TOTAL_AMT != null)
+            textPayableTotal.setText(String.format("%s %s", getResources().getString(R.string.rs), TOTAL_AMT));
+    }
 }

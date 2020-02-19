@@ -23,44 +23,59 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.itextpdf.text.DocumentException;
 import com.mezyapps.new_reportanalyst.R;
 import com.mezyapps.new_reportanalyst.connection.ConnectionCommon;
 import com.mezyapps.new_reportanalyst.model.PurchaseReportModel;
 import com.mezyapps.new_reportanalyst.model.UserProfileModel;
+import com.mezyapps.new_reportanalyst.utils.CommonPDFGenerate;
+import com.mezyapps.new_reportanalyst.utils.NetworkUtils;
 import com.mezyapps.new_reportanalyst.utils.SharedLoginUtils;
 import com.mezyapps.new_reportanalyst.utils.ShowProgressDialog;
 import com.mezyapps.new_reportanalyst.view.adapter.PurchaseReportAdapter;
+
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class PurchaseReportActivity extends AppCompatActivity {
 
-    private ImageView iv_back,iv_custom_calender,iv_search,iv_back_search,iv_export_pdf;
-    private TextView textDateStart, textDateEnd,textDateStartCustom, textDateEndCustom,text_today_date,textTotalAmt;
-    private String currentDate,databaseName;
+
+    private ImageView iv_back, iv_custom_calender, iv_search, iv_back_search, iv_export_pdf;
+    private TextView textDateStart, textDateEnd, textDateStartCustom, textDateEndCustom, text_today_date, textTotalAmt;
+    private String currentDate, databaseName;
     private boolean isStartDate;
-    private LinearLayout linear_layout_custom_day,linear_layout_today_date;
+    private LinearLayout linear_layout_custom_day, linear_layout_today_date;
     private RecyclerView recyclerView_Sales;
     private PurchaseReportAdapter purchaseReportAdapter;
-    private ArrayList<PurchaseReportModel> purchaseReportModelArrayList=new ArrayList<>();
-    private RelativeLayout rr_toolbar,rr_toolbar_search;
+    private ArrayList<PurchaseReportModel> purchaseReportModelArrayList = new ArrayList<>();
+    private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
+    private RelativeLayout rr_toolbar, rr_toolbar_search;
     private EditText edit_search;
     private ConnectionCommon connectionCommon;
     private ShowProgressDialog showProgressDialog;
-    private ArrayList<UserProfileModel> userProfileModelArrayList = new ArrayList<>();
+    private String date_where_condition_glb = "", display_name, date_display = "";
+    public ResultSet resultSet, resultSet1;
+    List<Map<String, String>> list = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase_report);
-
 
         find_View_IdS();
         events();
@@ -86,15 +101,25 @@ public class PurchaseReportActivity extends AppCompatActivity {
         edit_search = findViewById(R.id.edit_search);
 
 
-        userProfileModelArrayList= SharedLoginUtils.getUserProfile(PurchaseReportActivity.this);
-        databaseName = userProfileModelArrayList.get(0).getDb_name();
-
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(PurchaseReportActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(PurchaseReportActivity.this);
         recyclerView_Sales.setLayoutManager(linearLayoutManager);
 
         currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        date_where_condition_glb = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(new Date());
+
         textDateEnd.setText(currentDate);
         textDateStart.setText(currentDate);
+
+        userProfileModelArrayList = SharedLoginUtils.getUserProfile(PurchaseReportActivity.this);
+        databaseName = userProfileModelArrayList.get(0).getDb_name();
+        display_name = userProfileModelArrayList.get(0).getDisplay_name();
+
+        if (NetworkUtils.isNetworkAvailable(PurchaseReportActivity.this)) {
+            SalesReportAll salesReportAll = new SalesReportAll();
+            salesReportAll.execute("VCHDT_Y_M_D<='" + date_where_condition_glb + "'", "", "");
+        } else {
+            NetworkUtils.isNetworkNotAvailable(PurchaseReportActivity.this);
+        }
 
     }
 
@@ -132,7 +157,16 @@ public class PurchaseReportActivity extends AppCompatActivity {
         iv_export_pdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(PurchaseReportActivity.this, "Working In Progress", Toast.LENGTH_SHORT).show();
+                CommonPDFGenerate commonPDFGenerate = new CommonPDFGenerate(PurchaseReportActivity.this);
+                try {
+                    String columStr = "VCHDT#Date#1#Left,VCHNO#Bill No#1#Left,GROUPNAME#Party#2#Left,TOTALQTY#Qty#1#Left,TOTALBILLAMT#Amount#1#Left";
+                    String h2 = getResources().getString(R.string.purchase_report) + " " + date_display;
+                    commonPDFGenerate.createPDF(display_name, h2, "", "", list, columStr);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -145,7 +179,6 @@ public class PurchaseReportActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 purchaseReportAdapter.getFilter().filter(edit_search.getText().toString().trim());
-                purchaseReportAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -153,17 +186,14 @@ public class PurchaseReportActivity extends AppCompatActivity {
 
             }
         });
-
-        PurchaseReportAll purchaseReportAll = new PurchaseReportAll();
-        purchaseReportAll.execute("");
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class PurchaseReportAll extends AsyncTask<String, String, String> {
+    public class SalesReportAll extends AsyncTask<String, String, String> {
 
         String msg = "";
         boolean isSuccess = false;
-        String TOTAL_AMT = "00", TOTAL_QTY = "00";
+        double TOTAL_AMT = 0, TOTAL_QTY = 0;
 
         @Override
         protected void onPreExecute() {
@@ -174,227 +204,53 @@ public class PurchaseReportActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             showProgressDialog.dismissDialog();
             if (message.equalsIgnoreCase("success")) {
-                textTotalAmt.setText(TOTAL_AMT);
-                purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
+                textTotalAmt.setText(String.format("%.2f", TOTAL_AMT));
+                purchaseReportAdapter = new PurchaseReportAdapter(PurchaseReportActivity.this, purchaseReportModelArrayList);
                 recyclerView_Sales.setAdapter(purchaseReportAdapter);
                 purchaseReportAdapter.notifyDataSetChanged();
-            }
-            else
-            {
-                textTotalAmt.setText("00");
+            } else {
+                textTotalAmt.setText("0");
+                purchaseReportAdapter = new PurchaseReportAdapter(PurchaseReportActivity.this, purchaseReportModelArrayList);
+                recyclerView_Sales.setAdapter(purchaseReportAdapter);
+                purchaseReportAdapter.notifyDataSetChanged();
             }
         }
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected String doInBackground(String... args) {
             try {
-                Connection connection = connectionCommon.checkUserConnection(databaseName);
-                if (connection == null) {
-                    msg = "Check Your Internet Access!";
-                } else {
-                    String selectQuery =
-                            "SELECT  *,"+
-                                    "(select sum(TOTALBILLAMT) from MOB_PURCH_HD) as[TOTAL_AMT],"+
-                                    "(select sum(TOTALQTY) from MOB_PURCH_HD) as[TOTAL_QTY]" +
-                                    " FROM MOB_PURCH_HD"+
-                                    " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
+                String date_where_condition = args[0];
+                String date_ = args[1];
 
-
-                    purchaseReportModelArrayList.clear();
-
-                    Statement stmt = connection.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(selectQuery);
-
-                    while (resultSet.next()) {
-                        String entryid = resultSet.getString("ENTRYID");
-                        String group_name = resultSet.getString("GROUPNAME");
-                        String group_id = resultSet.getString("VCHNO");
-                        String qty = resultSet.getString("TOTALQTY");
-                        String finalAmt = resultSet.getString("TOTALBILLAMT");
-                        String narration = resultSet.getString("NARRATION");
-                        String date = resultSet.getString("VCHDT");
-                        TOTAL_AMT = resultSet.getString("TOTAL_AMT");
-                        TOTAL_QTY = resultSet.getString("TOTAL_QTY");
-
-
-                        PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
-                        purchaseReportModel.setGroupname(group_name);
-                        purchaseReportModel.setEntryid(entryid);
-                        purchaseReportModel.setTotalqty("Total qty : "+qty);
-                        purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-                        purchaseReportModel.setVchno("Bill No : "+group_id);
-                        purchaseReportModel.setTotal_qty(TOTAL_QTY);
-                        purchaseReportModel.setTotal_amt(TOTAL_AMT);
-                        purchaseReportModel.setVchdt(date);
-                        purchaseReportModel.setNarration(narration);
-                        purchaseReportModelArrayList.add(purchaseReportModel);
-                    }
-                    if (purchaseReportModelArrayList.size() != 0) {
-                        msg = "success";
-                        isSuccess = true;
-                    } else {
-                        msg = "fail";
-                        isSuccess = false;
-                    }
-                    connection.close();
+                if (!args[1].equalsIgnoreCase("")) {
+                    date_display = ": - " + args[1];
                 }
-            } catch (Exception ex) {
-                isSuccess = false;
-                msg = ex.getMessage();
-            }
-            return msg;
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public class SingleDateFilter extends AsyncTask<String, String, String> {
-
-        String msg = "";
-        boolean isSuccess = false;
-        String TOTAL_AMT = "00", TOTAL_QTY = "00";
-        String date;
-
-        public SingleDateFilter(String date) {
-            this.date = date;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            showProgressDialog.showDialog();
-        }
-
-        @Override
-        protected void onPostExecute(String message) {
-            showProgressDialog.dismissDialog();
-            if (message.equalsIgnoreCase("success")) {
-                textTotalAmt.setText(TOTAL_AMT);
-                purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
-                recyclerView_Sales.setAdapter(purchaseReportAdapter);
-                purchaseReportAdapter.notifyDataSetChanged();
-            }
-            else
-            {
-                textTotalAmt.setText("00");
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
-                Connection connection = connectionCommon.checkUserConnection(databaseName);
-                if (connection == null) {
-                    msg = "Check Your Internet Access!";
-                } else {
-                    String selectQuery =
-                            "SELECT  *,"+
-                                    "(select sum(TOTALBILLAMT) from MOB_PURCH_HD) as[TOTAL_AMT],"+
-                                    "(select sum(TOTALQTY) from MOB_PURCH_HD) as[TOTAL_QTY]" +
-                                    " FROM MOB_PURCH_HD "+
-                                    " WHERE VCHDT_Y_M_D='"+date+"'"+
-                                    " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
-
-
-                    purchaseReportModelArrayList.clear();
-
-                    Statement stmt = connection.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(selectQuery);
-
-                    while (resultSet.next()) {
-                        String entryid = resultSet.getString("ENTRYID");
-                        String group_name = resultSet.getString("GROUPNAME");
-                        String group_id = resultSet.getString("VCHNO");
-                        String qty = resultSet.getString("TOTALQTY");
-                        String finalAmt = resultSet.getString("TOTALBILLAMT");
-                        String narration = resultSet.getString("NARRATION");
-                        String date = resultSet.getString("VCHDT");
-                        TOTAL_AMT = resultSet.getString("TOTAL_AMT");
-                        TOTAL_QTY = resultSet.getString("TOTAL_QTY");
-
-
-                        PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
-                        purchaseReportModel.setGroupname(group_name);
-                        purchaseReportModel.setEntryid(entryid);
-                        purchaseReportModel.setTotalqty("Total qty : "+qty);
-                        purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-                        purchaseReportModel.setVchno("Bill No : "+group_id);
-                        purchaseReportModel.setTotal_qty(TOTAL_QTY);
-                        purchaseReportModel.setTotal_amt(TOTAL_AMT);
-                        purchaseReportModel.setVchdt(date);
-                        purchaseReportModel.setNarration(narration);
-                        purchaseReportModelArrayList.add(purchaseReportModel);
-                    }
-                    if (purchaseReportModelArrayList.size() != 0) {
-                        msg = "success";
-                        isSuccess = true;
-                    } else {
-                        msg = "fail";
-                        isSuccess = false;
-                    }
-                    connection.close();
+                if (!args[2].equalsIgnoreCase("")) {
+                    date_display += " To " + args[2];
                 }
-            } catch (Exception ex) {
-                isSuccess = false;
-                msg = ex.getMessage();
-            }
-            return msg;
-        }
-    }
 
-    @SuppressLint("StaticFieldLeak")
-    public class TwoDateFilter extends AsyncTask<String, String, String> {
-
-        String msg = "";
-        boolean isSuccess = false;
-        String TOTAL_AMT = "00", TOTAL_QTY = "00";
-        String date1,date2;
-
-        public TwoDateFilter(String date1, String date2) {
-            this.date1 = date1;
-            this.date2 = date2;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            showProgressDialog.showDialog();
-        }
-
-        @Override
-        protected void onPostExecute(String message) {
-            showProgressDialog.dismissDialog();
-            if (message.equalsIgnoreCase("success")) {
-                textTotalAmt.setText(TOTAL_AMT);
-                purchaseReportAdapter=new PurchaseReportAdapter(PurchaseReportActivity.this,purchaseReportModelArrayList);
-                recyclerView_Sales.setAdapter(purchaseReportAdapter);
-                purchaseReportAdapter.notifyDataSetChanged();
-            }
-            else
-            {
-                textTotalAmt.setText("00");
-            }
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
                 Connection connection = connectionCommon.checkUserConnection(databaseName);
                 if (connection == null) {
                     msg = "Check Your Internet Access!";
                 } else {
-                    String selectQuery =
-                            "SELECT  *,"+
-                                    "(select sum(TOTALBILLAMT) from MOB_PURCH_HD) as[TOTAL_AMT],"+
-                                    "(select sum(TOTALQTY) from MOB_PURCH_HD) as[TOTAL_QTY]" +
-                                    " FROM MOB_PURCH_HD "+
-                                    " WHERE VCHDT_Y_M_D BETWEEN '"+date1+"' AND '"+date2+"'"+
-                                    " ORDER BY VCHDT_Y_M_D DESC,PREFIXID DESC,PREFIXNO DESC";
-
-
-                    purchaseReportModelArrayList.clear();
+                    String query =
+                            "SELECT * FROM MOB_PURCH_HD WHERE " + date_where_condition + " ORDER BY VCHDT_Y_M_D DESC, PREFIXNO DESC";
 
                     Statement stmt = connection.createStatement();
-                    ResultSet resultSet = stmt.executeQuery(selectQuery);
-
+                    resultSet = stmt.executeQuery(query);
+                    resultSet1 = resultSet;
+                    purchaseReportModelArrayList.clear();
+                    list.clear();
+                    ResultSetMetaData meta = resultSet.getMetaData();
                     while (resultSet.next()) {
+                        Map map = new HashMap();
+                        for (int i = 1; i <= meta.getColumnCount(); i++) {
+                            String key = meta.getColumnName(i);
+                            String value = resultSet.getString(key);
+                            map.put(key, value);
+                        }
+                        list.add(map);
+
                         String entryid = resultSet.getString("ENTRYID");
                         String group_name = resultSet.getString("GROUPNAME");
                         String group_id = resultSet.getString("VCHNO");
@@ -402,19 +258,18 @@ public class PurchaseReportActivity extends AppCompatActivity {
                         String finalAmt = resultSet.getString("TOTALBILLAMT");
                         String narration = resultSet.getString("NARRATION");
                         String date = resultSet.getString("VCHDT");
-                        TOTAL_AMT = resultSet.getString("TOTAL_AMT");
-                        TOTAL_QTY = resultSet.getString("TOTAL_QTY");
+                        TOTAL_AMT += resultSet.getDouble("TOTALBILLAMT");
+                        TOTAL_QTY += resultSet.getDouble("TOTALQTY");
 
-
-                        PurchaseReportModel purchaseReportModel=new PurchaseReportModel();
+                        PurchaseReportModel purchaseReportModel = new PurchaseReportModel();
                         purchaseReportModel.setGroupname(group_name);
                         purchaseReportModel.setEntryid(entryid);
-                        purchaseReportModel.setTotalqty("Total qty : "+qty);
-                        purchaseReportModel.setTotalbillamt("Bill Amt : "+finalAmt);
-                        purchaseReportModel.setVchno("Bill No : "+group_id);
-                        purchaseReportModel.setTotal_qty(TOTAL_QTY);
-                        purchaseReportModel.setTotal_amt(TOTAL_AMT);
+                        purchaseReportModel.setTotalqty("Total qty : " + qty);
+                        purchaseReportModel.setTotalbillamt("Bill Amt : " + finalAmt);
+                        purchaseReportModel.setVchno("Bill No : " + group_id);
                         purchaseReportModel.setVchdt(date);
+                        purchaseReportModel.setTotal_qty(String.valueOf(TOTAL_QTY));
+                        purchaseReportModel.setTotal_amt(String.valueOf(TOTAL_AMT));
                         purchaseReportModel.setNarration(narration);
                         purchaseReportModelArrayList.add(purchaseReportModel);
                     }
@@ -438,7 +293,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
 
     //Custom Date Dialog
     private void customDateDialog() {
-        final Dialog customDateDialog= new Dialog(PurchaseReportActivity.this);
+        final Dialog customDateDialog = new Dialog(PurchaseReportActivity.this);
         customDateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         customDateDialog.setContentView(R.layout.custom_date);
 
@@ -456,7 +311,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
         customDateDialog.show();
 
         Window window = customDateDialog.getWindow();
-        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 
         //Events Custom Date
@@ -466,14 +321,14 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 linear_layout_today_date.setVisibility(View.VISIBLE);
                 linear_layout_custom_day.setVisibility(View.GONE);
                 customDateDialog.dismiss();
+
                 currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                date_where_condition_glb = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(new Date());
 
-                String SendDate= new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(new Date());
                 text_today_date.setText(currentDate);
+                SalesReportAll salesReportAll = new SalesReportAll();
+                salesReportAll.execute("VCHDT_Y_M_D='" + date_where_condition_glb + "'", currentDate, "");
 
-                SingleDateFilter singleDateFilter = new SingleDateFilter(SendDate);
-                singleDateFilter.execute("");
-                //   Toast.makeText(SalesReportActivity.this, currentDate, Toast.LENGTH_SHORT).show();
             }
         });
         text_yesterday.setOnClickListener(new View.OnClickListener() {
@@ -485,19 +340,19 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DATE, -1);
-                String yesterday=dateFormat.format(cal.getTime());
+                String yesterday = dateFormat.format(cal.getTime());
                 text_today_date.setText(yesterday);
 
 
                 DateFormat sendDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.add(Calendar.DATE, -1);
-                String yesterdaySend=sendDateFormat.format(calSend.getTime());
+                date_where_condition_glb = sendDateFormat.format(calSend.getTime());
                 text_today_date.setText(yesterday);
 
 
-                SingleDateFilter singleDateFilter = new SingleDateFilter(yesterdaySend);
-                singleDateFilter.execute("");
+                SalesReportAll salesReportAll = new SalesReportAll();
+                salesReportAll.execute("VCHDT_Y_M_D='" + date_where_condition_glb + "'", yesterday, "");
                 // Toast.makeText(SalesReportActivity.this, yesterday, Toast.LENGTH_SHORT).show();
             }
         });
@@ -511,22 +366,21 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                String startDate=dateFormat.format(cal.getTime());
+                String startDate = dateFormat.format(cal.getTime());
                 cal.add(Calendar.DATE, 6);
                 String endDate = dateFormat.format(cal.getTime());
 
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy/MM/dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                String startDateSend=dateFormatSend.format(calSend.getTime());
+                String startDateSend = dateFormatSend.format(calSend.getTime());
                 calSend.add(Calendar.DATE, 6);
                 String endDateSend = dateFormatSend.format(calSend.getTime());
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-
-                TwoDateFilter twoDateFilter = new TwoDateFilter(startDateSend,endDateSend);
-                twoDateFilter.execute("");
+                SalesReportAll salesReportAll = new SalesReportAll();
+                salesReportAll.execute("VCHDT_Y_M_D BETWEEN '" + startDateSend + "' AND '" + endDateSend + "'", startDate, endDate);
 
                 // Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
@@ -540,7 +394,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                 Calendar cal = Calendar.getInstance();
                 cal.set(Calendar.DAY_OF_MONTH, 1);
-                String startDate=dateFormat.format(cal.getTime());
+                String startDate = dateFormat.format(cal.getTime());
                 cal.add(Calendar.MONTH, 1);
                 cal.add(Calendar.DATE, -1);
                 String endDate = dateFormat.format(cal.getTime());
@@ -548,15 +402,16 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy/MM/dd");
                 Calendar calSend = Calendar.getInstance();
                 calSend.set(Calendar.DAY_OF_MONTH, 1);
-                String startDateSend=dateFormatSend.format(calSend.getTime());
+                String startDateSend = dateFormatSend.format(calSend.getTime());
                 calSend.add(Calendar.MONTH, 1);
                 calSend.add(Calendar.DATE, -1);
                 String endDateSend = dateFormatSend.format(calSend.getTime());
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-                TwoDateFilter twoDateFilter = new TwoDateFilter(startDateSend,endDateSend);
-                twoDateFilter.execute("");
+                SalesReportAll salesReportAll = new SalesReportAll();
+                salesReportAll.execute("VCHDT_Y_M_D BETWEEN '" + startDateSend + "' AND '" + endDateSend + "'", startDate, endDate);
+
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -571,10 +426,10 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 cal.set(Calendar.DATE, 1);
                 cal.add(Calendar.DAY_OF_MONTH, -1);
                 Date lastDateOfPreviousMonth = cal.getTime();
-                String endDate=dateFormat.format(lastDateOfPreviousMonth);
+                String endDate = dateFormat.format(lastDateOfPreviousMonth);
                 cal.set(Calendar.DATE, 1);
                 Date firstDateOfPreviousMonth = cal.getTime();
-                String startDate=dateFormat.format(firstDateOfPreviousMonth);
+                String startDate = dateFormat.format(firstDateOfPreviousMonth);
 
 
                 DateFormat dateFormatSend = new SimpleDateFormat("yyyy/MM/dd");
@@ -582,16 +437,17 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 calSend.set(Calendar.DATE, 1);
                 calSend.add(Calendar.DAY_OF_MONTH, -1);
                 Date lastDateOfPreviousMonthSend = calSend.getTime();
-                String endDateSend=dateFormatSend.format(lastDateOfPreviousMonthSend);
+                String endDateSend = dateFormatSend.format(lastDateOfPreviousMonthSend);
                 calSend.set(Calendar.DATE, 1);
                 Date firstDateOfPreviousMonthSend = calSend.getTime();
-                String startDateSend=dateFormatSend.format(firstDateOfPreviousMonthSend);
+                String startDateSend = dateFormatSend.format(firstDateOfPreviousMonthSend);
 
 
                 textDateStart.setText(startDate);
                 textDateEnd.setText(endDate);
-                TwoDateFilter twoDateFilter = new TwoDateFilter(startDateSend,endDateSend);
-                twoDateFilter.execute("");
+
+                SalesReportAll salesReportAll = new SalesReportAll();
+                salesReportAll.execute("VCHDT_Y_M_D BETWEEN '" + startDateSend + "' AND '" + endDateSend + "'", startDate, endDate);
                 //Toast.makeText(SalesReportActivity.this, startDate+" "+endDate, Toast.LENGTH_SHORT).show();
             }
         });
@@ -601,7 +457,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 linear_layout_today_date.setVisibility(View.GONE);
                 linear_layout_custom_day.setVisibility(View.VISIBLE);
                 customDateDialog.dismiss();
-                final Dialog customDateDialogDate= new Dialog(PurchaseReportActivity.this);
+                final Dialog customDateDialogDate = new Dialog(PurchaseReportActivity.this);
                 customDateDialogDate.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 customDateDialogDate.setContentView(R.layout.custom_date_calendar);
 
@@ -609,7 +465,7 @@ public class PurchaseReportActivity extends AppCompatActivity {
                 textDateEndCustom = customDateDialogDate.findViewById(R.id.textDateEnd);
                 TextView textAll = customDateDialogDate.findViewById(R.id.textAll);
 
-                currentDate = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(new Date());
+                currentDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
 
                 textDateStartCustom.setText(currentDate);
                 textDateEndCustom.setText(currentDate);
@@ -619,19 +475,19 @@ public class PurchaseReportActivity extends AppCompatActivity {
 
                 customDateDialogDate.show();
                 Window window = customDateDialogDate.getWindow();
-                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT );
+                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                 textDateStartCustom.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isStartDate=true;
+                        isStartDate = true;
                         customDatePickerDialog();
                     }
                 });
                 textDateEndCustom.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isStartDate=false;
+                        isStartDate = false;
                         customDatePickerDialog();
                     }
                 });
@@ -640,17 +496,32 @@ public class PurchaseReportActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         customDateDialogDate.dismiss();
-                        String startDate=textDateStartCustom.getText().toString();
-                        String endDate=textDateEndCustom.getText().toString();
+                        String startDate = textDateStartCustom.getText().toString();
+                        String endDate = textDateEndCustom.getText().toString();
+
                         textDateStart.setText(startDate);
                         textDateEnd.setText(endDate);
 
-                        TwoDateFilter twoDateFilter = new TwoDateFilter(startDate,endDate);
-                        twoDateFilter.execute("");
+
+                        String startDateSend = strDateFormate(startDate);
+                        String endDateSend = strDateFormate(endDate);
+
+
+                        SalesReportAll salesReportAll = new SalesReportAll();
+                        salesReportAll.execute("VCHDT_Y_M_D BETWEEN '" + startDateSend + "' AND '" + endDateSend + "'", startDate, endDate);
                     }
                 });
             }
         });
+    }
+
+    private String strDateFormate(String date) {
+        StringTokenizer stringTokenizer = new StringTokenizer(date, "/");
+        String day = stringTokenizer.nextToken();
+        String month = stringTokenizer.nextToken();
+        String year = stringTokenizer.nextToken();
+        String sendDate = year + "/" + month + "/" + day;
+        return sendDate;
     }
 
     private void customDatePickerDialog() {
@@ -668,13 +539,12 @@ public class PurchaseReportActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(year, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
                         String dateString = format.format(calendar.getTime());
 
-                        if(isStartDate) {
+                        if (isStartDate) {
                             textDateStartCustom.setText(dateString);
-                        }
-                        else {
+                        } else {
                             textDateEndCustom.setText(dateString);
                         }
                     }

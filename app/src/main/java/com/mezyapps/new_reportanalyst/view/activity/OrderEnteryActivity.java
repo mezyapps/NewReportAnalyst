@@ -63,7 +63,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
     private ImageView iv_back, iv_import_table;
     private TextView textDate, textTotalQty, textTotalAmt, textBalance,textArea;
     private String currentDate,currentDate_Y_M_D, group_id = "", group_name, balance, total_qty, total_amt, date, order_no;
-    private FloatingActionButton fab_add_product;
+    private FloatingActionButton fab_add_product,fab_add_customer;
     private ArrayList<OrderEntryProduct> orderEntryProductArrayList = new ArrayList<>();
     private OrderEntryProductAdapter orderEntryProductAdapter;
     private RecyclerView recycler_view_product;
@@ -98,6 +98,7 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
         iv_back = findViewById(R.id.iv_back);
         textDate = findViewById(R.id.textDate);
         fab_add_product = findViewById(R.id.fab_add_product);
+        fab_add_customer = findViewById(R.id.fab_add_customer);
         textTotalQty = findViewById(R.id.textTotalQty);
         textTotalAmt = findViewById(R.id.textTotalAmt);
         recycler_view_product = findViewById(R.id.recycler_view_product);
@@ -300,6 +301,12 @@ public class OrderEnteryActivity extends AppCompatActivity implements SelectProd
                         Toast.makeText(OrderEnteryActivity.this, "Please Add product", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+        fab_add_customer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OrderEnteryActivity.this,AddCustomerActivity.class));
             }
         });
     }

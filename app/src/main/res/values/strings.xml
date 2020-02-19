@@ -39,7 +39,10 @@
     <string name="order_register">Order Register</string>
     <string name="delete_msg">Are You Sure You Want To Delete ??</string>
     <string name="exit_msg">Are You Sure You Want To Exit ??</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="area">Area</string>
 
+    <string name="rs"> \u20B9 </string>
 
     <string-array name="array_gst">
         <item>Select GST</item>

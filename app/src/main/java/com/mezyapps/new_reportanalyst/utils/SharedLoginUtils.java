@@ -48,6 +48,7 @@ public class SharedLoginUtils {
         editor.putString(ConstantFields.SALESMAN_ID, userProfileModelArrayList.get(0).getSALESMAN_ID());
         editor.putString(ConstantFields.SALESMAN_NAME, userProfileModelArrayList.get(0).getSALESMAN_NAME());
         editor.putString(ConstantFields.INCLU_EXCLU, userProfileModelArrayList.get(0).getINCLU_EXCLU());
+        editor.putString(ConstantFields.DISPLAY_NAME, userProfileModelArrayList.get(0).getDisplay_name());
 
         editor.commit();
     }
@@ -66,6 +67,7 @@ public class SharedLoginUtils {
         userProfileModel.setSALESMAN_ID(preferences.getString(ConstantFields.SALESMAN_ID, ""));
         userProfileModel.setSALESMAN_NAME(preferences.getString(ConstantFields.SALESMAN_NAME, ""));
         userProfileModel.setINCLU_EXCLU(preferences.getString(ConstantFields.INCLU_EXCLU, ""));
+        userProfileModel.setDisplay_name(preferences.getString(ConstantFields.DISPLAY_NAME, ""));
         userProfileModelArrayList.add(userProfileModel);
         return userProfileModelArrayList;
     }

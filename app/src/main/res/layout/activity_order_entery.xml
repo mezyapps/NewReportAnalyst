@@ -126,14 +126,34 @@
                     android:textColor="@color/app_color"
                     android:textStyle="bold" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/actv_customer_name"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/shape_edit_text"
-                    android:inputType="text"
-                    android:padding="10dp" />
+                    android:weightSum="4"
+                    android:layout_marginTop="5dp">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actv_customer_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3.9"
+                        android:layout_marginEnd="5dp"
+                        android:background="@drawable/shape_edit_text"
+                        android:inputType="text"
+                        android:padding="10dp" />
+
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fab_add_customer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_vector_add_user"
+                        app:fabSize="mini" />
+
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -178,8 +198,8 @@
                         android:id="@+id/textArea"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
                         android:gravity="end"
+                        android:maxLines="1"
                         android:textColor="@color/gray" />
 
                 </LinearLayout>
